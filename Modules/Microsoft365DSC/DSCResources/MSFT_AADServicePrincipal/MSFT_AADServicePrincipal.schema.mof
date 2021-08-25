@@ -4,7 +4,7 @@ class MSFT_AADServicePrincipal : OMI_BaseResource
     [Key, Description("The unique identifier for the associated application.")] String AppId;
     [Write, Description("The ObjectID of the ServicePrincipal")] String ObjectID;
     [Write, Description("Displayname of the ServicePrincipal.")] String DisplayName;
-    [Write, Description("The atlernative names for this service principal")] String AlternativeNames[];
+    [Write, Description("The alternative names for this service principal")] String AlternativeNames[];
     [Write, Description("True if the service principal account is enabled; otherwise, false.")] Boolean AccountEnabled;
     [Write, Description("Indicates whether an application role assignment is required.")] Boolean AppRoleAssignmentRequired;
     [Write, Description("Specifies the error URL of the ServicePrincipal.")] String ErrorUrl;
