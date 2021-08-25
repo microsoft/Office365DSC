@@ -1,0 +1,11 @@
+[ClassVersion("1.0.0.0"), FriendlyName("AADADministrativeUnit")]
+class MSFT_AADAdministrativeUnit : OMI_BaseResource
+{
+    [Key, Description("DisplayName of the app")] string DisplayName;
+    [Write, Description("ObjectID of the app.")] String ObjectId;
+    [Write, Description("Specify if the Azure AD Administrative Unit should exist or not."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("Credentials of the Azure AD Admin"), EmbeddedInstance("MSFT_Credential")] string GlobalAdminAccount;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+};
