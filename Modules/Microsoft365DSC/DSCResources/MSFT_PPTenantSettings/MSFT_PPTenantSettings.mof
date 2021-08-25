@@ -1,0 +1,21 @@
+[ClassVersion("1.0.0.0"), FriendlyName("PPTenantSettings")]
+class MSFT_PPTenantSettings : OMI_BaseResource
+{
+    [Key, Description("Should be set to yes"),ValueMap{"Yes"},Values{"Yes"}] string IsSingleInstance;
+    [Write, Description("When set to true this will disable the Walk Me guidance.")] boolean WalkMeOptOut;
+    [Write, Description("When set to true this will disable the NPS Comments Reachout.")] boolean DisableNPSCommentsReachout;
+    [Write, Description("When set to true this will disable the monthly newsletters.")] boolean DisableNewsletterSendout;
+    [Write, Description("When set to true this will disable production environment creation by non-admin users.")] boolean DisableEnvironmentCreationByNonAdminUsers;
+    [Write, Description("When set to true this will disable portal creation by non-admin users.")] boolean DisablePortalsCreationByNonAdminUsers;
+    [Write, Description("When set to true this will disable survey feedback that sometimes pops up on top of an app.")] boolean DisableSurveyFeedback;
+    [Write, Description("When set to true this will disable trial environment creation by non-admin users.")] boolean DisableTrialEnvironmentCreationByNonAdminUsers;
+    [Write, Description("When set to true this will disable capacity allocation by environment admins.")] boolean DisableCapacityAllocationByEnvironmentAdmins;
+    [Write, Description("When set to true this will disable support tickets to be visible by all users.")] boolean DisableSupportTicketsVisibleByAllUsers;
+    [Write, Description("When set to true this will disable docs search in the Office 365 Suite navigation bar.")] boolean DisableDocsSearch;
+    [Write, Description("When set to true this will disable community search in the Office 365 Suite navigation bar.")] boolean DisableCommunitySearch;
+    [Write, Description("When set to true this will disable Bing video search in the Office 365 Suite navigation bar.")] boolean DisableBingVideoSearch;
+    [Write, Description("When set to true this will disable the ability to share apps with the whole tenant.")] boolean DisableShareWithEveryone;
+    [Write, Description("When set to true this will enable the ability for guests in your tenant to create Power Platform resources.")] boolean EnableGuestsToMake;
+    [Write, Description("The amount of people an app can be shared with in Dataverse for Teams (maximum is 10,000).")] uint32 ShareWithColleaguesUserLimit;
+    [Write, Description("Credentials of the Azure Active Directory Global Admin"), EmbeddedInstance("MSFT_Credential")] string GlobalAdminAccount;
+};
