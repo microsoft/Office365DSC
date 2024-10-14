@@ -38,14 +38,15 @@ Configuration Example
             Owner                 = "";
             PrivacyInformationUrl = "";
             Publisher             = "Contoso";
-            Assignments          = @(
-                    MSFT_DeviceManagementMobileAppAssignment{
+            PublishingState       = "published";
+            Assignments           = @(
+                    MSFT_DeviceManagementMobileAppAssignment {
                         groupDisplayName = 'All devices'
                         deviceAndAppManagementAssignmentFilterType = 'none'
                         dataType = '#microsoft.graph.allDevicesAssignmentTarget'
                         intent = 'required'
                     }
-                    MSFT_DeviceManagementMobileAppAssignment{
+                    MSFT_DeviceManagementMobileAppAssignment {
                         deviceAndAppManagementAssignmentFilterType = 'none'
                         dataType = '#microsoft.graph.groupAssignmentTarget'
                         groupId = '57b5e81c-85bb-4644-a4fd-33b03e451c89'

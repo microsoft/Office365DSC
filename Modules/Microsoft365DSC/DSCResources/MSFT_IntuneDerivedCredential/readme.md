@@ -3,4 +3,4 @@
 
 ## Description
 
-##Create new navigation property to derivedCredentials for deviceManagement
+## Create new navigation property to derivedCredentials for deviceManagement for Intune.

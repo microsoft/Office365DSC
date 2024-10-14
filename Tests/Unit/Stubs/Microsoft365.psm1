@@ -19348,12 +19348,81 @@ function Get-MgBetaDeviceManagementGroupPolicyConfigurationAssignment
     )
 }
 
-function New-MgBetaDeviceAppManagementMobileApp {
+function New-MgBetaDeviceManagementDerivedCredential {
+
     [CmdletBinding()]
     param (
         [Parameter()]
         [System.String]
         $Id,
+
+        [Parameter()]
+        [System.String]
+        $DisplayName,
+
+        [Parameter()]
+        [System.String]
+        $HelpUrl,
+
+        [Parameter()]
+        [ValidateSet('intercede', 'entrustData', 'purebred')]
+        [System.String]
+        $Issuer,
+
+        [Parameter()]
+        [ValidateSet('none', 'email', 'companyPortal')]
+        [System.String]
+        $NotificationType = 'none'
+    )
+}
+
+function Get-MgBetaDeviceManagementDerivedCredential {
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [System.String]
+        $DeviceManagementDerivedCredentialSettingsId,
+
+        [Parameter()]
+        [System.String]
+        $DisplayName,
+
+        [Parameter()]
+        [System.String]
+        $HelpUrl,
+
+        [Parameter()]
+        [ValidateSet('intercede', 'entrustData', 'purebred')]
+        [System.String]
+        $Issuer,
+
+        [Parameter()]
+        [ValidateSet('none', 'email', 'companyPortal')]
+        [System.String]
+        $NotificationType = 'none'
+    )
+}
+
+function Remove-MgBetaDeviceManagementDerivedCredential
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $DeviceManagementDerivedCredentialSettingsId,
+
+        [Parameter()]
+        [System.Boolean]
+        $Confirm
+    )
+}
+
+function New-MgBetaDeviceAppManagementMobileApp {
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [System.String]
+        $DeviceManagementDerivedCredentialSettingsId,
 
         [Parameter()]
         [System.String]
@@ -96973,5 +97042,60 @@ function Get-TenantDetailsFromGraph
         [Parameter()]
         [System.String]
         $GraphApiVersion
+    )
+}
+function Remove-PowerAppDlpPolicyConnectorConfigurations
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $PolicyName,
+
+        [Parameter()]
+        [System.String]
+        $ApiVersion
+    )
+}
+function New-PowerAppDlpPolicyConnectorConfigurations
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $PolicyName,
+
+        [Parameter()]
+        [System.String]
+        $ApiVersion,
+
+        [Parameter()]
+        [System.Object]
+        $NewDlpPolicyConnectorConfigurations
+    )
+}
+function Get-PowerAppDlpPolicyConnectorConfigurations
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $PolicyName,
+
+        [Parameter()]
+        [System.String]
+        $ApiVersion
     )
 }

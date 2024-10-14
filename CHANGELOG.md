@@ -2,6 +2,8 @@
 
 # UNRELEASED
 
+* IntuneDerivedCredential
+  * Initial release.
 * AADAdminConsentRequestPolicy
   * Initial release.
 * AADApplication
@@ -43,6 +45,8 @@
 * IntuneMobileAppsMacOSLobApp
   * Initial release
 * PPAdminDLPPolicy
+  * Initial release.
+* PPDLPPolicyConnectorConfigurations
   * Initial release.
 * PPPowerAppPolicyUrlPatterns
   * Initial release.

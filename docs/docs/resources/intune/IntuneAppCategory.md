@@ -4,7 +4,7 @@
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
-| **DisplayName** | Key | String | The name of the app category. | |
+| **DisplayName** | Key | String | The name of the app. | |
 | **Id** | Write | String | The unique identifier for an entity. Read-only. | |
 | **Ensure** | Write | String | Present ensures the instance exists, absent ensures it is removed. | `Present`, `Absent` |
 | **Credential** | Write | PSCredential | Credentials of the workload's Admin | |

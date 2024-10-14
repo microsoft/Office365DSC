@@ -1,0 +1,30 @@
+[ClassVersion("1.0.0.0")]
+class MSFT_PPDLPPolicyConnectorConfigurationsActionRules
+{
+    [Write, Description("Id of the action.")] String actionId;
+    [Write, Description("Associated behavior.")] String behavior;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_PPDLPPolicyConnectorConfigurationsAction
+{
+    [Write, Description("Unique id of the connector.")] String connectorId;
+    [Write, Description("Default action behavior for to connector.")] String defaultConnectorActionRuleBehavior;
+    [Write, Description("List of associated actions."), EmbeddedInstance("MSFT_PPDLPPolicyConnectorConfigurationsActionRules")] String actionRules[];
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("PPDLPPolicyConnectorConfigurations")]
+class MSFT_PPDLPPolicyConnectorConfigurations : OMI_BaseResource
+{
+    [Key, Description("The policy name identifier.")] String PolicyName;
+    [Key, Description("The tenant identifier.")] String PPTenantId;
+    [Write, Description("Set of cnnector actions associated with the policy."), EmbeddedInstance("MSFT_PPDLPPolicyConnectorConfigurationsAction")] String ConnectorActionConfigurations[];
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

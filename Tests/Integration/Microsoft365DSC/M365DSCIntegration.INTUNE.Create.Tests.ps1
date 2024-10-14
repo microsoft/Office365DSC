@@ -305,6 +305,15 @@
                     TenantId              = $TenantId;
                     CertificateThumbprint = $CertificateThumbprint;
                 }
+                IntuneDerivedCredential 'IntuneDerivedCredential-K5'
+                {
+                    DisplayName          = "K5";
+                    HelpUrl              = "http://www.ff.com/";
+                    Id                   = "a409d85f-2a49-440d-884a-80fb52a557ab";
+                    Issuer               = "purebred";
+                    NotificationType     = "email";
+                    Ensure               = "Present";
+                }
                 IntuneDeviceAndAppManagementAssignmentFilter 'AssignmentFilter'
                 {
                     DisplayName = 'Test Device Filter'
@@ -2542,7 +2551,7 @@
                     PrivacyInformationUrl = "";
                     Publisher             = "Contoso";
                     Assignments          = @(
-                            MSFT_DeviceManagementMobileAppAssignment{
+                            MSFT_DeviceManagementMobileAppAssignment {
                                 groupDisplayName = 'All devices'
                                 deviceAndAppManagementAssignmentFilterType = 'none'
                                 dataType = '#microsoft.graph.allDevicesAssignmentTarget'

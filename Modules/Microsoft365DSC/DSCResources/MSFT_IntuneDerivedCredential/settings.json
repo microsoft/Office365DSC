@@ -1,40 +1,21 @@
 {
     "resourceName": "IntuneDerivedCredential",
-    "description": "Use this resource to create new navigation property to derivedCredentials for deviceManagement",
-    // "roles": {
-    //   "read": [
-    //     "Global Reader"
-    //   ],
-    //   "update": [
-    //     "Intune Administrator"
-    //   ]
-    // },
+    "description": "Use this resource to create new navigation property to derivedCredentials for device Management in Intune.",
 
     "permissions": {
       "graph": {
         "delegated": {
           "read": [
-            "DeviceManagementConfiguration.Read.All"
           ],
           "update": [
-            "DeviceManagementConfiguration.ReadWrite.All"
           ]
         },
         "application": {
           "read": [
-            "DeviceManagementConfiguration.Read.All"
           ],
           "update": [
-            "DeviceManagementConfiguration.ReadWrite.All"
           ]
         }
       }
     }
   }
-
-// PS C:\Windows\system32> Find-MgGraphCommand -Command “Get-MgBetaDeviceManagementDerivedCredential” | select Permissions
-    // OUTPUT:
-    // Permissions
-    // -----------
-    // {}
-    // {}

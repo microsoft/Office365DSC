@@ -2,11 +2,14 @@ function Get-TargetResource {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param (
+
+        #region resource params
+
         [Parameter()]
         [System.String]
         $Id,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DisplayName,
 
@@ -23,6 +26,12 @@ function Get-TargetResource {
         [ValidateSet('none', 'email', 'companyPortal')]
         [System.String]
         $NotificationType = 'none',
+
+        [Parameter()]
+        [System.Int32]
+        $RenewalThresholdPercentage,
+
+        #endregion resource params
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -58,7 +67,6 @@ function Get-TargetResource {
         $AccessTokens
 
     )
-    Write-Host "Host: start of get."
 
     New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters | Out-Null
@@ -105,27 +113,25 @@ function Get-TargetResource {
                         return $nullResult
                     }
                 }
-
             }
+        }
 
-        }
-        Write-Host "Values of Instance Id: $($instance.Id), DisplayName: $($instance.DisplayName), HelpUrl: $($instance.HelpUrl), Issuer: $($instance.Issuer), NotificationType: $($instance.NotificationType)"
         $results = @{
-            Ensure                = 'Present'
-            Id                    = $instance.Id
-            DisplayName           = $instance.DisplayName
-            HelpUrl               = $instance.HelpUrl
-            Issuer                = $instance.Issuer
-            NotificationType      = $instance.NotificationType
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            ApplicationSecret     = $ApplicationSecret
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
+            Ensure                      = 'Present'
+            Id                          = $instance.Id
+            DisplayName                 = $instance.DisplayName
+            HelpUrl                     = $instance.HelpUrl
+            Issuer                      = $instance.Issuer.ToString()
+            NotificationType            = $instance.NotificationType.ToString()
+            RenewalThresholdPercentage  = $instance.RenewalThresholdPercentage
+            Credential                  = $Credential
+            ApplicationId               = $ApplicationId
+            TenantId                    = $TenantId
+            CertificateThumbprint       = $CertificateThumbprint
+            ApplicationSecret           = $ApplicationSecret
+            ManagedIdentity             = $ManagedIdentity.IsPresent
+            AccessTokens                = $AccessTokens
         }
-        Write-Host "Values of Results:: Id: $($results.Id), DisplayName: $($results.DisplayName), HelpUrl: $($results.HelpUrl), Issuer: $($results.Issuer), NotificationType: $($results.NotificationType)"
 
         return [System.Collections.Hashtable] $results
     }
@@ -145,11 +151,14 @@ function Get-TargetResource {
 function Set-TargetResource {
     [CmdletBinding()]
     param (
+
+        #region resource params
+
         [Parameter()]
         [System.String]
         $Id,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DisplayName,
 
@@ -161,6 +170,12 @@ function Set-TargetResource {
         [ValidateSet('intercede', 'entrustData', 'purebred')]
         [System.String]
         $Issuer,
+
+        [Parameter()]
+        [System.Int32]
+        $RenewalThresholdPercentage,
+
+        #endregion resource params
 
         [Parameter()]
         [ValidateSet('none', 'email', 'companyPortal')]
@@ -224,11 +239,7 @@ function Set-TargetResource {
     {
         New-MgBetaDeviceManagementDerivedCredential @SetParameters
     }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Update-MgBetaDeviceManagementDerivedCredential -DeviceManagementDerivedCredentialSettingsId $currentInstance.Id @SetParameters
-    }
+    # UPDATE is not supported API, it always creates a new Derived Credential instance
     # REMOVE
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
@@ -240,11 +251,14 @@ function Test-TargetResource {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
+
+        #region resource params
+
         [Parameter()]
         [System.String]
         $Id,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DisplayName,
 
@@ -261,6 +275,12 @@ function Test-TargetResource {
         [ValidateSet('none', 'email', 'companyPortal')]
         [System.String]
         $NotificationType = 'none',
+
+        [Parameter()]
+        [System.Int32]
+        $RenewalThresholdPercentage,
+
+        #endregion resource params
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -327,6 +347,9 @@ function Export-TargetResource {
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
+
+        #region resource params
+
         [Parameter()]
         [System.String]
         $Id,
@@ -350,9 +373,16 @@ function Export-TargetResource {
         $NotificationType = 'none',
 
         [Parameter()]
+        [System.Int32]
+        $RenewalThresholdPercentage,
+
+        #endregion resource params
+
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
+
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
@@ -381,7 +411,6 @@ function Export-TargetResource {
         [System.String[]]
         $AccessTokens
     )
-    Write-Host "Host: start of export."
 
     $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
     -InboundParameters $PSBoundParameters
@@ -417,20 +446,22 @@ function Export-TargetResource {
         {
             $displayedKey = $config.Id
             Write-Host "    |---[$i/$($Script:exportedInstances.Count)] $displayedKey" -NoNewline
+
             $params = @{
-                Ensure                = 'Present'
-                Id                    = $config.Id
-                DisplayName           = $config.DisplayName
-                HelpUrl               = $config.HelpUrl
-                Issuer                = $config.Issuer
-                NotificationType      = $config.NotificationType
-                Credential            = $Credential
-                AccessTokens          = $AccessTokens
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                ManagedIdentity       = $ManagedIdentity.IsPresent
+                Ensure                      = 'Present'
+                Id                          = $config.Id
+                DisplayName                 = $config.DisplayName
+                HelpUrl                     = $config.HelpUrl
+                Issuer                      = $config.Issuer.ToString()
+                NotificationType            = $config.NotificationType.ToString()
+                RenewalThresholdPercentage  = $config.RenewalThresholdPercentage
+                Credential                  = $Credential
+                AccessTokens                = $AccessTokens
+                ApplicationId               = $ApplicationId
+                TenantId                    = $TenantId
+                ApplicationSecret           = $ApplicationSecret
+                CertificateThumbprint       = $CertificateThumbprint
+                ManagedIdentity             = $ManagedIdentity.IsPresent
             }
 
             $Results = Get-TargetResource @Params
@@ -448,6 +479,7 @@ function Export-TargetResource {
             $i++
             Write-Host $Global:M365DSCEmojiGreenCheckMark
         }
+
         return $dscContent
     }
     catch
@@ -462,7 +494,6 @@ function Export-TargetResource {
 
         return ''
     }
-
 }
 
 Export-ModuleMember -Function *-TargetResource

@@ -14,12 +14,12 @@
 | **Owner** | Write | String | The owner of the app. Inherited from mobileApp. | |
 | **PrivacyInformationUrl** | Write | String | The privacy statement Url. Inherited from mobileApp. | |
 | **Publisher** | Write | String | The publisher of the app. Inherited from mobileApp. | |
+| **PublishingState** | Write | String | The publishing state for the app. The app cannot be assigned unless the app is published. Inherited from mobileApp. | `notPublished`, `processing`, `published` |
 | **BundleId** | Write | String | The bundleId of the app. | |
 | **BuildNumber** | Write | String | The build number of the app. | |
 | **VersionNumber** | Write | String | The version number of the app. | |
 | **RoleScopeTagIds** | Write | StringArray[] | List of Scope Tag IDs for mobile app. | |
 | **IgnoreVersionDetection** | Write | Boolean | Whether to ignore the version of the app or not. | |
-| **InstallAsManaged** | Write | Boolean | Install the app as managed. Requires macOS 11.0. | |
 | **LargeIcon** | Write | MSFT_DeviceManagementMimeContent | The icon for this app. | |
 | **MinimumSupportedOperatingSystem** | Write | MSFT_DeviceManagementMinimumOperatingSystem | The minimum supported operating system to install the app. | |
 | **Categories** | Write | MSFT_DeviceManagementMobileAppCategory[] | The list of categories for this app. | |
@@ -170,7 +170,7 @@ Configuration Example
             PrivacyInformationUrl = "";
             Publisher             = "Contoso";
             Assignments          = @(
-                    MSFT_DeviceManagementMobileAppAssignment{
+                    MSFT_DeviceManagementMobileAppAssignment {
                         groupDisplayName = 'All devices'
                         deviceAndAppManagementAssignmentFilterType = 'none'
                         dataType = '#microsoft.graph.allDevicesAssignmentTarget'
@@ -234,14 +234,15 @@ Configuration Example
             Owner                 = "";
             PrivacyInformationUrl = "";
             Publisher             = "Contoso";
-            Assignments          = @(
-                    MSFT_DeviceManagementMobileAppAssignment{
+            PublishingState       = "published";
+            Assignments           = @(
+                    MSFT_DeviceManagementMobileAppAssignment {
                         groupDisplayName = 'All devices'
                         deviceAndAppManagementAssignmentFilterType = 'none'
                         dataType = '#microsoft.graph.allDevicesAssignmentTarget'
                         intent = 'required'
                     }
-                    MSFT_DeviceManagementMobileAppAssignment{
+                    MSFT_DeviceManagementMobileAppAssignment {
                         deviceAndAppManagementAssignmentFilterType = 'none'
                         dataType = '#microsoft.graph.groupAssignmentTarget'
                         groupId = '57b5e81c-85bb-4644-a4fd-33b03e451c89'

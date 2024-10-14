@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "PPDLPPolicyConnectorConfigurations",
+    "description": "Configures connectors Data Loss Prevention policies in Power Platforms.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

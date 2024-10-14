@@ -21850,6 +21850,81 @@
                        ]
     },
     {
+        "ClassName":  "MSFT_IntuneDerivedCredential",
+        "Parameters":  [
+                           {
+                               "CIMType":  "String",
+                               "Name":  "DisplayName",
+                               "Option":  "Key"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "Id",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "HelpUrl",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "Uint32",
+                               "Name":  "RenewalThresholdPercentage",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "Issuer",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "NotificationType",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "Ensure",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_Credential",
+                               "Name":  "Credential",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "ApplicationId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "TenantId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_Credential",
+                               "Name":  "ApplicationSecret",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "CertificateThumbprint",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "Boolean",
+                               "Name":  "ManagedIdentity",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "AccessTokens",
+                               "Option":  "Write"
+                           }
+                       ]
+    },
+    {
         "ClassName":  "MSFT_IntuneDeviceAndAppManagementAssignmentFilter",
         "Parameters":  [
                            {
@@ -35884,6 +35959,11 @@
                            },
                            {
                                "CIMType":  "String",
+                               "Name":  "PublishingState",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
                                "Name":  "BundleId",
                                "Option":  "Write"
                            },
@@ -35905,11 +35985,6 @@
                            {
                                "CIMType":  "Boolean",
                                "Name":  "IgnoreVersionDetection",
-                               "Option":  "Write"
-                           },
-                           {
-                               "CIMType":  "Boolean",
-                               "Name":  "InstallAsManaged",
                                "Option":  "Write"
                            },
                            {
@@ -39855,6 +39930,96 @@
                            {
                                "CIMType":  "String",
                                "Name":  "FilterType",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "string",
+                               "Name":  "Ensure",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_Credential",
+                               "Name":  "Credential",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "ApplicationId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "TenantId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "CertificateThumbprint",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "Boolean",
+                               "Name":  "ManagedIdentity",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "AccessTokens",
+                               "Option":  "Write"
+                           }
+                       ]
+    },
+    {
+        "ClassName":  "MSFT_PPDLPPolicyConnectorConfigurationsActionRules",
+        "Parameters":  [
+                           {
+                               "CIMType":  "String",
+                               "Name":  "actionId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "behavior",
+                               "Option":  "Write"
+                           }
+                       ]
+    },
+    {
+        "ClassName":  "MSFT_PPDLPPolicyConnectorConfigurationsAction",
+        "Parameters":  [
+                           {
+                               "CIMType":  "String",
+                               "Name":  "connectorId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "defaultConnectorActionRuleBehavior",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_PPDLPPolicyConnectorConfigurationsActionRules[]",
+                               "Name":  "actionRules",
+                               "Option":  "Write"
+                           }
+                       ]
+    },
+    {
+        "ClassName":  "MSFT_PPDLPPolicyConnectorConfigurations",
+        "Parameters":  [
+                           {
+                               "CIMType":  "String",
+                               "Name":  "PolicyName",
+                               "Option":  "Key"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "PPTenantId",
+                               "Option":  "Key"
+                           },
+                           {
+                               "CIMType":  "MSFT_PPDLPPolicyConnectorConfigurationsAction[]",
+                               "Name":  "ConnectorActionConfigurations",
                                "Option":  "Write"
                            },
                            {
