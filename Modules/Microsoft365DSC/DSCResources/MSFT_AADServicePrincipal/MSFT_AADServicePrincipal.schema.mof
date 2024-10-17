@@ -5,6 +5,13 @@ class MSFT_AADServicePrincipalRoleAssignment
     [Write, Description("Unique identity representing the principal.")] String Identity;
 };
 
+[ClassVersion("1.0.0")]
+class MSFT_AADServicePrincipalDelegatedPermissionClassification
+{
+    [Write, Description("Classification of the delegated permission"), ValueMap{"low", "medium", "high"}, Values{"low", "medium", "high"}] String Classification;
+    [Write, Description("Name of the permission")] String PermissionName;
+};
+
 [ClassVersion("1.0.0.0"), FriendlyName("AADServicePrincipal")]
 class MSFT_AADServicePrincipal : OMI_BaseResource
 {
@@ -25,6 +32,8 @@ class MSFT_AADServicePrincipal : OMI_BaseResource
     [Write, Description("Specifies an array of service principal names. Based on the identifierURIs collection, plus the application's appId property, these URIs are used to reference an application's service principal.")] String ServicePrincipalNames[];
     [Write, Description("The type of the service principal.")] String ServicePrincipalType;
     [Write, Description("Tags linked to this service principal.Note that if you intend for this service principal to show up in the All Applications list in the admin portal, you need to set this value to {WindowsAzureActiveDirectoryIntegratedApp}")] String Tags[];
+    [Write, Description("The permission classifications for delegated permissions exposed by the app that this service principal represents."), EmbeddedInstance("MSFT_AADServicePrincipalDelegatedPermissionClassification")] String DelegatedPermissionClassifications[];
+
     [Write, Description("Specify if the Azure AD App should exist or not."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
     [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;

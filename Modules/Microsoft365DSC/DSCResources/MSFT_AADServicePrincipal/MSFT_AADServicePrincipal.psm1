@@ -33,6 +33,10 @@ function Get-TargetResource
         $AppRoleAssignmentRequired,
 
         [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $DelegatedPermissionClassifications,
+
+        [Parameter()]
         [System.String]
         $ErrorUrl,
 
@@ -212,32 +216,43 @@ function Get-TargetResource
                 }
             }
 
+            [Array]$complexDelegatedPermissionClassifications = @()
+            $permissionClassifications = Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$AppId')/delegatedPermissionClassifications" -Method Get
+            foreach ($permissionClassification in $permissionClassifications.Value){
+                $hashtable = @{
+                    classification = $permissionClassification.Classification
+                    permissionName = $permissionClassification.permissionName
+                }
+                $complexDelegatedPermissionClassifications += $hashtable
+            }
+
             $result = @{
-                AppId                     = $AADServicePrincipal.AppId
-                AppRoleAssignedTo         = $AppRoleAssignedToValues
-                ObjectID                  = $AADServicePrincipal.Id
-                DisplayName               = $AADServicePrincipal.DisplayName
-                AlternativeNames          = $AADServicePrincipal.AlternativeNames
-                AccountEnabled            = [boolean]$AADServicePrincipal.AccountEnabled
-                AppRoleAssignmentRequired = $AADServicePrincipal.AppRoleAssignmentRequired
-                ErrorUrl                  = $AADServicePrincipal.ErrorUrl
-                Homepage                  = $AADServicePrincipal.Homepage
-                LogoutUrl                 = $AADServicePrincipal.LogoutUrl
-                Owners                    = $ownersValues
-                PublisherName             = $AADServicePrincipal.PublisherName
-                ReplyURLs                 = $AADServicePrincipal.ReplyURLs
-                SamlMetadataURL           = $AADServicePrincipal.SamlMetadataURL
-                ServicePrincipalNames     = $AADServicePrincipal.ServicePrincipalNames
-                ServicePrincipalType      = $AADServicePrincipal.ServicePrincipalType
-                Tags                      = $AADServicePrincipal.Tags
-                Ensure                    = 'Present'
-                Credential                = $Credential
-                ApplicationId             = $ApplicationId
-                ApplicationSecret         = $ApplicationSecret
-                TenantId                  = $TenantId
-                CertificateThumbprint     = $CertificateThumbprint
-                Managedidentity           = $ManagedIdentity.IsPresent
-                AccessTokens              = $AccessTokens
+                AppId                              = $AADServicePrincipal.AppId
+                AppRoleAssignedTo                  = $AppRoleAssignedToValues
+                ObjectID                           = $AADServicePrincipal.Id
+                DisplayName                        = $AADServicePrincipal.DisplayName
+                AlternativeNames                   = $AADServicePrincipal.AlternativeNames
+                AccountEnabled                     = [boolean]$AADServicePrincipal.AccountEnabled
+                AppRoleAssignmentRequired          = $AADServicePrincipal.AppRoleAssignmentRequired
+                DelegatedPermissionClassifications = [Array]$complexDelegatedPermissionClassifications
+                ErrorUrl                           = $AADServicePrincipal.ErrorUrl
+                Homepage                           = $AADServicePrincipal.Homepage
+                LogoutUrl                          = $AADServicePrincipal.LogoutUrl
+                Owners                             = $ownersValues
+                PublisherName                      = $AADServicePrincipal.PublisherName
+                ReplyURLs                          = $AADServicePrincipal.ReplyURLs
+                SamlMetadataURL                    = $AADServicePrincipal.SamlMetadataURL
+                ServicePrincipalNames              = $AADServicePrincipal.ServicePrincipalNames
+                ServicePrincipalType               = $AADServicePrincipal.ServicePrincipalType
+                Tags                               = $AADServicePrincipal.Tags
+                Ensure                             = 'Present'
+                Credential                         = $Credential
+                ApplicationId                      = $ApplicationId
+                ApplicationSecret                  = $ApplicationSecret
+                TenantId                           = $TenantId
+                CertificateThumbprint              = $CertificateThumbprint
+                Managedidentity                    = $ManagedIdentity.IsPresent
+                AccessTokens                       = $AccessTokens
             }
             Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
             return $result
@@ -288,6 +303,10 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $AppRoleAssignmentRequired,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $DelegatedPermissionClassifications,
 
         [Parameter()]
         [System.String]
@@ -398,6 +417,8 @@ function Set-TargetResource
         {
             $currentParameters.AppRoleAssignedTo = $AppRoleAssignedToValue
         }
+        # removing Delegated permission classifications from this new call, as adding below separately
+        $currentParameters.Remove('DelegatedPermissionClassifications') | Out-Null
         $ObjectGuid = [System.Guid]::empty
         if (-not [System.Guid]::TryParse($AppId, [System.Management.Automation.PSReference]$ObjectGuid))
         {
@@ -419,6 +440,17 @@ function Set-TargetResource
             Write-Verbose -Message "Adding new owner {$owner}"
             $newOwner = New-MgServicePrincipalOwnerByRef -ServicePrincipalId $newSP.Id -BodyParameter $body
         }
+
+        #adding delegated permissions classifications
+        if($null -ne $DelegatedPermissionClassifications){
+            foreach ($permissionClassification in $DelegatedPermissionClassifications){
+                $params = @{
+                    classification = $permissionClassification.Classification
+                    permissionName = $permissionClassification.permissionName
+                }
+                Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications" -Method Post -Body $params
+            }
+        }
     }
     # ServicePrincipal should exist and will be configured to desired state
     elseif ($Ensure -eq 'Present' -and $currentAADServicePrincipal.Ensure -eq 'Present')
@@ -434,6 +466,7 @@ function Set-TargetResource
         Write-Verbose -Message "ServicePrincipalID: $($currentAADServicePrincipal.ObjectID)"
         $currentParameters.Remove('AppRoleAssignedTo') | Out-Null
         $currentParameters.Remove('Owners') | Out-Null
+        $currentParameters.Remove('DelegatedPermissionClassifications') | Out-Null
         Update-MgServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID @currentParameters
 
         if ($AppRoleAssignedTo)
@@ -546,6 +579,26 @@ function Set-TargetResource
                                                     -DirectoryObjectId $userInfo.Id | Out-Null
             }
         }
+
+        Write-Verbose -Message "Checking if DelegatedPermissionClassifications need to be updated..."
+
+        if ($null -ne $DelegatedPermissionClassifications)
+        {
+            # removing old perm classifications
+            $permissionClassificationList = Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications" -Method Get
+            foreach($permissionClassification in $permissionClassificationList.Value){
+                Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications/$($permissionClassification.Id)" -Method Delete
+            }
+
+            # adding new perm classifications
+            foreach ($permissionClassification in $DelegatedPermissionClassifications){
+                $params = @{
+                    classification = $permissionClassification.Classification
+                    permissionName = $permissionClassification.permissionName
+                }
+                Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications" -Method Post -Body $params
+            }
+        }
     }
     # ServicePrincipal exists but should not
     elseif ($Ensure -eq 'Absent' -and $currentAADServicePrincipal.Ensure -eq 'Present')
@@ -588,6 +641,10 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $AppRoleAssignmentRequired,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $DelegatedPermissionClassifications,
 
         [Parameter()]
         [System.String]
@@ -677,21 +734,48 @@ function Test-TargetResource
 
     Write-Verbose -Message 'Testing configuration of Azure AD ServicePrincipal'
 
+    $testTargetResource = $true
     $CurrentValues = Get-TargetResource @PSBoundParameters
+    $ValuesToCheck = ([Hashtable]$PSBoundParameters).Clone()
+
+    #Compare Cim instances
+    foreach ($key in $PSBoundParameters.Keys)
+    {
+        $source = $PSBoundParameters.$key
+        $target = $CurrentValues.$key
+        if ($null -ne $source -and $source.GetType().Name -like '*CimInstance*')
+        {
+            $testResult = Compare-M365DSCComplexObject `
+                -Source ($source) `
+                -Target ($target)
+
+            if (-not $testResult)
+            {
+                $testTargetResource = $false
+            }
+            else {
+                $ValuesToCheck.Remove($key) | Out-Null
+            }
+        }
+    }
 
     Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
     Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $PSBoundParameters)"
 
-    $ValuesToCheck = $PSBoundParameters
-
     $TestResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-        -Source $($MyInvocation.MyCommand.Source) `
-        -DesiredValues $PSBoundParameters `
-        -ValuesToCheck $ValuesToCheck.Keys
+    -Source $($MyInvocation.MyCommand.Source) `
+    -DesiredValues $PSBoundParameters `
+    -ValuesToCheck $ValuesToCheck.Keys `
+    -IncludedDrifts $driftedParams
 
-    Write-Verbose -Message "Test-TargetResource returned $TestResult"
+    if(-not $TestResult)
+    {
+        $testTargetResource = $false
+    }
 
-    return $TestResult
+    Write-Verbose -Message "Test-TargetResource returned $testTargetResource"
+
+    return $testTargetResource
 }
 
 function Export-TargetResource
@@ -785,6 +869,10 @@ function Export-TargetResource
                 {
                     $Results.AppRoleAssignedTo = Get-M365DSCAzureADServicePrincipalAssignmentAsString -Assignments $Results.AppRoleAssignedTo
                 }
+                if ($Results.DelegatedPermissionClassifications.Count -gt 0)
+                {
+                    $Results.DelegatedPermissionClassifications = Get-M365DSCAzureADServicePrincipalDelegatedPermissionClassifications -PermissionClassifications $Results.DelegatedPermissionClassifications
+                }
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
                     -ConnectionMode $ConnectionMode `
                     -ModulePath $PSScriptRoot `
@@ -794,6 +882,11 @@ function Export-TargetResource
                 {
                     $currentDSCBlock = Convert-DSCStringParamToVariable -DSCBlock $currentDSCBlock `
                         -ParameterName 'AppRoleAssignedTo'
+                }
+                if ($null -ne $Results.DelegatedPermissionClassifications)
+                {
+                    $currentDSCBlock = Convert-DSCStringParamToVariable -DSCBlock $currentDSCBlock `
+                        -ParameterName 'DelegatedPermissionClassifications'
                 }
                 $dscContent += $currentDSCBlock
                 Save-M365DSCPartialExport -Content $currentDSCBlock `
@@ -836,6 +929,28 @@ function Get-M365DSCAzureADServicePrincipalAssignmentAsString
         $StringContent += "                PrincipalType = '" + $assignment.PrincipalType + "'`r`n"
         $StringContent += "                Identity      = '" + $assignment.Identity + "'`r`n"
         $StringContent += "            }`r`n"
+    }
+    $StringContent += '            )'
+    return $StringContent
+}
+
+function Get-M365DSCAzureADServicePrincipalDelegatedPermissionClassifications
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Collections.ArrayList]
+        $PermissionClassifications
+    )
+
+    $StringContent = "@(`r`n"
+    foreach ($permissionClassification in $PermissionClassifications)
+    {
+        $StringContent += "                MSFT_AADServicePrincipalDelegatedPermissionClassification {`r`n"
+        $StringContent += "                     Classification = '" + $PermissionClassification.Classification + "'`r`n"
+        $StringContent += "                     PermissionName = '" + $PermissionClassification.PermissionName + "'`r`n"
+        $StringContent += "                }`r`n"
     }
     $StringContent += '            )'
     return $StringContent

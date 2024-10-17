@@ -2,7 +2,7 @@
 class MSFT_TeamsUpgradePolicy : OMI_BaseResource
 {
     [Key, Description("Identity of the Teams Upgrade Policy.")] String Identity;
-    [Write, Description("List of users that will be granted the Upgrade Policy to.")] String Users[];
+    [Write, Description("List of users that will be granted the Upgrade Policy to. Use value * to apply the policy globally.")] String Users[];
     [Write, Description("Specifies whether to move existing Skype for Business meetings organized by the user to Teams. This parameter can only be true if the mode of the specified policy instance is either TeamsOnly or SfBWithTeamsCollabAndMeetings, and if the policy instance is being granted to a specific user. It not possible to trigger meeting migration when granting TeamsUpgradePolicy to the entire tenant.")] Boolean MigrateMeetingsToTeams;
     [Write, Description("Credentials of the Teams Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;

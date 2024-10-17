@@ -1,0 +1,33 @@
+{
+    "resourceName": "IntuneSecurityBaselineMicrosoftEdge",
+    "description": "This resource configures an Intune Security Baseline Microsoft Edge.",
+    "permissions":    {
+  "graph": {
+    "application": {
+      "read": [
+        {
+          "name": "DeviceManagementConfiguration.Read.All"
+        }
+      ],
+      "update": [
+        {
+          "name": "DeviceManagementConfiguration.ReadWrite.All"
+        }
+      ]
+    },
+    "delegated": {
+      "read": [
+        {
+          "name": "DeviceManagementConfiguration.Read.All"
+        }
+      ],
+      "update": [
+        {
+          "name": "DeviceManagementConfiguration.ReadWrite.All"
+        }
+      ]
+    }
+  }
+}
+
+}

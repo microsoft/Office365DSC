@@ -91,12 +91,12 @@
                 IntuneAccountProtectionPolicyWindows10 'myAccountProtectionPolicy'
                 {
                     DisplayName           = 'test'
-                    DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings
+                    DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
                     {
                         History = 10
                         EnablePinRecovery = 'true'
                     }
-                    UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings
+                    UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
                     {
                         History = 20
                         EnablePinRecovery = 'true'
@@ -2570,6 +2570,34 @@
                             DisplayName = 'Kajal 3'
                         });
                 }
+                IntuneMobileAppsWindowsOfficeSuiteApp 'IntuneMobileAppsWindowsOfficeSuiteApp-Microsoft 365 Apps for Windows 10 and later'
+                {
+                    Id                    = "8e683524-4ec1-4813-bb3e-6256b2f293d"
+                    Description           = "Microsoft 365 Apps for Windows 10 and laterr"
+                    DisplayName           = "Microsoft 365 Apps for Windows 10 and later"
+                    Ensure                = "Present";
+                    InformationUrl        = "";
+                    IsFeatured            = $False;
+                    Notes                 = ""
+                    PrivacyInformationUrl = ""
+                    RoleScopeTagIds       = @()
+                    Assignments          = @(
+                        MSFT_DeviceManagementMobileAppAssignment{
+                            deviceAndAppManagementAssignmentFilterType = 'none'
+                            dataType = '#microsoft.graph.groupAssignmentTarget'
+                            groupId = '42c02b60-f28c-4eef-b3e1-973184cc4a6c'
+                            intent = 'required'
+                        }
+                    );
+                    Categories           = @(
+                        MSFT_DeviceManagementMobileAppCategory {
+                            Id  = '8e683524-4ec1-4813-bb3e-6256b2f293d8'
+                            DisplayName = 'Productivity'
+                        });
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
                 IntunePolicySets 'Example'
                 {
                     Assignments          = @(
@@ -2627,6 +2655,50 @@
                     notallowedResourceActions = @()
                     roleScopeTagIds           = @('0', '1')
                     Ensure                    = 'Present'
+                    ApplicationId         = $ApplicationId;
+                    TenantId              = $TenantId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                }
+                IntuneSecurityBaselineMicrosoft365AppsForEnterprise 'mySecurityBaselineMicrosoft365AppsForEnterprisePolicy'
+                {
+                    DisplayName           = 'test'
+                    DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneSecurityBaselineMicrosoft365AppsForEnterprise
+                    {
+                        L_ProtectionFromZoneElevation = '1'
+                        L_grooveexe98 = '1'
+                        L_excelexe99 = '1'
+                        L_mspubexe100 = '1'
+                        L_powerpntexe101 = '1'
+                        L_pptviewexe102 = '1'
+                        L_visioexe103 = '1'
+                        L_winprojexe104 = '1'
+                        L_winwordexe105 = '1'
+                        L_outlookexe106 = '1'
+                        L_spdesignexe107 = '1'
+                        L_exprwdexe108 = '1'
+                        L_msaccessexe109 = '1'
+                        L_onenoteexe110 = '1'
+                        L_mse7exe111 = '1'
+                    }
+                    UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneSecurityBaselineMicrosoft365AppsForEnterprise
+                    {
+                        MicrosoftPublisherV3_Security_TrustCenter_L_BlockMacroExecutionFromInternet = '1'
+                        MicrosoftVisio_Security_TrustCenter_L_VBAWarningsPolicy = '1'
+                        MicrosoftVisio_Security_TrustCenter_L_VBAWarningsPolicy_L_Empty = '3'
+                    }
+                    Ensure                = 'Present'
+                    ApplicationId         = $ApplicationId;
+                    TenantId              = $TenantId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                }
+                IntuneSecurityBaselineMicrosoftEdge 'mySecurityBaselineMicrosoftEdge'
+                {
+                    DisplayName           = 'test'
+                    InsecurePrivateNetworkRequestsAllowed                   = "0";
+                    InternetExplorerIntegrationReloadInIEModeAllowed        = "0";
+                    InternetExplorerIntegrationZoneIdentifierMhtFileAllowed = "0";
+                    InternetExplorerModeToolbarButtonEnabled                = "0";
+                    Ensure                = 'Present'
                     ApplicationId         = $ApplicationId;
                     TenantId              = $TenantId;
                     CertificateThumbprint = $CertificateThumbprint;

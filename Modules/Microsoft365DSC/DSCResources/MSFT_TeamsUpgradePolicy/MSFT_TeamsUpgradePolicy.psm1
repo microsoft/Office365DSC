@@ -175,10 +175,22 @@ function Set-TargetResource
     $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftTeams' `
         -InboundParameters $PSBoundParameters
 
-    foreach ($user in $Users)
+    if ($Identity -eq 'Global' -and $Users.Length -eq 1 -and $Users[0] -eq '*')
     {
-        Write-Verbose -Message "Granting TeamsUpgradePolicy {$Identity} to User {$user} with MigrateMeetingsToTeams=$MigrateMeetingsToTeams"
-        Grant-CsTeamsUpgradePolicy -PolicyName $Identity -Identity $user -MigrateMeetingsToTeams:$MigrateMeetingsToTeams
+        Write-Verbose -Message "Granting TeamsUpgradePolicy {$Identity} to all Users with MigrateMeetingsToTeams=$MigrateMeetingsToTeams"
+        Grant-CsTeamsUpgradePolicy -PolicyName $Identity `
+                                   -MigrateMeetingsToTeams:$MigrateMeetingsToTeams `
+                                   -Global
+    }
+    else
+    {
+        foreach ($user in $Users)
+        {
+            Write-Verbose -Message "Granting TeamsUpgradePolicy {$Identity} to User {$user} with MigrateMeetingsToTeams=$MigrateMeetingsToTeams"
+            Grant-CsTeamsUpgradePolicy -PolicyName $Identity `
+                                    -Identity $user `
+                                    -MigrateMeetingsToTeams:$MigrateMeetingsToTeams
+        }
     }
 }
 

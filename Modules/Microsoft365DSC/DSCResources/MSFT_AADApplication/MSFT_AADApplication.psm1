@@ -971,7 +971,7 @@ function Set-TargetResource
     if ($needToUpdatePermissions -and -not [System.String]::IsNullOrEmpty($Permissions) -and $Permissions.Length -gt 0)
     {
         Write-Verbose -Message "Will update permissions for Azure AD Application {$($currentAADApp.DisplayName)}"
-        $allSourceAPIs = $Permissions.SourceAPI | Get-Unique
+        $allSourceAPIs = $Permissions.SourceAPI | Select-Object -Unique
         $allRequiredAccess = @()
 
         foreach ($sourceAPI in $allSourceAPIs)

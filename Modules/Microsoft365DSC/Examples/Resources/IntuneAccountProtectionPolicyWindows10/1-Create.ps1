@@ -25,12 +25,12 @@ Configuration Example
         IntuneAccountProtectionPolicyWindows10 'myAccountProtectionPolicy'
         {
             DisplayName           = 'test'
-            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings
+            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
             {
                 History = 10
                 EnablePinRecovery = 'true'
             }
-            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings
+            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
             {
                 History = 20
                 EnablePinRecovery = 'true'

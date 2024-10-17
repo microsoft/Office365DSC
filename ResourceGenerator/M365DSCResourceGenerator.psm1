@@ -278,6 +278,10 @@ function New-M365DSCResource
             $deviceDefinitionSettings = @()
             foreach ($deviceTemplateSetting in $deviceTemplateSettings)
             {
+                foreach ($deviceChildSetting in $deviceTemplateSetting.ChildSettings)
+                {
+                    $deviceChildSetting.DisplayName += " - Depends on $($deviceTemplateSetting.Name)"
+                }
                 $deviceDefinitionSettings += New-ParameterDefinitionFromSettingsCatalogTemplateSetting `
                     -TemplateSetting $deviceTemplateSetting
             }
@@ -285,6 +289,10 @@ function New-M365DSCResource
             $userDefinitionSettings = @()
             foreach ($userTemplateSetting in $userTemplateSettings)
             {
+                foreach ($userChildSetting in $userTemplateSetting.ChildSettings)
+                {
+                    $userChildSetting.DisplayName += " - Depends on $($userTemplateSetting.Name)"
+                }
                 $userDefinitionSettings += New-ParameterDefinitionFromSettingsCatalogTemplateSetting `
                     -TemplateSetting $userTemplateSetting
             }
@@ -308,14 +316,14 @@ function New-M365DSCResource
                     MOFInstance = @(
 @"
 [ClassVersion("1.0.0.0")]
-class MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings
+class MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_$($ResourceName)
 {
 $($deviceDefinitionSettings.MOF -join "`r`n")
 };
 "@,
 @"
 [ClassVersion("1.0.0.0")]
-class MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings
+class MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_$($ResourceName)
 {
 $($userDefinitionSettings.MOF -join "`r`n")
 };
@@ -336,13 +344,13 @@ $($userDefinitionSettings.MOF -join "`r`n")
             {
                 $parameter -match '\$.*$'
                 $parameterName = $Matches[0].Replace('$', '')
-                $parameterType = 'IntuneSettingsCatalog' + $parameterName
-                $cimInstance = $definitionSettings.MOFInstance | Where-Object -FilterScript { $_ -like "*$parameterType`n*" }
+                $parameterType = 'IntuneSettingsCatalog' + $parameterName + $(if ($parameterName -in @('DeviceSettings', 'UserSettings')) { "_$ResourceName" })
+                $cimInstance = $definitionSettings.MOFInstance | Where-Object -FilterScript { $_ -like "*$parameterType`n*" -or $_ -like "*$parameterType`r`n*" }
                 $rowFilter = '\[.*;'
                 $cimRows = [regex]::Matches($cimInstance, $rowFilter) | Foreach-Object {
                     $_.Value
                 }
-                $cimPropertyNamequery = '[a-zA-Z_]+[\[\]]*;'
+                $cimPropertyNamequery = '[a-zA-Z0-9_]+[\[\]]*;'
                 $cimProperties = @()
                 foreach ($row in $cimRows)
                 {
@@ -364,7 +372,7 @@ $($userDefinitionSettings.MOF -join "`r`n")
                     Name = $parameterName
                     IsComplexType = $true
                     IsMandatory = $false
-                    IsArray = $true
+                    IsArray = $parameter -match '\[.*\[\]\]'
                     Type = $parameterType
                     Properties = $cimProperties
                 }
@@ -539,6 +547,7 @@ $($userDefinitionSettings.MOF -join "`r`n")
         [array]`$settings = Get-$($CmdLetNoun)Setting ``
             -DeviceManagementConfigurationPolicyId `$Id ``
             -ExpandProperty 'settingDefinitions' ``
+            -All ``
             -ErrorAction Stop
 
         `$policySettings = @{}
@@ -662,7 +671,7 @@ $($userDefinitionSettings.MOF -join "`r`n")
             $defaultCreateParameters = @"
         `$settings = Get-IntuneSettingCatalogPolicySetting ``
             -DSCParams ([System.Collections.Hashtable]`$BoundParameters) ``
-            -TemplateId `$templateReferenceId$(if ($containsDeviceAndUserSettings) { " ```r`n            -ContainsDeviceAndUserSettings" })`r`n
+            -TemplateId `$templateReferenceId$(if ($containsDeviceAndUserSettings) { " ```r`n            -ContainsDeviceAndUserSettings" })
 
         `$createParameters = @{
             Name              = `$DisplayName
@@ -785,7 +794,7 @@ $($userDefinitionSettings.MOF -join "`r`n")
             $defaultUpdateParameters = @"
         `$settings = Get-IntuneSettingCatalogPolicySetting ``
             -DSCParams ([System.Collections.Hashtable]`$BoundParameters) ``
-            -TemplateId `$templateReferenceId$(if ($containsDeviceAndUserSettings) { " ```r`n            -ContainsDeviceAndUserSettings" })`r`n
+            -TemplateId `$templateReferenceId$(if ($containsDeviceAndUserSettings) { " ```r`n            -ContainsDeviceAndUserSettings" })
 
         Update-IntuneDeviceConfigurationPolicy ``
             -DeviceConfigurationPolicyId `$currentInstance.Id ``
@@ -3894,7 +3903,12 @@ function New-SettingsCatalogSettingDefinitionSettingsFromTemplate {
                         $newName = Get-SettingDefinitionNameWithParentFromOffsetUri -OffsetUri $_.OffsetUri -SettingName $previousSettingName -Skip $skip
                         if ($newName -eq $newSettingName)
                         {
-                            $combinationMatchesWithOffsetUri += $_
+                            # Exclude v2 versions from the comparison
+                            if ($settingDefinition.Id -like "*_v2" -and $_.Id -ne $settingDefinition.Id.Replace('_v2', '') -or
+                                $settingDefinition.Id -notlike "*_v2" -and $_.Id -ne $settingDefinition.Id + "_v2")
+                            {
+                                $combinationMatchesWithOffsetUri += $_
+                            }
                         }
                     }
                     $settingsWithSameName = $combinationMatchesWithOffsetUri
@@ -3904,6 +3918,10 @@ function New-SettingsCatalogSettingDefinitionSettingsFromTemplate {
 
                 if ($breakCounter -lt 8)
                 {
+                    if ($settingDefinition.Id -like "*_v2" -and $newSettingName -notlike "*_v2")
+                    {
+                        $newSettingName += "_v2"
+                    }
                     $settingName = $newSettingName
                 }
                 else
@@ -3924,6 +3942,26 @@ function New-SettingsCatalogSettingDefinitionSettingsFromTemplate {
         if ($null -eq $parentSetting)
         {
             $settingName = Get-SettingDefinitionNameWithParentFromOffsetUri -OffsetUri $SettingDefinition.OffsetUri -SettingName $settingName
+        }
+
+        # Simplify names from the OffsetUri. This is done to make the names more readable, especially in case of long and complex OffsetUris.
+        switch -wildcard ($settingName)
+        {
+            'access16v2~Policy~L_MicrosoftOfficeaccess~L_ApplicationSettings~*' { $settingName = $settingName.Replace('access16v2~Policy~L_MicrosoftOfficeaccess~L_ApplicationSettings', 'MicrosoftAccess_') }
+            'excel16v2~Policy~L_MicrosoftOfficeExcel~L_ExcelOptions~*' { $settingName = $settingName.Replace('excel16v2~Policy~L_MicrosoftOfficeExcel~L_ExcelOptions', 'MicrosoftExcel_') }
+            'word16v2~Policy~L_MicrosoftOfficeWord~L_WordOptions~*' { $settingName = $settingName.Replace('word16v2~Policy~L_MicrosoftOfficeWord~L_WordOptions', 'MicrosoftWord_') }
+            'ppt16v2~Policy~L_MicrosoftOfficePowerPoint~L_PowerPointOptions~*' { $settingName = $settingName.Replace('ppt16v2~Policy~L_MicrosoftOfficePowerPoint~L_PowerPointOptions', 'MicrosoftPowerPoint_') }
+            'proj16v2~Policy~L_Proj~L_ProjectOptions~*' { $settingName = $settingName.Replace('proj16v2~Policy~L_Proj~L_ProjectOptions', 'MicrosoftProject_') }
+            'visio16v2~Policy~L_MicrosoftVisio~L_VisioOptions~*' { $settingName = $settingName.Replace('visio16v2~Policy~L_MicrosoftVisio~L_VisioOptions', 'MicrosoftVisio_') }
+            'pub16v2~Policy~L_MicrosoftOfficePublisher~*' { $settingName = $settingName.Replace('pub16v2~Policy~L_MicrosoftOfficePublisher', 'MicrosoftPublisherV2_') }
+            'pub16v3~Policy~L_MicrosoftOfficePublisher~*' { $settingName = $settingName.Replace('pub16v3~Policy~L_MicrosoftOfficePublisher', 'MicrosoftPublisherV3_') }
+            'microsoft_edge~Policy~microsoft_edge~*' { $settingName = $settingName.Replace('microsoft_edge~Policy~microsoft_edge', 'MicrosoftEdge_') }
+            '*~L_Security~*' { $settingName = $settingName.Replace('~L_Security', 'Security') }
+            '*~L_TrustCenter*' { $settingName = $settingName.Replace('~L_TrustCenter', '_TrustCenter') }
+            '*~L_ProtectedView_*' { $settingName = $settingName.Replace('~L_ProtectedView', 'ProtectedView') }
+            '*~L_FileBlockSettings_*' { $settingName = $settingName.Replace('~L_FileBlockSettings', 'FileBlockSettings') }
+            '*~L_TrustedLocations*' { $settingName = $settingName.Replace('~L_TrustedLocations', 'TrustedLocations') }
+            '*~HTTPAuthentication_*' { $settingName = $settingName.Replace('~HTTPAuthentication', 'HTTPAuthentication') }
         }
     }
 
@@ -3997,6 +4035,12 @@ function Get-SettingDefinitionNameWithParentFromOffsetUri {
     {
         $splittedOffsetUri = $splittedOffsetUri[1..($splittedOffsetUri.Length - 1)]
     }
+
+    if ($Skip -gt $splittedOffsetUri.Length - 1)
+    {
+        return $SettingName
+    }
+
     $splittedOffsetUri = $splittedOffsetUri[0..($splittedOffsetUri.Length - 1 - $Skip)]
     $traversed = $false
     while (-not $traversed -and $splittedOffsetUri.Length -gt 1) # Prevent adding the first element of the OffsetUri
@@ -4092,7 +4136,7 @@ class <ClassName>
         $<Name>
 "@
 
-    $mofDefinition = $mofParameterTemplate.Replace("<DisplayName>", $TemplateSetting.DisplayName)
+    $mofDefinition = $mofParameterTemplate.Replace("<DisplayName>", $TemplateSetting.DisplayName.Replace("`r`n", ""))
     $optionsString = ""
     $valueMapString = ""
     if ($TemplateSetting.Options) {

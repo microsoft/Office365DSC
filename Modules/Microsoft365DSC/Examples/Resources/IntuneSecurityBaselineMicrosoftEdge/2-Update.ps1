@@ -22,19 +22,13 @@ Configuration Example
 
     node localhost
     {
-        IntuneAccountProtectionPolicyWindows10 'myAccountProtectionPolicy'
+        IntuneSecurityBaselineMicrosoftEdge 'mySecurityBaselineMicrosoftEdge'
         {
             DisplayName           = 'test'
-            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
-            {
-                History = 10
-                EnablePinRecovery = 'true'
-            }
-            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
-            {
-                History = 30 # Updated property
-                EnablePinRecovery = 'true'
-            }
+            InsecurePrivateNetworkRequestsAllowed                   = "0";
+            InternetExplorerIntegrationReloadInIEModeAllowed        = "0";
+            InternetExplorerIntegrationZoneIdentifierMhtFileAllowed = "0";
+            InternetExplorerModeToolbarButtonEnabled                = "1"; # Drift
             Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

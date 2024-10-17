@@ -22,12 +22,108 @@ function Get-TargetResource
         $Id,
 
         [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $DeviceSettings,
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InternetExplorerIntegrationReloadInIEModeAllowed,
 
         [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $UserSettings,
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SSLErrorOverrideAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InternetExplorerIntegrationZoneIdentifierMhtFileAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $BrowserLegacyExtensionPointsBlockingEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SitePerProcess,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $EdgeEnhanceImagesEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $ExtensionInstallBlocklist,
+
+        [Parameter()]
+        [ValidateLength(0, 2048)]
+        [System.String[]]
+        $ExtensionInstallBlocklistDesc,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $WebSQLAccess,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $BasicAuthOverHttpEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $MicrosoftEdge_HTTPAuthentication_AuthSchemes,
+
+        [Parameter()]
+        [System.String]
+        $authschemes,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $NativeMessagingUserLevelHosts,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InsecurePrivateNetworkRequestsAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InternetExplorerModeToolbarButtonEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SmartScreenEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SmartScreenPuaEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $PreventSmartScreenPromptOverride,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $PreventSmartScreenPromptOverrideForFiles,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SharedArrayBufferUnrestrictedAccessAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $TyposquattingCheckerEnabled,
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
@@ -94,7 +190,7 @@ function Get-TargetResource
 
         if ($null -eq $getValue)
         {
-            Write-Verbose -Message "Could not find an Intune Account Protection Policy for Windows10 with Id {$Id}"
+            Write-Verbose -Message "Could not find an Intune Security Baseline Microsoft Edge with Id {$Id}"
 
             if (-not [System.String]::IsNullOrEmpty($DisplayName))
             {
@@ -106,129 +202,21 @@ function Get-TargetResource
         #endregion
         if ($null -eq $getValue)
         {
-            Write-Verbose -Message "Could not find an Intune Account Protection Policy for Windows10 with Name {$DisplayName}."
+            Write-Verbose -Message "Could not find an Intune Security Baseline Microsoft Edge with Name {$DisplayName}."
             return $nullResult
         }
         $Id = $getValue.Id
-        Write-Verbose -Message "An Intune Account Protection Policy for Windows10 with Id {$Id} and Name {$DisplayName} was found"
+        Write-Verbose -Message "An Intune Security Baseline Microsoft Edge with Id {$Id} and Name {$DisplayName} was found"
 
         # Retrieve policy specific settings
         [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
             -DeviceManagementConfigurationPolicyId $Id `
             -ExpandProperty 'settingDefinitions' `
+            -All `
             -ErrorAction Stop
 
         $policySettings = @{}
-        $policySettings = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $policySettings -ContainsDeviceAndUserSettings
-
-        #region resource generator code
-        $complexDeviceSettings = @{}
-        if ($null -ne $policySettings.deviceSettings.lsaCfgFlags)
-        {
-            $complexDeviceSettings.Add('LsaCfgFlags', $policySettings.deviceSettings.lsaCfgFlags)
-        }
-        if ($null -ne $policySettings.deviceSettings.facialFeaturesUseEnhancedAntiSpoofing)
-        {
-            $complexDeviceSettings.Add('FacialFeaturesUseEnhancedAntiSpoofing', $policySettings.deviceSettings.facialFeaturesUseEnhancedAntiSpoofing)
-        }
-        if ($null -ne $policySettings.deviceSettings.enablePinRecovery)
-        {
-            $complexDeviceSettings.Add('EnablePinRecovery', $policySettings.deviceSettings.enablePinRecovery)
-        }
-        if ($null -ne $policySettings.deviceSettings.expiration)
-        {
-            $complexDeviceSettings.Add('Expiration', $policySettings.deviceSettings.expiration)
-        }
-        if ($null -ne $policySettings.deviceSettings.history)
-        {
-            $complexDeviceSettings.Add('History', $policySettings.deviceSettings.history)
-        }
-        if ($null -ne $policySettings.deviceSettings.lowercaseLetters)
-        {
-            $complexDeviceSettings.Add('LowercaseLetters', $policySettings.deviceSettings.lowercaseLetters)
-        }
-        if ($null -ne $policySettings.deviceSettings.maximumPINLength)
-        {
-            $complexDeviceSettings.Add('MaximumPINLength', $policySettings.deviceSettings.maximumPINLength)
-        }
-        if ($null -ne $policySettings.deviceSettings.minimumPINLength)
-        {
-            $complexDeviceSettings.Add('MinimumPINLength', $policySettings.deviceSettings.minimumPINLength)
-        }
-        if ($null -ne $policySettings.deviceSettings.specialCharacters)
-        {
-            $complexDeviceSettings.Add('SpecialCharacters', $policySettings.deviceSettings.specialCharacters)
-        }
-        if ($null -ne $policySettings.deviceSettings.uppercaseLetters)
-        {
-            $complexDeviceSettings.Add('UppercaseLetters', $policySettings.deviceSettings.uppercaseLetters)
-        }
-        if ($null -ne $policySettings.deviceSettings.requireSecurityDevice)
-        {
-            $complexDeviceSettings.Add('RequireSecurityDevice', $policySettings.deviceSettings.requireSecurityDevice)
-        }
-        if ($null -ne $policySettings.deviceSettings.useCertificateForOnPremAuth)
-        {
-            $complexDeviceSettings.Add('UseCertificateForOnPremAuth', $policySettings.deviceSettings.useCertificateForOnPremAuth)
-        }
-        if ($null -ne $policySettings.deviceSettings.usePassportForWork)
-        {
-            $complexDeviceSettings.Add('UsePassportForWork', $policySettings.deviceSettings.usePassportForWork)
-        }
-        if ($complexDeviceSettings.Values.Where({ $_ -ne $null }).Count -eq 0)
-        {
-            $complexDeviceSettings = $null
-        }
-
-        $complexUserSettings = @{}
-        if ($null -ne $policySettings.userSettings.enablePinRecovery)
-        {
-            $complexUserSettings.Add('EnablePinRecovery', $policySettings.userSettings.enablePinRecovery)
-        }
-        if ($null -ne $policySettings.userSettings.expiration)
-        {
-            $complexUserSettings.Add('Expiration', $policySettings.userSettings.expiration)
-        }
-        if ($null -ne $policySettings.userSettings.history)
-        {
-            $complexUserSettings.Add('History', $policySettings.userSettings.history)
-        }
-        if ($null -ne $policySettings.userSettings.lowercaseLetters)
-        {
-            $complexUserSettings.Add('LowercaseLetters', $policySettings.userSettings.lowercaseLetters)
-        }
-        if ($null -ne $policySettings.userSettings.maximumPINLength)
-        {
-            $complexUserSettings.Add('MaximumPINLength', $policySettings.userSettings.maximumPINLength)
-        }
-        if ($null -ne $policySettings.userSettings.minimumPINLength)
-        {
-            $complexUserSettings.Add('MinimumPINLength', $policySettings.userSettings.minimumPINLength)
-        }
-        if ($null -ne $policySettings.userSettings.specialCharacters)
-        {
-            $complexUserSettings.Add('SpecialCharacters', $policySettings.userSettings.specialCharacters)
-        }
-        if ($null -ne $policySettings.userSettings.uppercaseLetters)
-        {
-            $complexUserSettings.Add('UppercaseLetters', $policySettings.userSettings.uppercaseLetters)
-        }
-        if ($null -ne $policySettings.userSettings.requireSecurityDevice)
-        {
-            $complexUserSettings.Add('RequireSecurityDevice', $policySettings.userSettings.requireSecurityDevice)
-        }
-        if ($null -ne $policySettings.userSettings.usePassportForWork)
-        {
-            $complexUserSettings.Add('UsePassportForWork', $policySettings.userSettings.usePassportForWork)
-        }
-        if ($complexUserSettings.Values.Where({ $_ -ne $null }).Count -eq 0)
-        {
-            $complexUserSettings = $null
-        }
-
-        $policySettings.Remove('deviceSettings') | Out-Null
-        $policySettings.Remove('userSettings') | Out-Null
-        #endregion
+        $policySettings = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $policySettings
 
         $results = @{
             #region resource generator code
@@ -236,8 +224,6 @@ function Get-TargetResource
             DisplayName           = $getValue.Name
             RoleScopeTagIds       = $getValue.RoleScopeTagIds
             Id                    = $getValue.Id
-            DeviceSettings        = $complexDeviceSettings
-            UserSettings          = $complexUserSettings
             Ensure                = 'Present'
             Credential            = $Credential
             ApplicationId         = $ApplicationId
@@ -294,12 +280,108 @@ function Set-TargetResource
         $Id,
 
         [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $DeviceSettings,
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InternetExplorerIntegrationReloadInIEModeAllowed,
 
         [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $UserSettings,
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SSLErrorOverrideAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InternetExplorerIntegrationZoneIdentifierMhtFileAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $BrowserLegacyExtensionPointsBlockingEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SitePerProcess,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $EdgeEnhanceImagesEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $ExtensionInstallBlocklist,
+
+        [Parameter()]
+        [ValidateLength(0, 2048)]
+        [System.String[]]
+        $ExtensionInstallBlocklistDesc,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $WebSQLAccess,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $BasicAuthOverHttpEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $MicrosoftEdge_HTTPAuthentication_AuthSchemes,
+
+        [Parameter()]
+        [System.String]
+        $authschemes,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $NativeMessagingUserLevelHosts,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InsecurePrivateNetworkRequestsAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InternetExplorerModeToolbarButtonEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SmartScreenEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SmartScreenPuaEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $PreventSmartScreenPromptOverride,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $PreventSmartScreenPromptOverrideForFiles,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SharedArrayBufferUnrestrictedAccessAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $TyposquattingCheckerEnabled,
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
@@ -355,19 +437,18 @@ function Set-TargetResource
 
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
 
-    $templateReferenceId = 'fcef01f2-439d-4c3f-9184-823fd6e97646_1'
+    $templateReferenceId = 'c66347b7-8325-4954-a235-3bf2233dfbfd_2'
     $platforms = 'windows10'
     $technologies = 'mdm'
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
-        Write-Verbose -Message "Creating an Intune Account Protection Policy for Windows10 with Name {$DisplayName}"
+        Write-Verbose -Message "Creating an Intune Security Baseline Microsoft Edge with Name {$DisplayName}"
         $BoundParameters.Remove("Assignments") | Out-Null
 
         $settings = Get-IntuneSettingCatalogPolicySetting `
             -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
-            -TemplateId $templateReferenceId `
-            -ContainsDeviceAndUserSettings
+            -TemplateId $templateReferenceId
 
         $createParameters = @{
             Name              = $DisplayName
@@ -393,13 +474,12 @@ function Set-TargetResource
     }
     elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
     {
-        Write-Verbose -Message "Updating the Intune Account Protection Policy for Windows10 with Id {$($currentInstance.Id)}"
+        Write-Verbose -Message "Updating the Intune Security Baseline Microsoft Edge with Id {$($currentInstance.Id)}"
         $BoundParameters.Remove("Assignments") | Out-Null
 
         $settings = Get-IntuneSettingCatalogPolicySetting `
             -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
-            -TemplateId $templateReferenceId `
-            -ContainsDeviceAndUserSettings
+            -TemplateId $templateReferenceId
 
         Update-IntuneDeviceConfigurationPolicy `
             -DeviceConfigurationPolicyId $currentInstance.Id `
@@ -420,7 +500,7 @@ function Set-TargetResource
     }
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
-        Write-Verbose -Message "Removing the Intune Account Protection Policy for Windows10 with Id {$($currentInstance.Id)}"
+        Write-Verbose -Message "Removing the Intune Security Baseline Microsoft Edge with Id {$($currentInstance.Id)}"
         #region resource generator code
         Remove-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $currentInstance.Id
         #endregion
@@ -451,12 +531,108 @@ function Test-TargetResource
         $Id,
 
         [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $DeviceSettings,
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InternetExplorerIntegrationReloadInIEModeAllowed,
 
         [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $UserSettings,
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SSLErrorOverrideAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InternetExplorerIntegrationZoneIdentifierMhtFileAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $BrowserLegacyExtensionPointsBlockingEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SitePerProcess,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $EdgeEnhanceImagesEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $ExtensionInstallBlocklist,
+
+        [Parameter()]
+        [ValidateLength(0, 2048)]
+        [System.String[]]
+        $ExtensionInstallBlocklistDesc,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $WebSQLAccess,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $BasicAuthOverHttpEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $MicrosoftEdge_HTTPAuthentication_AuthSchemes,
+
+        [Parameter()]
+        [System.String]
+        $authschemes,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $NativeMessagingUserLevelHosts,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InsecurePrivateNetworkRequestsAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $InternetExplorerModeToolbarButtonEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SmartScreenEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SmartScreenPuaEnabled,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $PreventSmartScreenPromptOverride,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $PreventSmartScreenPromptOverrideForFiles,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $SharedArrayBufferUnrestrictedAccessAllowed,
+
+        [Parameter()]
+        [ValidateSet('0', '1')]
+        [System.String]
+        $TyposquattingCheckerEnabled,
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
@@ -509,7 +685,7 @@ function Test-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
-    Write-Verbose -Message "Testing configuration of the Intune Account Protection Policy for Windows10 with Id {$Id} and Name {$DisplayName}"
+    Write-Verbose -Message "Testing configuration of the Intune Security Baseline Microsoft Edge with Id {$Id} and Name {$DisplayName}"
 
     $CurrentValues = Get-TargetResource @PSBoundParameters
     [Hashtable]$ValuesToCheck = @{}
@@ -630,7 +806,7 @@ function Export-TargetResource
     try
     {
         #region resource generator code
-        $policyTemplateID = "fcef01f2-439d-4c3f-9184-823fd6e97646_1"
+        $policyTemplateID = "c66347b7-8325-4954-a235-3bf2233dfbfd_2"
         [array]$getValue = Get-MgBetaDeviceManagementConfigurationPolicy `
             -Filter $Filter `
             -All `
@@ -678,34 +854,6 @@ function Export-TargetResource
             $Results = Get-TargetResource @Params
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results
-            if ($null -ne $Results.DeviceSettings)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.DeviceSettings `
-                    -CIMInstanceName 'MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10'
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.DeviceSettings = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('DeviceSettings') | Out-Null
-                }
-            }
-            if ($null -ne $Results.UserSettings)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.UserSettings `
-                    -CIMInstanceName 'MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10'
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.UserSettings = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('UserSettings') | Out-Null
-                }
-            }
 
             if ($Results.Assignments)
             {
@@ -725,14 +873,6 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential
-            if ($Results.DeviceSettings)
-            {
-                $currentDSCBlock = Convert-DSCStringParamToVariable -DSCBlock $currentDSCBlock -ParameterName "DeviceSettings" -IsCIMArray:$True
-            }
-            if ($Results.UserSettings)
-            {
-                $currentDSCBlock = Convert-DSCStringParamToVariable -DSCBlock $currentDSCBlock -ParameterName "UserSettings" -IsCIMArray:$True
-            }
 
             if ($Results.Assignments)
             {

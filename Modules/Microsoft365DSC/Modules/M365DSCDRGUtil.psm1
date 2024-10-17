@@ -2121,6 +2121,7 @@ function Get-IntuneSettingCatalogPolicySettingDSCValue
         $matchCombined = $false
         $matchesId = $false
         $matchesOffsetUri = $false
+        $offsetUriFound = $false
         $settingDefinitions = $SettingTemplates.SettingDefinitions `
             | Where-Object -FilterScript { $_.Name -eq $key }
 
@@ -2146,7 +2147,26 @@ function Get-IntuneSettingCatalogPolicySettingDSCValue
                 # If no parent definition is found, it might have been combined with the OffsetUri
                 if ($null -eq $parentDefinition)
                 {
-                    $definition = Get-SettingDefinitionFromNameWithParentFromOffsetUri -OffsetUriName $key -SettingDefinitions $SettingTemplates.SettingDefinitions
+                    $newKey = $key
+                    switch -wildcard ($newKey)
+                    {
+                        '*_HTTPAuthentication_*' { $newKey = $newKey.Replace('HTTPAuthentication', '~HTTPAuthentication') }
+                        '*TrustCenterTrustedLocations_*' { $newKey = $newKey.Replace('TrustCenterTrustedLocations', 'TrustCenter~L_TrustedLocations') }
+                        '*TrustCenterFileBlockSettings_*' { $newKey = $newKey.Replace('TrustCenterFileBlockSettings', 'TrustCenter~L_FileBlockSettings') }
+                        '*TrustCenterProtectedView_*' { $newKey = $newKey.Replace('TrustCenterProtectedView', 'TrustCenter~L_ProtectedView') }
+                        '*_TrustCenter*' { $newKey = $newKey.Replace('_TrustCenter', '~L_TrustCenter') }
+                        '*_Security_*' { $newKey = $newKey.Replace('Security', '~L_Security') }
+                        'MicrosoftEdge_*' { $newKey = $newKey.Replace('MicrosoftEdge_', 'microsoft_edge~Policy~microsoft_edge') }
+                        'MicrosoftPublisherV3_*' { $newKey = $newKey.Replace('MicrosoftPublisherV3_', 'pub16v3~Policy~L_MicrosoftOfficePublisher') }
+                        'MicrosoftPublisherV2_*' { $newKey = $newKey.Replace('MicrosoftPublisherV2_', 'pub16v2~Policy~L_MicrosoftOfficePublisher') }
+                        'MicrosoftVisio_*' { $newKey = $newKey.Replace('MicrosoftVisio_', 'visio16v2~Policy~L_MicrosoftVisio~L_VisioOptions') }
+                        'MicrosoftProject_*' { $newKey = $newKey.Replace('MicrosoftProject_', 'proj16v2~Policy~L_Proj~L_ProjectOptions') }
+                        'MicrosoftPowerPoint_*' { $newKey = $newKey.Replace('MicrosoftPowerPoint_', 'ppt16v2~Policy~L_MicrosoftOfficePowerPoint~L_PowerPointOptions') }
+                        'MicrosoftWord_*' { $newKey = $newKey.Replace('MicrosoftWord_', 'word16v2~Policy~L_MicrosoftOfficeWord~L_WordOptions') }
+                        'MicrosoftExcel_*' { $newKey = $newKey.Replace('MicrosoftExcel_', 'excel16v2~Policy~L_MicrosoftOfficeExcel~L_ExcelOptions') }
+                        'MicrosoftAccess_*' { $newKey = $newKey.Replace('MicrosoftAccess_', 'access16v2~Policy~L_MicrosoftOfficeaccess~L_ApplicationSettings') }
+                    }
+                    $definition = Get-SettingDefinitionFromNameWithParentFromOffsetUri -OffsetUriName $newKey -SettingDefinitions $SettingTemplates.SettingDefinitions
                     if ($null -ne $definition)
                     {
                         $offsetUriFound = $true
@@ -2187,6 +2207,19 @@ function Get-IntuneSettingCatalogPolicySettingDSCValue
                         $global:excludedDscParams += $key
                         $matchesId = $true
                         $SettingDefinition = $_
+                    }
+                }
+
+                if (-not $matchesId)
+                {
+                    $definition = Get-SettingDefinitionFromNameWithParentFromOffsetUri -OffsetUriName $key -SettingDefinitions $SettingTemplates.SettingDefinitions
+                    if ($null -ne $definition)
+                    {
+                        $offsetUriFound = $true
+                        if ($SettingDefinition.Id -eq $definition.Id)
+                        {
+                            $matchesOffsetUri = $true
+                        }
                     }
                 }
             }
@@ -2279,18 +2312,31 @@ function Get-SettingDefinitionFromNameWithParentFromOffsetUri
 
     $settingName = $OffsetUriName
     $offsetUriPrefix = ""
-    foreach ($part in $offsetUriParts)
+    for ($i = 0; $i -lt $offsetUriParts.Count; $i++)
     {
-        if ($settingName -like "*$($part)_*")
+        $part = $offsetUriParts[$i]
+        if ($settingName -like "$($part)_*")
         {
             $settingName = $settingName.Replace("$($part)_", "")
             # Add wildcards to match removed parts with invalid characters
             $offsetUriPrefix += "*$($part)*"
+            $i = 0
         }
     }
 
-    $filteredDefinitions = $SettingDefinitions | Where-Object -FilterScript {
-        $_.Name -eq $settingName -and $_.OffsetUri -like "*$offsetUriPrefix*"
+    if ($settingName -eq "v2")
+    {
+        $settingName = $offsetUriPrefix.Split("*")[-2] + "_v2" # Add the last element of the offset Uri parts before the v2
+        $filteredDefinitions = $SettingDefinitions | Where-Object -FilterScript {
+            ($_.Id -like "*$settingName" -and $_.Name -eq $settingName.Replace('_v2', '') -and $_.OffsetUri -like "*$offsetUriPrefix*") -or
+            ($_.Name -eq $settingName -and $_.OffsetUri -like "*$offsetUriPrefix*")
+        }
+    }
+    else
+    {
+        $filteredDefinitions = $SettingDefinitions | Where-Object -FilterScript {
+            $_.Name -eq $settingName -and $_.OffsetUri -like "*$offsetUriPrefix*"
+        }
     }
 
     if ($filteredDefinitions.Count -eq 1)
@@ -2302,7 +2348,9 @@ function Get-SettingDefinitionFromNameWithParentFromOffsetUri
         $settingsWithSameName = $filteredDefinitions
         foreach ($definition in $filteredDefinitions)
         {
+            $parentSetting = Get-ParentSettingDefinition -SettingDefinition $definition -AllSettingDefinitions $SettingDefinitions
             $skip = 0
+            $breakCounter = 0
             $newSettingName = $settingName
             do {
                 $previousSettingName = $newSettingName
@@ -2313,12 +2361,34 @@ function Get-SettingDefinitionFromNameWithParentFromOffsetUri
                     $newName = Get-SettingDefinitionNameWithParentFromOffsetUri -OffsetUri $_.OffsetUri -SettingName $previousSettingName -Skip $skip
                     if ($newName -eq $newSettingName)
                     {
-                        $combinationMatchesWithOffsetUri += $_
+                        # Exclude v2 versions from the comparison
+                        if ($definition.Id -like "*_v2" -and $_.Id -ne $definition.Id.Replace('_v2', '') -or
+                            $definition.Id -notlike "*_v2" -and $_.Id -ne $definition.Id + "_v2")
+                        {
+                            $combinationMatchesWithOffsetUri += $_
+                        }
                     }
                 }
                 $settingsWithSameName = $combinationMatchesWithOffsetUri
+                $breakCounter++
                 $skip++
-            } while ($combinationMatchesWithOffsetUri.Count -gt 1)
+            } while ($combinationMatchesWithOffsetUri.Count -gt 1 -and $breakCounter -lt 8)
+
+            if ($breakCounter -eq 8)
+            {
+                if ($null -ne $parentSetting)
+                {
+                    # Alternative way if no unique setting name can be found
+                    $parentSettingIdProperty = $parentSetting.Id.Split('_')[-1]
+                    $parentSettingIdWithoutProperty = $parentSetting.Id.Replace("_$parentSettingIdProperty", "")
+                    # We can't use the entire setting here, because the child setting id does not have to come after the parent setting id
+                    $settingNameV2 = $definition.Id.Replace($parentSettingIdWithoutProperty + "_", "").Replace($parentSettingIdProperty + "_", "")
+                    if ($settingNameV2 -eq $OffsetUriName)
+                    {
+                        $newSettingName = $settingNameV2
+                    }
+                }
+            }
 
             if ($newSettingName -eq $OffsetUriName)
             {
@@ -2379,6 +2449,12 @@ function Get-SettingDefinitionNameWithParentFromOffsetUri {
     {
         $splittedOffsetUri = $splittedOffsetUri[1..($splittedOffsetUri.Length - 1)]
     }
+
+    if ($Skip -gt $splittedOffsetUri.Length - 1)
+    {
+        return $SettingName
+    }
+
     $splittedOffsetUri = $splittedOffsetUri[0..($splittedOffsetUri.Length - 1 - $Skip)]
     $traversed = $false
     while (-not $traversed -and $splittedOffsetUri.Length -gt 1) # Prevent adding the first element of the OffsetUri
@@ -2524,7 +2600,12 @@ function Export-IntuneSettingCatalogPolicySettings
                         $newName = Get-SettingDefinitionNameWithParentFromOffsetUri -OffsetUri $_.OffsetUri -SettingName $previousSettingName -Skip $skip
                         if ($newName -eq $newSettingName)
                         {
-                            $combinationMatchesWithOffsetUri += $_
+                            # Exclude v2 versions from the comparison
+                            if ($settingDefinition.Id -like "*_v2" -and $_.Id -ne $settingDefinition.Id.Replace('_v2', '') -or
+                                $settingDefinition.Id -notlike "*_v2" -and $_.Id -ne $settingDefinition.Id + "_v2")
+                            {
+                                $combinationMatchesWithOffsetUri += $_
+                            }
                         }
                     }
                     $settingsWithSameName = $combinationMatchesWithOffsetUri
@@ -2534,6 +2615,10 @@ function Export-IntuneSettingCatalogPolicySettings
 
                 if ($breakCounter -lt 8)
                 {
+                    if ($settingDefinition.Id -like "*_v2" -and $newSettingName -notlike "*_v2")
+                    {
+                        $newSettingName += "_v2"
+                    }
                     $settingName = $newSettingName
                 }
                 else
@@ -2554,6 +2639,26 @@ function Export-IntuneSettingCatalogPolicySettings
         if ($null -eq $parentSetting)
         {
             $settingName = Get-SettingDefinitionNameWithParentFromOffsetUri -OffsetUri $settingDefinition.OffsetUri -SettingName $settingName
+        }
+
+        # Simplify names from the OffsetUri. This is done to make the names more readable, especially in case of long and complex OffsetUris.
+        switch -wildcard ($settingName)
+        {
+            'access16v2~Policy~L_MicrosoftOfficeaccess~L_ApplicationSettings~*' { $settingName = $settingName.Replace('access16v2~Policy~L_MicrosoftOfficeaccess~L_ApplicationSettings', 'MicrosoftAccess_') }
+            'excel16v2~Policy~L_MicrosoftOfficeExcel~L_ExcelOptions~*' { $settingName = $settingName.Replace('excel16v2~Policy~L_MicrosoftOfficeExcel~L_ExcelOptions', 'MicrosoftExcel_') }
+            'word16v2~Policy~L_MicrosoftOfficeWord~L_WordOptions~*' { $settingName = $settingName.Replace('word16v2~Policy~L_MicrosoftOfficeWord~L_WordOptions', 'MicrosoftWord_') }
+            'ppt16v2~Policy~L_MicrosoftOfficePowerPoint~L_PowerPointOptions~*' { $settingName = $settingName.Replace('ppt16v2~Policy~L_MicrosoftOfficePowerPoint~L_PowerPointOptions', 'MicrosoftPowerPoint_') }
+            'proj16v2~Policy~L_Proj~L_ProjectOptions~*' { $settingName = $settingName.Replace('proj16v2~Policy~L_Proj~L_ProjectOptions', 'MicrosoftProject_') }
+            'visio16v2~Policy~L_MicrosoftVisio~L_VisioOptions~*' { $settingName = $settingName.Replace('visio16v2~Policy~L_MicrosoftVisio~L_VisioOptions', 'MicrosoftVisio_') }
+            'pub16v2~Policy~L_MicrosoftOfficePublisher~*' { $settingName = $settingName.Replace('pub16v2~Policy~L_MicrosoftOfficePublisher', 'MicrosoftPublisherV2_') }
+            'pub16v3~Policy~L_MicrosoftOfficePublisher~*' { $settingName = $settingName.Replace('pub16v3~Policy~L_MicrosoftOfficePublisher', 'MicrosoftPublisherV3_') }
+            'microsoft_edge~Policy~microsoft_edge~*' { $settingName = $settingName.Replace('microsoft_edge~Policy~microsoft_edge', 'MicrosoftEdge_') }
+            '*~L_Security~*' { $settingName = $settingName.Replace('~L_Security', 'Security') }
+            '*~L_TrustCenter*' { $settingName = $settingName.Replace('~L_TrustCenter', '_TrustCenter') }
+            '*~L_ProtectedView_*' { $settingName = $settingName.Replace('~L_ProtectedView', 'ProtectedView') }
+            '*~L_FileBlockSettings_*' { $settingName = $settingName.Replace('~L_FileBlockSettings', 'FileBlockSettings') }
+            '*~L_TrustedLocations*' { $settingName = $settingName.Replace('~L_TrustedLocations', 'TrustedLocations') }
+            '*~HTTPAuthentication_*' { $settingName = $settingName.Replace('~HTTPAuthentication', 'HTTPAuthentication') }
         }
     }
 
@@ -2712,7 +2817,7 @@ function Update-IntuneDeviceConfigurationPolicy
             'settings'          = $Settings
         }
         $body = $policy | ConvertTo-Json -Depth 20
-        #write-verbose -Message $body
+        #Write-Verbose -Message $body
         Invoke-MgGraphRequest -Method PUT -Uri $Uri -Body $body -ErrorAction Stop
     }
     catch

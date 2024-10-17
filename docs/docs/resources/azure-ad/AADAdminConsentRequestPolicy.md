@@ -25,6 +25,7 @@
 | --- | --- | --- | --- | --- |
 | **ReviewerType** | Write | String | Type of reviewwer. Can be User, Group or Role | |
 | **ReviewerId** | Write | String | Identifier for the reviewer instance. | |
+| **QueryRoot** | Write | String | Associated query. | |
 
 
 ## Description

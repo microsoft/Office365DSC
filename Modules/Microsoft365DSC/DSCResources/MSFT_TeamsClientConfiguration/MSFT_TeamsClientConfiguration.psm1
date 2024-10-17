@@ -140,7 +140,7 @@ function Get-TargetResource
             ManagedIdentity                  = $ManagedIdentity.IsPresent
             AccessTokens                     = $AccessTokens
         }
-        if ([System.String]::IsNullOrEmpty($RestrictedSenderList))
+        if ([System.String]::IsNullOrEmpty($Config.RestrictedSenderList))
         {
             $result.Remove('RestrictedSenderList') | Out-Null
         }
@@ -282,12 +282,9 @@ function Set-TargetResource
     }
     else
     {
-        $tempValue = $null
-        foreach ($sender in $SetParams.RestrictedSenderList)
-        {
-            $tempValue += $sender + ','
-        }
-        $tempValue = $tempValue.Substring(0, $tempValue.Length - 1)
+        # https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsclientconfiguration?view=teams-ps#-restrictedsenderlist
+        # This is a semicolon-separated string of the domains you'd like to allow to send emails to Teams channels
+        $tempValue = $SetParams['RestrictedSenderList'] -join ';'
         $SetParams.RestrictedSenderList = $tempValue
     }
     Set-CsTeamsClientConfiguration @SetParams

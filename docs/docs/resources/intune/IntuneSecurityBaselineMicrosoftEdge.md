@@ -1,4 +1,4 @@
-﻿# IntuneAccountProtectionPolicyWindows10
+﻿# IntuneSecurityBaselineMicrosoftEdge
 
 ## Parameters
 
@@ -8,8 +8,27 @@
 | **DisplayName** | Key | String | Policy name | |
 | **RoleScopeTagIds** | Write | StringArray[] | List of Scope Tags for this Entity instance. | |
 | **Id** | Write | String | The unique identifier for an entity. Read-only. | |
-| **DeviceSettings** | Write | MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10 | The policy settings for the device scope. | |
-| **UserSettings** | Write | MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10 | The policy settings for the user scope | |
+| **InternetExplorerIntegrationReloadInIEModeAllowed** | Write | String | Allow unconfigured sites to be reloaded in Internet Explorer mode (0: Disabled, 1: Enabled) | `0`, `1` |
+| **SSLErrorOverrideAllowed** | Write | String | Allow users to proceed from the HTTPS warning page (0: Disabled, 1: Enabled) | `0`, `1` |
+| **InternetExplorerIntegrationZoneIdentifierMhtFileAllowed** | Write | String | Automatically open downloaded MHT or MHTML files from the web in Internet Explorer mode (0: Disabled, 1: Enabled) | `0`, `1` |
+| **BrowserLegacyExtensionPointsBlockingEnabled** | Write | String | Enable browser legacy extension point blocking (0: Disabled, 1: Enabled) | `0`, `1` |
+| **SitePerProcess** | Write | String | Enable site isolation for every site (0: Disabled, 1: Enabled) | `0`, `1` |
+| **EdgeEnhanceImagesEnabled** | Write | String | Enhance images enabled (0: Disabled, 1: Enabled) | `0`, `1` |
+| **ExtensionInstallBlocklist** | Write | String | Control which extensions cannot be installed (0: Disabled, 1: Enabled) | `0`, `1` |
+| **ExtensionInstallBlocklistDesc** | Write | StringArray[] | Extension IDs the user should be prevented from installing (or * for all) (Device) - Depends on ExtensionInstallBlocklist | |
+| **WebSQLAccess** | Write | String | Force WebSQL to be enabled (0: Disabled, 1: Enabled) | `0`, `1` |
+| **BasicAuthOverHttpEnabled** | Write | String | Allow Basic authentication for HTTP (0: Disabled, 1: Enabled) | `0`, `1` |
+| **MicrosoftEdge_HTTPAuthentication_AuthSchemes** | Write | String | Supported authentication schemes (0: Disabled, 1: Enabled) | `0`, `1` |
+| **authschemes** | Write | String | Supported authentication schemes (Device) - Depends on MicrosoftEdge_HTTPAuthentication_AuthSchemes | |
+| **NativeMessagingUserLevelHosts** | Write | String | Allow user-level native messaging hosts (installed without admin permissions) (0: Disabled, 1: Enabled) | `0`, `1` |
+| **InsecurePrivateNetworkRequestsAllowed** | Write | String | Specifies whether to allow insecure websites to make requests to more-private network endpoints (0: Disabled, 1: Enabled) | `0`, `1` |
+| **InternetExplorerModeToolbarButtonEnabled** | Write | String | Show the Reload in Internet Explorer mode button in the toolbar (0: Disabled, 1: Enabled) | `0`, `1` |
+| **SmartScreenEnabled** | Write | String | Configure Microsoft Defender SmartScreen (0: Disabled, 1: Enabled) | `0`, `1` |
+| **SmartScreenPuaEnabled** | Write | String | Configure Microsoft Defender SmartScreen to block potentially unwanted apps (0: Disabled, 1: Enabled) | `0`, `1` |
+| **PreventSmartScreenPromptOverride** | Write | String | Prevent bypassing Microsoft Defender SmartScreen prompts for sites (0: Disabled, 1: Enabled) | `0`, `1` |
+| **PreventSmartScreenPromptOverrideForFiles** | Write | String | Prevent bypassing of Microsoft Defender SmartScreen warnings about downloads (0: Disabled, 1: Enabled) | `0`, `1` |
+| **SharedArrayBufferUnrestrictedAccessAllowed** | Write | String | Specifies whether SharedArrayBuffers can be used in a non cross-origin-isolated context (0: Disabled, 1: Enabled) | `0`, `1` |
+| **TyposquattingCheckerEnabled** | Write | String | Configure Edge TyposquattingChecker (0: Disabled, 1: Enabled) | `0`, `1` |
 | **Assignments** | Write | MSFT_DeviceManagementConfigurationPolicyAssignments[] | Represents the assignment to the Intune policy. | |
 | **Ensure** | Write | String | Present ensures the policy exists, absent ensures it is removed. | `Present`, `Absent` |
 | **Credential** | Write | PSCredential | Credentials of the Admin | |
@@ -33,47 +52,10 @@
 | **groupDisplayName** | Write | String | The group Display Name that is the target of the assignment. | |
 | **collectionId** | Write | String | The collection Id that is the target of the assignment.(ConfigMgr) | |
 
-### MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
-
-#### Parameters
-
-| Parameter | Attribute | DataType | Description | Allowed Values |
-| --- | --- | --- | --- | --- |
-| **LsaCfgFlags** | Write | String | Credential Guard (0: (Disabled) Turns off Credential Guard remotely if configured previously without UEFI Lock., 1: (Enabled with UEFI lock) Turns on Credential Guard with UEFI lock., 2: (Enabled without lock) Turns on Credential Guard without UEFI lock.) | `0`, `1`, `2` |
-| **FacialFeaturesUseEnhancedAntiSpoofing** | Write | String | Facial Features Use Enhanced Anti Spoofing (false: Disabled, true: Enabled) | `false`, `true` |
-| **EnablePinRecovery** | Write | String | Enable Pin Recovery (false: Disabled, true: Enabled) | `false`, `true` |
-| **Expiration** | Write | SInt32 | Expiration | |
-| **History** | Write | SInt32 | PIN History | |
-| **LowercaseLetters** | Write | String | Lowercase Letters (0: Allows the use of lowercase letters in PIN., 1: Requires the use of at least one lowercase letters in PIN., 2: Does not allow the use of lowercase letters in PIN.) | `0`, `1`, `2` |
-| **MaximumPINLength** | Write | SInt32 | Maximum PIN Length | |
-| **MinimumPINLength** | Write | SInt32 | Minimum PIN Length | |
-| **SpecialCharacters** | Write | String | Special Characters (0: Allows the use of special characters in PIN., 1: Requires the use of at least one special characters in PIN., 2: Does not allow the use of special characters in PIN.) | `0`, `1`, `2` |
-| **UppercaseLetters** | Write | String | Uppercase Letters (0: Allows the use of uppercase letters in PIN., 1: Requires the use of at least one uppercase letters in PIN., 2: Does not allow the use of uppercase letters in PIN.) | `0`, `1`, `2` |
-| **RequireSecurityDevice** | Write | String | Require Security Device (false: Disabled, true: Enabled) | `false`, `true` |
-| **UseCertificateForOnPremAuth** | Write | String | Use Certificate For On Prem Auth (false: Disabled, true: Enabled) | `false`, `true` |
-| **UsePassportForWork** | Write | String | Use Windows Hello For Business (Device) (false: Disabled, true: Enabled) | `false`, `true` |
-
-### MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
-
-#### Parameters
-
-| Parameter | Attribute | DataType | Description | Allowed Values |
-| --- | --- | --- | --- | --- |
-| **EnablePinRecovery** | Write | String | Enable Pin Recovery (User) (false: Disabled, true: Enabled) | `false`, `true` |
-| **Expiration** | Write | SInt32 | Expiration (User) | |
-| **History** | Write | SInt32 | PIN History (User) | |
-| **LowercaseLetters** | Write | String | Lowercase Letters (User) (0: Allows the use of lowercase letters in PIN., 1: Requires the use of at least one lowercase letters in PIN., 2: Does not allow the use of lowercase letters in PIN.) | `0`, `1`, `2` |
-| **MaximumPINLength** | Write | SInt32 | Maximum PIN Length (User) | |
-| **MinimumPINLength** | Write | SInt32 | Minimum PIN Length (User) | |
-| **SpecialCharacters** | Write | String | Special Characters (User) (0: Allows the use of special characters in PIN., 1: Requires the use of at least one special characters in PIN., 2: Does not allow the use of special characters in PIN.) | `0`, `1`, `2` |
-| **UppercaseLetters** | Write | String | Uppercase Letters (User) (0: Allows the use of uppercase letters in PIN., 1: Requires the use of at least one uppercase letters in PIN., 2: Does not allow the use of uppercase letters in PIN.) | `0`, `1`, `2` |
-| **RequireSecurityDevice** | Write | String | Require Security Device (User) (false: Disabled, true: Enabled) | `false`, `true` |
-| **UsePassportForWork** | Write | String | Use Windows Hello For Business (User) (false: Disabled, true: Enabled) | `false`, `true` |
-
 
 ## Description
 
-Intune Account Protection Policy for Windows10
+Intune Security Baseline Microsoft Edge
 
 ## Permissions
 
@@ -128,19 +110,13 @@ Configuration Example
 
     node localhost
     {
-        IntuneAccountProtectionPolicyWindows10 'myAccountProtectionPolicy'
+        IntuneSecurityBaselineMicrosoftEdge 'mySecurityBaselineMicrosoftEdge'
         {
             DisplayName           = 'test'
-            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
-            {
-                History = 10
-                EnablePinRecovery = 'true'
-            }
-            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
-            {
-                History = 20
-                EnablePinRecovery = 'true'
-            }
+            InsecurePrivateNetworkRequestsAllowed                   = "0";
+            InternetExplorerIntegrationReloadInIEModeAllowed        = "0";
+            InternetExplorerIntegrationZoneIdentifierMhtFileAllowed = "0";
+            InternetExplorerModeToolbarButtonEnabled                = "0";
             Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
@@ -175,19 +151,13 @@ Configuration Example
 
     node localhost
     {
-        IntuneAccountProtectionPolicyWindows10 'myAccountProtectionPolicy'
+        IntuneSecurityBaselineMicrosoftEdge 'mySecurityBaselineMicrosoftEdge'
         {
             DisplayName           = 'test'
-            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
-            {
-                History = 10
-                EnablePinRecovery = 'true'
-            }
-            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
-            {
-                History = 30 # Updated property
-                EnablePinRecovery = 'true'
-            }
+            InsecurePrivateNetworkRequestsAllowed                   = "0";
+            InternetExplorerIntegrationReloadInIEModeAllowed        = "0";
+            InternetExplorerIntegrationZoneIdentifierMhtFileAllowed = "0";
+            InternetExplorerModeToolbarButtonEnabled                = "1"; # Drift
             Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
@@ -222,7 +192,7 @@ Configuration Example
 
     node localhost
     {
-        IntuneAccountProtectionPolicyWindows10 'myAccountProtectionPolicy'
+        IntuneSecurityBaselineMicrosoftEdge 'mySecurityBaselineMicrosoftEdge'
         {
             DisplayName           = 'test'
             Ensure                = 'Absent'

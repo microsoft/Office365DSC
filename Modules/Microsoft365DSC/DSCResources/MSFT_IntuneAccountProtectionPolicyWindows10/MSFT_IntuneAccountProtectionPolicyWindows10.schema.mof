@@ -10,7 +10,7 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 };
 
 [ClassVersion("1.0.0.0")]
-class MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings
+class MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
 {
     [Write, Description("Credential Guard (0: (Disabled) Turns off Credential Guard remotely if configured previously without UEFI Lock., 1: (Enabled with UEFI lock) Turns on Credential Guard with UEFI lock., 2: (Enabled without lock) Turns on Credential Guard without UEFI lock.)"), ValueMap{"0", "1", "2"}, Values{"0", "1", "2"}] String LsaCfgFlags;
     [Write, Description("Facial Features Use Enhanced Anti Spoofing (false: Disabled, true: Enabled)"), ValueMap{"false", "true"}, Values{"false", "true"}] String FacialFeaturesUseEnhancedAntiSpoofing;
@@ -28,7 +28,7 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings
 };
 
 [ClassVersion("1.0.0.0")]
-class MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings
+class MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
 {
     [Write, Description("Enable Pin Recovery (User) (false: Disabled, true: Enabled)"), ValueMap{"false", "true"}, Values{"false", "true"}] String EnablePinRecovery;
     [Write, Description("Expiration (User)")] SInt32 Expiration;
@@ -49,8 +49,8 @@ class MSFT_IntuneAccountProtectionPolicyWindows10 : OMI_BaseResource
     [Key, Description("Policy name")] String DisplayName;
     [Write, Description("List of Scope Tags for this Entity instance.")] String RoleScopeTagIds[];
     [Write, Description("The unique identifier for an entity. Read-only.")] String Id;
-    [Write, Description("The policy settings for the device scope."), EmbeddedInstance("MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings")] String DeviceSettings;
-    [Write, Description("The policy settings for the user scope"), EmbeddedInstance("MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings")] String UserSettings;
+    [Write, Description("The policy settings for the device scope."), EmbeddedInstance("MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10")] String DeviceSettings;
+    [Write, Description("The policy settings for the user scope"), EmbeddedInstance("MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10")] String UserSettings;
     [Write, Description("Represents the assignment to the Intune policy."), EmbeddedInstance("MSFT_DeviceManagementConfigurationPolicyAssignments")] String Assignments[];
     [Write, Description("Present ensures the policy exists, absent ensures it is removed."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
     [Write, Description("Credentials of the Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;

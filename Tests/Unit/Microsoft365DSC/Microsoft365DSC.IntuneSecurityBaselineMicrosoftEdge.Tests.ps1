@@ -15,7 +15,7 @@ Import-Module -Name (Join-Path -Path $M365DSCTestFolder `
         -Resolve)
 
 $Global:DscHelper = New-M365DscUnitTestHelper -StubModule $CmdletModule `
-    -DscResource "IntuneAccountProtectionPolicyWindows10" -GenericStubModule $GenericStubPath
+    -DscResource "IntuneSecurityBaselineMicrosoftEdge" -GenericStubModule $GenericStubPath
 Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
     InModuleScope -ModuleName $Global:DscHelper.ModuleName -ScriptBlock {
         Invoke-Command -ScriptBlock $Global:DscHelper.InitializeScript -NoNewScope
@@ -49,7 +49,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Name            = 'My Test'
                     RoleScopeTagIds = @("FakeStringValue")
                     TemplateReference = @{
-                        TemplateId = 'fcef01f2-439d-4c3f-9184-823fd6e97646_1'
+                        TemplateId = 'c66347b7-8325-4954-a235-3bf2233dfbfd_2'
                     }
                 }
             }
@@ -69,52 +69,24 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         Id = '0'
                         SettingDefinitions = @(
                             @{
-                                Id = 'device_vendor_msft_passportforwork_{tenantid}_policies_pincomplexity_history'
-                                Name = 'History'
+                                Id = 'device_vendor_msft_policy_config_microsoft_edgev92~policy~microsoft_edge~privatenetworkrequestsettings_insecureprivatenetworkrequestsallowed'
+                                Name = 'InsecurePrivateNetworkRequestsAllowed'
                                 AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                    dependentOn = @(
-                                        @{
-                                            dependentOn = 'device_vendor_msft_passportforwork_{tenantid}'
-                                            parentSettingId = 'device_vendor_msft_passportforwork_{tenantid}'
-                                        }
-                                    )
-                                }
-                            },
-                            @{
-                                Id = 'device_vendor_msft_passportforwork_{tenantid}'
-                                Name = '{TenantId}'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
-                                    childIds = @(
-                                        'device_vendor_msft_passportforwork_{tenantid}_policies_pincomplexity_history'
-                                    )
-                                    maximumCount = 1
-                                    minimumCount = 0
+                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
                             }
                         )
                         SettingInstance = @{
-                            SettingDefinitionId = 'device_vendor_msft_passportforwork_{tenantid}'
+                            SettingDefinitionId = 'device_vendor_msft_policy_config_microsoft_edgev92~policy~microsoft_edge~privatenetworkrequestsettings_insecureprivatenetworkrequestsallowed'
                             SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = '0ece2bdc-57c1-4be9-93e9-ac9c395a9c94'
+                                SettingInstanceTemplateId = 'c6dec9f2-a235-4878-8462-e88569b47e0b'
                             }
                             AdditionalProperties = @{
-                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                groupSettingCollectionValue = @(
-                                    @{
-                                        children = @(
-                                            @{
-                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                settingDefinitionId = 'device_vendor_msft_passportforwork_{tenantid}_policies_pincomplexity_history'
-                                                simpleSettingValue = @{
-                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationIntegerSettingValue'
-                                                    value = '10'
-                                                }
-                                            }
-                                        )
-                                    }
-                                )
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                choiceSettingValue = @{
+                                    children = @()
+                                    value = 'device_vendor_msft_policy_config_microsoft_edgev92~policy~microsoft_edge~privatenetworkrequestsettings_insecureprivatenetworkrequestsallowed_0'
+                                }
                             }
                         }
                     },
@@ -122,52 +94,74 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         Id = '1'
                         SettingDefinitions = @(
                             @{
-                                Id = 'user_vendor_msft_passportforwork_{tenantid}_policies_pincomplexity_history'
-                                Name = 'History'
+                                Id = 'device_vendor_msft_policy_config_microsoft_edgev92~policy~microsoft_edge_internetexplorerintegrationreloadiniemodeallowed'
+                                Name = 'InternetExplorerIntegrationReloadInIEModeAllowed'
                                 AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                    dependentOn = @(
-                                        @{
-                                            dependentOn = 'user_vendor_msft_passportforwork_{tenantid}'
-                                            parentSettingId = 'user_vendor_msft_passportforwork_{tenantid}'
-                                        }
-                                    )
-                                }
-                            },
-                            @{
-                                Id = 'user_vendor_msft_passportforwork_{tenantid}'
-                                Name = '{TenantId}'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
-                                    childIds = @(
-                                        'user_vendor_msft_passportforwork_{tenantid}_policies_pincomplexity_history'
-                                    )
-                                    maximumCount = 1
-                                    minimumCount = 0
+                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
                             }
                         )
                         SettingInstance = @{
-                            SettingDefinitionId = 'user_vendor_msft_passportforwork_{tenantid}'
+                            SettingDefinitionId = 'device_vendor_msft_policy_config_microsoft_edgev92~policy~microsoft_edge_internetexplorerintegrationreloadiniemodeallowed'
                             SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = '0ece2bdc-57c1-4be9-93e9-ac9c395a9c94'
+                                SettingInstanceTemplateId = 'fd416796-3442-405c-9f9e-e1ca3c0b9e3f'
                             }
                             AdditionalProperties = @{
-                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                groupSettingCollectionValue = @(
-                                    @{
-                                        children = @(
-                                            @{
-                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                settingDefinitionId = 'user_vendor_msft_passportforwork_{tenantid}_policies_pincomplexity_history'
-                                                simpleSettingValue = @{
-                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationIntegerSettingValue'
-                                                    value = '20'
-                                                }
-                                            }
-                                        )
-                                    }
-                                )
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                choiceSettingValue = @{
+                                    children = @()
+                                    value = 'device_vendor_msft_policy_config_microsoft_edgev92~policy~microsoft_edge_internetexplorerintegrationreloadiniemodeallowed_0'
+                                }
+                            }
+                        }
+                    },
+                    @{
+                        Id = '2'
+                        SettingDefinitions = @(
+                            @{
+                                Id = 'device_vendor_msft_policy_config_microsoft_edgev117~policy~microsoft_edge_internetexplorerintegrationzoneidentifiermhtfileallowed'
+                                Name = 'InternetExplorerIntegrationZoneIdentifierMhtFileAllowed'
+                                AdditionalProperties = @{
+                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
+                                }
+                            }
+                        )
+                        SettingInstance = @{
+                            SettingDefinitionId = 'device_vendor_msft_policy_config_microsoft_edgev117~policy~microsoft_edge_internetexplorerintegrationzoneidentifiermhtfileallowed'
+                            SettingInstanceTemplateReference = @{
+                                SettingInstanceTemplateId = 'ba15aa09-ea95-49bd-92bf-de9cec9c1146'
+                            }
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                choiceSettingValue = @{
+                                    children = @()
+                                    value = 'device_vendor_msft_policy_config_microsoft_edgev117~policy~microsoft_edge_internetexplorerintegrationzoneidentifiermhtfileallowed_0'
+                                }
+                            }
+                        }
+                    },
+                    @{
+                        Id = '3'
+                        SettingDefinitions = @(
+                            @{
+                                Id = 'device_vendor_msft_policy_config_microsoft_edgev96~policy~microsoft_edge_internetexplorermodetoolbarbuttonenabled'
+                                Name = 'InternetExplorerModeToolbarButtonEnabled'
+                                AdditionalProperties = @{
+                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
+                                }
+                            }
+                        )
+                        SettingInstance = @{
+                            SettingDefinitionId = 'device_vendor_msft_policy_config_microsoft_edgev96~policy~microsoft_edge_internetexplorermodetoolbarbuttonenabled'
+                            SettingInstanceTemplateReference = @{
+                                SettingInstanceTemplateId = 'fd416796-3442-405c-9f9e-e1ca3c0b9e3f'
+                            }
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                choiceSettingValue = @{
+                                    children = @()
+                                    value = 'device_vendor_msft_policy_config_microsoft_edgev96~policy~microsoft_edge_internetexplorermodetoolbarbuttonenabled_0'
+                                }
                             }
                         }
                     }
@@ -207,7 +201,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
         }
         # Test contexts
-        Context -Name "The IntuneAccountProtectionPolicyWindows10 should exist but it DOES NOT" -Fixture {
+        Context -Name "The IntuneSecurityBaselineMicrosoftEdge should exist but it DOES NOT" -Fixture {
             BeforeAll {
                 $testParams = @{
                     Assignments = [CimInstance[]]@(
@@ -218,21 +212,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         } -ClientOnly)
                     )
                     Description = "My Test"
-                    DeviceSettings = [CimInstance](
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10 -Property @{
-                            History = 10
-                        } -ClientOnly
-                    )
                     Id = "12345-12345-12345-12345-12345"
+                    InsecurePrivateNetworkRequestsAllowed                   = "0"
+                    InternetExplorerIntegrationReloadInIEModeAllowed        = "0"
+                    InternetExplorerIntegrationZoneIdentifierMhtFileAllowed = "0"
+                    InternetExplorerModeToolbarButtonEnabled                = "0"
                     DisplayName = "My Test"
                     RoleScopeTagIds = @("FakeStringValue")
-                    UserSettings = [CimInstance](
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10 -Property @{
-                            History = 20
-                        } -ClientOnly
-                    )
                     Ensure = "Present"
-                    Credential = $Credential
+                    Credential = $Credential;
                 }
 
                 Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
@@ -251,7 +239,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
-        Context -Name "The IntuneAccountProtectionPolicyWindows10 exists but it SHOULD NOT" -Fixture {
+        Context -Name "The IntuneSecurityBaselineMicrosoftEdge exists but it SHOULD NOT" -Fixture {
             BeforeAll {
                 $testParams = @{
                     Assignments = [CimInstance[]]@(
@@ -262,21 +250,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         } -ClientOnly)
                     )
                     Description = "My Test"
-                    DeviceSettings = [CimInstance](
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10 -Property @{
-                            History = 10
-                        } -ClientOnly
-                    )
                     Id = "12345-12345-12345-12345-12345"
+                    InsecurePrivateNetworkRequestsAllowed                   = "0"
+                    InternetExplorerIntegrationReloadInIEModeAllowed        = "0"
+                    InternetExplorerIntegrationZoneIdentifierMhtFileAllowed = "0"
+                    InternetExplorerModeToolbarButtonEnabled                = "0"
                     DisplayName = "My Test"
                     RoleScopeTagIds = @("FakeStringValue")
-                    UserSettings = [CimInstance](
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10 -Property @{
-                            History = 20
-                        } -ClientOnly
-                    )
                     Ensure = "Absent"
-                    Credential = $Credential
+                    Credential = $Credential;
                 }
             }
 
@@ -284,7 +266,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
             }
 
-            It 'Should return false from the Test method' {
+            It 'Should return true from the Test method' {
                 Test-TargetResource @testParams | Should -Be $false
             }
 
@@ -293,7 +275,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Should -Invoke -CommandName Remove-MgBetaDeviceManagementConfigurationPolicy -Exactly 1
             }
         }
-        Context -Name "The IntuneAccountProtectionPolicyWindows10 Exists and Values are already in the desired state" -Fixture {
+        Context -Name "The IntuneSecurityBaselineMicrosoftEdge Exists and Values are already in the desired state" -Fixture {
             BeforeAll {
                 $testParams = @{
                     Assignments = [CimInstance[]]@(
@@ -304,21 +286,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         } -ClientOnly)
                     )
                     Description = "My Test"
-                    DeviceSettings = [CimInstance](
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10 -Property @{
-                            History = 10
-                        } -ClientOnly
-                    )
                     Id = "12345-12345-12345-12345-12345"
+                    InsecurePrivateNetworkRequestsAllowed                   = "0"
+                    InternetExplorerIntegrationReloadInIEModeAllowed        = "0"
+                    InternetExplorerIntegrationZoneIdentifierMhtFileAllowed = "0"
+                    InternetExplorerModeToolbarButtonEnabled                = "0"
                     DisplayName = "My Test"
                     RoleScopeTagIds = @("FakeStringValue")
-                    UserSettings = [CimInstance](
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10 -Property @{
-                            History = 20
-                        } -ClientOnly
-                    )
                     Ensure = "Present"
-                    Credential = $Credential
+                    Credential = $Credential;
                 }
             }
 
@@ -327,7 +303,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
-        Context -Name "The IntuneAccountProtectionPolicyWindows10 exists and values are NOT in the desired state" -Fixture {
+        Context -Name "The IntuneSecurityBaselineMicrosoftEdge exists and values are NOT in the desired state" -Fixture {
             BeforeAll {
                 $testParams = @{
                     Assignments = [CimInstance[]]@(
@@ -338,21 +314,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         } -ClientOnly)
                     )
                     Description = "My Test"
-                    DeviceSettings = [CimInstance](
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10 -Property @{
-                            History = 10
-                        } -ClientOnly
-                    )
                     Id = "12345-12345-12345-12345-12345"
+                    InsecurePrivateNetworkRequestsAllowed                   = "0"
+                    InternetExplorerIntegrationReloadInIEModeAllowed        = "0"
+                    InternetExplorerIntegrationZoneIdentifierMhtFileAllowed = "0"
+                    InternetExplorerModeToolbarButtonEnabled                = "1" # Drift
                     DisplayName = "My Test"
                     RoleScopeTagIds = @("FakeStringValue")
-                    UserSettings = [CimInstance](
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10 -Property @{
-                            History = 30 # Drift
-                        } -ClientOnly
-                    )
                     Ensure = "Present"
-                    Credential = $Credential
+                    Credential = $Credential;
                 }
             }
 
@@ -378,7 +348,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential
                 }
             }
-
             It 'Should Reverse Engineer resource from the Export method' {
                 $result = Export-TargetResource @testParams
                 $result | Should -Not -BeNullOrEmpty

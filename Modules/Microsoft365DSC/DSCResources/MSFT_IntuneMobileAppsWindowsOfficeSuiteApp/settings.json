@@ -1,0 +1,32 @@
+﻿{
+    "resourceName": "IntuneMobileAppsWindowsOfficeSuiteApp",
+    "description": "This resource configures an Intune mobile app.",
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [
+                    {
+                        "name": "DeviceManagementApps.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "DeviceManagementApps.ReadWrite.All"
+                    }
+                ]
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "DeviceManagementApps.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "DeviceManagementApps.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -22,20 +22,10 @@ Configuration Example
 
     node localhost
     {
-        IntuneAccountProtectionPolicyWindows10 'myAccountProtectionPolicy'
+        IntuneSecurityBaselineMicrosoftEdge 'mySecurityBaselineMicrosoftEdge'
         {
             DisplayName           = 'test'
-            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
-            {
-                History = 10
-                EnablePinRecovery = 'true'
-            }
-            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
-            {
-                History = 30 # Updated property
-                EnablePinRecovery = 'true'
-            }
-            Ensure                = 'Present'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

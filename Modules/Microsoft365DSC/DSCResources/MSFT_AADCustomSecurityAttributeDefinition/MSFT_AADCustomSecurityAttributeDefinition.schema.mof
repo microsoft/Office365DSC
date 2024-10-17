@@ -2,7 +2,7 @@
 class MSFT_AADCustomSecurityAttributeDefinition : OMI_BaseResource
 {
     [Key, Description("Name of the custom security attribute. Must be unique within an attribute set. Can be up to 32 characters long and include Unicode characters. Can't contain spaces or special characters. Can't be changed later. Case sensitive.")] String Name;
-    [Write, Description("Name of the attribute set. Case sensitive.")] String AttributeSet;
+    [Key, Description("Name of the attribute set. Case sensitive.")] String AttributeSet;
     [Write, Description("Unique identifier of the Attribute Definition.")] String Id;
     [Write, Description("Description of the custom security attribute. Can be up to 128 characters long and include Unicode characters. Can't contain spaces or special characters. Can be changed later. ")] String Description;
     [Write, Description("Indicates whether multiple values can be assigned to the custom security attribute. Can't be changed later. If type is set to Boolean, isCollection can't be set to true.")] Boolean IsCollection;
