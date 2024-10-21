@@ -275,7 +275,7 @@ To authenticate with the Microsoft Graph API, this resource required the followi
 
 - **Update**
 
-    - DeviceManagementConfiguration.ReadWrite.All
+    - Group.Read.All, DeviceManagementConfiguration.ReadWrite.All
 
 #### Application permissions
 
@@ -285,7 +285,7 @@ To authenticate with the Microsoft Graph API, this resource required the followi
 
 - **Update**
 
-    - DeviceManagementConfiguration.ReadWrite.All
+    - Group.Read.All, DeviceManagementConfiguration.ReadWrite.All
 
 ## Examples
 

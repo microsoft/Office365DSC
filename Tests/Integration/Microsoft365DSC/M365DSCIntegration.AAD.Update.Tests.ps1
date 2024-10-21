@@ -34,6 +34,97 @@
         $Domain = $TenantId
         Node Localhost
         {
+                AADAccessReviewDefinition 'AADAccessReviewDefinition-Example'
+                {
+                    DescriptionForAdmins    = "description for admins";
+                    DescriptionForReviewers = "description for reviewers updated"; # drifted properties
+                    DisplayName             = "Test Access Review Definition";
+                    Ensure                  = "Present";
+                    Id                      = "613854e6-c458-4a2c-83fc-e0f4b8b17d60";
+                    ScopeValue              = MSFT_MicrosoftGraphaccessReviewScope{
+                        PrincipalScopes = @(
+                            MSFT_MicrosoftGraphAccessReviewScope{
+                                Query = '/v1.0/users?$filter=userType eq ''Guest'''
+                                odataType = '#microsoft.graph.accessReviewQueryScope'
+                                QueryType = 'MicrosoftGraph'
+                            }
+                        )
+                        ResourceScopes = @(
+                            MSFT_MicrosoftGraphAccessReviewScope{
+                                Query = '/v1.0/groups/a8ab05ba-6680-4f93-88ae-71099eedfda1/transitiveMembers/microsoft.graph.user/?$count=true&$filter=(userType eq ''Guest'')'
+                                odataType = '#microsoft.graph.accessReviewQueryScope'
+                                QueryType = 'MicrosoftGraph'
+                            }
+                            MSFT_MicrosoftGraphAccessReviewScope{
+                                Query = '/beta/teams/a8ab05ba-6680-4f93-88ae-71099eedfda1/channels?$filter=membershipType eq ''shared'''
+                                odataType = '#microsoft.graph.accessReviewQueryScope'
+                                QueryType = 'MicrosoftGraph'
+                            }
+                        )
+                        odataType = '#microsoft.graph.principalResourceMembershipsScope'
+                    };
+                    SettingsValue           = MSFT_MicrosoftGraphaccessReviewScheduleSettings{
+                        ApplyActions = @(
+                            MSFT_MicrosoftGraphAccessReviewApplyAction{
+                                odataType = '#microsoft.graph.removeAccessApplyAction'
+                            }
+                        )
+                        InstanceDurationInDays = 4
+                        RecommendationsEnabled = $False
+                        DecisionHistoriesForReviewersEnabled = $False
+                        DefaultDecisionEnabled = $False
+                        JustificationRequiredOnApproval = $True
+                        RecommendationInsightSettings = @(
+                            MSFT_MicrosoftGraphAccessReviewRecommendationInsightSetting{
+                                SignInScope = 'tenant'
+                                RecommendationLookBackDuration = 'P15D'
+                                odataType = '#microsoft.graph.userLastSignInRecommendationInsightSetting'
+                            }
+                        )
+                        AutoApplyDecisionsEnabled = $False
+                        ReminderNotificationsEnabled = $True
+                        Recurrence = MSFT_MicrosoftGraphPatternedRecurrence{
+                            Range = MSFT_MicrosoftGraphRecurrenceRange{
+                                NumberOfOccurrences = 0
+                                Type = 'noEnd'
+                                StartDate = '10/18/2024 12:00:00 AM'
+                                EndDate = '12/31/9999 12:00:00 AM'
+                            }
+                            Pattern = MSFT_MicrosoftGraphRecurrencePattern{
+                                DaysOfWeek = @()
+                                Type = 'weekly'
+                                Interval = 1
+                                Month = 0
+                                Index = 'first'
+                                FirstDayOfWeek = 'sunday'
+                                DayOfMonth = 0
+                            }
+        
+                        }
+                        DefaultDecision = 'None'
+                        RecommendationLookBackDuration = '15.00:00:00'
+                        MailNotificationsEnabled = $False
+                    };
+                    StageSettings           = @(
+                        MSFT_MicrosoftGraphaccessReviewStageSettings{
+                            StageId = '1'
+                            RecommendationsEnabled = $True
+                            DependsOnValue = @()
+                            DecisionsThatWillMoveToNextStage = @('Approve')
+                            DurationInDays = 3
+                        }
+                        MSFT_MicrosoftGraphaccessReviewStageSettings{
+                            StageId = '2'
+                            RecommendationsEnabled = $True
+                            DependsOnValue = @('1')
+                            DecisionsThatWillMoveToNextStage = @('Approve')
+                            DurationInDays = 3
+                        }
+                    );
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
                 AADAdminConsentRequestPolicy 'AADAdminConsentRequestPolicy'
                 {
                     ApplicationId         = $ApplicationId;
@@ -861,6 +952,59 @@
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
                 }
+                AADIdentityB2XUserFlow 'AADIdentityB2XUserFlow-B2X_1_TestFlow'
+                {
+                    ApplicationId             = $ApplicationId
+                    TenantId                  = $TenantId
+                    CertificateThumbprint     = $CertificateThumbprint
+                    ApiConnectorConfiguration = MSFT_MicrosoftGraphuserFlowApiConnectorConfiguration
+                    {
+                        postAttributeCollectionConnectorId = 'RestApi_f6e8e73d-6b17-433e-948f-f578f12bd57c'
+                        postFederationSignupConnectorId = 'RestApi_beeb7152-673c-48b3-b143-9975949a93ca'
+                    };
+                    Credential                = $Credscredential;
+                    Ensure                    = "Present";
+                    Id                        = "B2X_1_TestFlow";
+                    IdentityProviders         = @("MSASignup-OAUTH","EmailOtpSignup-OAUTH");
+                    UserAttributeAssignments  = @(
+                        MSFT_MicrosoftGraphuserFlowUserAttributeAssignment
+                        {
+                            UserInputType = 'textBox'
+                            IsOptional = $True
+                            DisplayName = 'Email Address'
+                            Id = 'emailReadonly'
+        
+                        }
+                        MSFT_MicrosoftGraphuserFlowUserAttributeAssignment
+                        {
+                            UserInputType = 'dropdownSingleSelect'
+                            IsOptional = $True
+                            DisplayName = 'Random'
+                            Id = 'city'
+                            UserAttributeValues = @(
+                                MSFT_MicrosoftGraphuserFlowUserAttributeAssignmentUserAttributeValues
+                                {
+                                    IsDefault = $True
+                                    Name = 'S'
+                                    Value = '2'
+                                }
+                                MSFT_MicrosoftGraphuserFlowUserAttributeAssignmentUserAttributeValues
+                                {
+                                    IsDefault = $True
+                                    Name = 'X'
+                                    Value = '1'
+                                }
+                            )
+                        }
+                        MSFT_MicrosoftGraphuserFlowUserAttributeAssignment{
+                            UserInputType = 'textBox'
+                            IsOptional = $False
+                            DisplayName = 'Piyush1'
+                            Id = 'extension_91d51274096941f786b07b9d723d93f4_Piyush1'
+        
+                        }
+                    );
+                }
                 AADIdentityGovernanceLifecycleWorkflow 'AADIdentityGovernanceLifecycleWorkflow-Onboard pre-hire employee updated version'
                 {
                     Category             = "joiner";
@@ -904,6 +1048,15 @@
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
+                }
+                AADIdentityGovernanceProgram 'AADIdentityGovernanceProgram-Example'
+                {
+                    ApplicationId           = $ApplicationId
+                    TenantId                = $TenantId
+                    CertificateThumbprint   = $CertificateThumbprint
+                    Description             = "Example Program Description Updated";
+                    DisplayName             = "Example";
+                    Ensure                  = "Present";
                 }
                 AADLifecycleWorkflowSettings 'AADLifecycleWorkflowSettings'
                 {

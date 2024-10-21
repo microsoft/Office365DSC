@@ -12,8 +12,16 @@
     "permissions": {
         "graph": {
             "delegated": {
-                "read": [],
-                "update": []
+                "read": [
+                    {
+                        "name": "CustomSecAttributeDefinition.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "CustomSecAttributeDefinition.ReadWrite.All"
+                    }
+                ]
             },
             "application": {
                 "read": [

@@ -6,10 +6,16 @@
     "application": {
       "read": [
         {
+          "name": "Group.Read.All"
+        },
+        {
           "name": "DeviceManagementConfiguration.Read.All"
         }
       ],
       "update": [
+        {
+          "name": "Group.Read.All"
+        },
         {
           "name": "DeviceManagementConfiguration.ReadWrite.All"
         }
@@ -18,10 +24,16 @@
     "delegated": {
       "read": [
         {
+          "name": "Group.Read.All"
+        },
+        {
           "name": "DeviceManagementConfiguration.Read.All"
         }
       ],
       "update": [
+        {
+          "name": "Group.Read.All"
+        },
         {
           "name": "DeviceManagementConfiguration.ReadWrite.All"
         }

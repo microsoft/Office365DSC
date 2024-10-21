@@ -1,0 +1,29 @@
+{
+    "resourceName": "AADIdentityB2XUserFlow",
+    "description": "This resource configures an Azure AD Identity B2 X User Flow.",
+    "permissions":    {
+    "graph":  {
+                  "delegated":  {
+                                    "read":  [
+                                                 {
+                                                     "name":  "IdentityUserFlow.Read.All"
+                                                 }
+                                             ],
+                                    "update":  [
+
+                                               ]
+                                },
+                  "application":  {
+                                      "read":  [
+                                                   {
+                                                       "name":  "IdentityUserFlow.Read.All"
+                                                   }
+                                               ],
+                                      "update":  [
+
+                                                 ]
+                                  }
+              }
+}
+
+}

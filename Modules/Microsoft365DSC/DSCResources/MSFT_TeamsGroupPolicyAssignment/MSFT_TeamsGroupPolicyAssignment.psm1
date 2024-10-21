@@ -75,8 +75,12 @@ function Get-TargetResource
     try
     {
         Write-Verbose -Message "Getting Group with Id {$GroupId}"
-        $Group = Find-CsGroup -SearchQuery $GroupId -ExactMatchOnly $true -ErrorAction SilentlyContinue
-
+        if ($GroupId -match '\b[A-Fa-f0-9]{8}(?:-[A-Fa-f0-9]{4}){3}-[A-Fa-f0-9]{12}\b' -and $GroupId -ne '00000000-0000-0000-0000-000000000000'){
+            $Group = Find-CsGroup -SearchQuery $GroupId -ExactMatchOnly $true -ErrorAction SilentlyContinue
+        }
+        else {
+            $Group = $null
+        }
         if ($null -eq $Group)
         {
             Write-Verbose -Message "Could not find Group with Id {$GroupId}, searching with DisplayName {$GroupDisplayName}"

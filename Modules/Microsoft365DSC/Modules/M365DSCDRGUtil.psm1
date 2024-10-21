@@ -2576,8 +2576,16 @@ function Export-IntuneSettingCatalogPolicySettings
 
         if ($null -ne $parentSetting)
         {
-            $combinationMatchesWithParent = $settingsWithSameName | Where-Object -FilterScript {
-                "$($parentSetting.Name)_$($_.Name)" -eq "$($parentSetting.Name)_$settingName"
+            $combinationMatchesWithParent = @()
+            $settingsWithSameName | ForEach-Object {
+                $innerParentSetting = Get-ParentSettingDefinition -SettingDefinition $_ -AllSettingDefinitions $AllSettingDefinitions
+                if ($null -ne $innerParentSetting)
+                {
+                    if ("$($innerParentSetting.Name)_$($_.Name)" -eq "$($parentSetting.Name)_$settingName")
+                    {
+                        $combinationMatchesWithParent += $_
+                    }
+                }
             }
 
             # If the combination of parent setting and setting name is unique, add the parent setting name to the setting name

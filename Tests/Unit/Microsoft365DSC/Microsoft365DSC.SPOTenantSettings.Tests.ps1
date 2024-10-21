@@ -36,6 +36,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return $null
             }
 
+            Mock -CommandName Invoke-PnPSPRestMethod -MockWith {
+                return $null
+            }
+
             # Mock Write-Host to hide output during the tests
             Mock -CommandName Write-Host -MockWith {
             }

@@ -24,6 +24,11 @@ class MSFT_SPOTenantSettings : OMI_BaseResource
     [Write, Description("Disables or enables the Social Bar. It will give users the ability to like a page, see the number of views, likes, and comments on a page, and see the people who have liked a page.")] boolean SocialBarOnSitePagesDisabled;
     [Write, Description("Set to false to enable a comment section on all site pages, users who have access to the pages can leave comments. Set to true to disable this feature.")] boolean CommentsOnSitePagesDisabled;
     [Write, Description("Boolean indicating if Azure Information Protection (AIP) should be enabled on the tenant.")] boolean EnableAIPIntegration;
+    [Write, Description("Determines whether or not we need to include external participants in shared channels for SharePoint access restriction.")] Boolean ExemptNativeUsersFromTenantLevelRestricedAccessControl;
+    [Write, Description("List of security groups to include in OneDrive access restrictions")] String AllowSelectSGsInODBListInTenant[];
+    [Write, Description("List of security groups to exclude in OneDrive access restrictions")] String DenySelectSGsInODBListInTenant[];
+    [Write, Description("List of security groups to exclude in SharePoint access restrictions")] String DenySelectSecurityGroupsInSPSitesList[];
+    [Write, Description("List of security groups to include in SharePoint access restrictions.")] String AllowSelectSecurityGroupsInSPSitesList[];
     [Write, Description("The default timezone of a tenant for newly created sites.")] String TenantDefaultTimezone;
     [Write, Description("Only accepted value is 'Present'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("Credentials of the account to authenticate with."), EmbeddedInstance("MSFT_Credential")] string Credential;

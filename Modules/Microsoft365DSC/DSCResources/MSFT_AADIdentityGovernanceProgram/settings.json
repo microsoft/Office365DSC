@@ -1,0 +1,32 @@
+{
+    "resourceName": "AADIdentityGovernanceProgram",
+    "description": "This resource configures an Azure AD Identity Governance Program.",
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [
+                    {
+                        "name": "ProgramControl.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "ProgramControl.ReadWrite.All"
+                    }
+                ]
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "ProgramControl.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "ProgramControl.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}

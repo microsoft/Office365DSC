@@ -34,11 +34,11 @@ To authenticate with the Microsoft Graph API, this resource required the followi
 
 - **Read**
 
-    - None
+    - IdentityProvider.Read.All
 
 - **Update**
 
-    - None
+    - IdentityProvider.ReadWrite.All
 
 #### Application permissions
 

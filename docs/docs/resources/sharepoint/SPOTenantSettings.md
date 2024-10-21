@@ -27,6 +27,11 @@
 | **SocialBarOnSitePagesDisabled** | Write | Boolean | Disables or enables the Social Bar. It will give users the ability to like a page, see the number of views, likes, and comments on a page, and see the people who have liked a page. | |
 | **CommentsOnSitePagesDisabled** | Write | Boolean | Set to false to enable a comment section on all site pages, users who have access to the pages can leave comments. Set to true to disable this feature. | |
 | **EnableAIPIntegration** | Write | Boolean | Boolean indicating if Azure Information Protection (AIP) should be enabled on the tenant. | |
+| **ExemptNativeUsersFromTenantLevelRestricedAccessControl** | Write | Boolean | Determines whether or not we need to include external participants in shared channels for SharePoint access restriction. | |
+| **AllowSelectSGsInODBListInTenant** | Write | StringArray[] | List of security groups to include in OneDrive access restrictions | |
+| **DenySelectSGsInODBListInTenant** | Write | StringArray[] | List of security groups to exclude in OneDrive access restrictions | |
+| **DenySelectSecurityGroupsInSPSitesList** | Write | StringArray[] | List of security groups to exclude in SharePoint access restrictions | |
+| **AllowSelectSecurityGroupsInSPSitesList** | Write | StringArray[] | List of security groups to include in SharePoint access restrictions. | |
 | **TenantDefaultTimezone** | Write | String | The default timezone of a tenant for newly created sites. | |
 | **Ensure** | Write | String | Only accepted value is 'Present'. | `Present`, `Absent` |
 | **Credential** | Write | PSCredential | Credentials of the account to authenticate with. | |

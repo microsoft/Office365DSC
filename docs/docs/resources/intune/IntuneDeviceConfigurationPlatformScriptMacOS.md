@@ -52,21 +52,21 @@ To authenticate with the Microsoft Graph API, this resource required the followi
 
 - **Read**
 
-    - DeviceManagementConfiguration.Read.All, DeviceManagementManagedDevices.Read.All
+    - Group.Read.All, DeviceManagementConfiguration.Read.All, DeviceManagementManagedDevices.Read.All
 
 - **Update**
 
-    - DeviceManagementConfiguration.ReadWrite.All, DeviceManagementManagedDevices.ReadWrite.All
+    - Group.Read.All, DeviceManagementConfiguration.ReadWrite.All, DeviceManagementManagedDevices.ReadWrite.All
 
 #### Application permissions
 
 - **Read**
 
-    - DeviceManagementConfiguration.Read.All, DeviceManagementManagedDevices.Read.All
+    - Group.Read.All, DeviceManagementConfiguration.Read.All, DeviceManagementManagedDevices.Read.All
 
 - **Update**
 
-    - DeviceManagementConfiguration.ReadWrite.All, DeviceManagementManagedDevices.ReadWrite.All
+    - Group.Read.All, DeviceManagementConfiguration.ReadWrite.All, DeviceManagementManagedDevices.ReadWrite.All
 
 ## Examples
 

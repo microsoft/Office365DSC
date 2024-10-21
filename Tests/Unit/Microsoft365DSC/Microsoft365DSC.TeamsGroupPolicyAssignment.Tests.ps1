@@ -38,7 +38,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Find-CsGroup -MockWith {
                 return @(
                     @{
-                        Id= '00000000-0000-0000-0000-000000000000'
                         Displayname = 'TestGroup'
                     }
                 )

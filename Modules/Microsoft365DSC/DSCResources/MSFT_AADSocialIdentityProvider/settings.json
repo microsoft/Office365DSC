@@ -13,8 +13,14 @@
         "graph": {
             "delegated": {
                 "read": [
+                    {
+                        "name": "IdentityProvider.Read.All"
+                    }
                 ],
                 "update": [
+                    {
+                        "name": "IdentityProvider.ReadWrite.All"
+                    }
                 ]
             },
             "application": {

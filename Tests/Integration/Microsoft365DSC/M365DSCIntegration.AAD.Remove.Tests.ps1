@@ -34,6 +34,17 @@
         $Domain = $TenantId
         Node Localhost
         {
+                AADAccessReviewDefinition 'AADAccessReviewDefinition-Example'
+                {
+                    DescriptionForAdmins    = "description for admins";
+                    DescriptionForReviewers = "description for reviewers";
+                    DisplayName             = "Test Access Review Definition";
+                    Ensure                  = "Absent";
+                    Id                      = "613854e6-c458-4a2c-83fc-e0f4b8b17d60";
+                    ApplicationId           = $ApplicationId
+                    TenantId                = $TenantId
+                    CertificateThumbprint   = $CertificateThumbprint
+                }
                 AADAdministrativeUnit 'TestUnit'
                 {
                     DisplayName                   = 'Test-Unit'
@@ -285,6 +296,13 @@
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
                 }
+                AADIdentityB2XUserFlow 'AADIdentityB2XUserFlow-B2X_1_TestFlow'
+                {
+                    ApplicationId             = $ApplicationId
+                    TenantId                  = $TenantId
+                    CertificateThumbprint     = $CertificateThumbprint
+                    Id                        = "B2X_1_TestFlow";
+                }
                 AADIdentityGovernanceLifecycleWorkflow 'AADIdentityGovernanceLifecycleWorkflow-Onboard pre-hire employee updated version'
                 {
                     Category             = "joiner";
@@ -325,6 +343,14 @@
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
+                }
+                AADIdentityGovernanceProgram 'AADIdentityGovernanceProgram-Example'
+                {
+                    ApplicationId           = $ApplicationId
+                    TenantId                = $TenantId
+                    CertificateThumbprint   = $CertificateThumbprint
+                    DisplayName             = "Example";
+                    Ensure                  = "Absent";
                 }
                 AADNamedLocationPolicy 'CompanyNetwork'
                 {

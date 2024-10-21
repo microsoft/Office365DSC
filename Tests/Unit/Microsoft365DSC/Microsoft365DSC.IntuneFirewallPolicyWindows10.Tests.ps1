@@ -118,6 +118,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 }
                             },
                             @{
+                                Id = 'vendor_msft_firewall_mdmstore_publicprofile_enablefirewall'
+                                Name = 'EnableFirewall'
+                                OffsetUri = '/MdmStore/PublicProfile/EnableFirewall'
+                                AdditionalProperties = @{
+                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
+                                }
+                            },
+                            @{
                                 Id = 'vendor_msft_firewall_mdmstore_publicprofile_logfilepath'
                                 Name = 'LogFilePath'
                                 OffsetUri = '/MdmStore/PublicProfile/LogFilePath'
@@ -175,7 +183,27 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                                     parentSettingId = 'vendor_msft_firewall_mdmstore_hypervvmsettings_{vmcreatorid}_target'
                                                 }
                                             )
-
+                                        }
+                                    )
+                                }
+                            },
+                            @{
+                                Id = 'vendor_msft_firewall_mdmstore_hypervvmsettings_{vmcreatorid}_publicprofile_enablefirewall'
+                                Name = 'EnableFirewall'
+                                OffsetUri = '/MdmStore/HyperVVMSettings/{0}/PublicProfile/EnableFirewall'
+                                AdditionalProperties = @{
+                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
+                                    options = @(
+                                        # Only option used in the tests is defined here
+                                        @{
+                                            name = 'Enable Firewall'
+                                            itemId = 'vendor_msft_firewall_mdmstore_hypervvmsettings_{vmcreatorid}_publicprofile_enablefirewall_true'
+                                            dependentOn = @(
+                                                @{
+                                                    dependentOn = 'vendor_msft_firewall_mdmstore_hypervvmsettings_{vmcreatorid}_target_wsl'
+                                                    parentSettingId = 'vendor_msft_firewall_mdmstore_hypervvmsettings_{vmcreatorid}_target'
+                                                }
+                                            )
                                         }
                                     )
                                 }
@@ -348,7 +376,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
             }
 
-            It 'Should return true from the Test method' {
+            It 'Should return false from the Test method' {
                 Test-TargetResource @testParams | Should -Be $false
             }
 

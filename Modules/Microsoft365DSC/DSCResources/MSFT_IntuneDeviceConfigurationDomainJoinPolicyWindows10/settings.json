@@ -29,6 +29,9 @@
                                                ],
                                       "update":  [
                                                      {
+                                                         "name": "Group.Read.All"
+                                                     },
+                                                     {
                                                          "name":  "DeviceManagementConfiguration.ReadWrite.All"
                                                      }
                                                  ]

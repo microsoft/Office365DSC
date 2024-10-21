@@ -1,0 +1,41 @@
+[ClassVersion("1.0.0")]
+class MSFT_MicrosoftGraphUserFlowApiConnectorConfiguration
+{
+    [Write, Description("The name of the connector used for post federation signup step.")] String postFederationSignupConnectorName;
+    [Write, Description("The name of the connector used for post attribute collection step.")] String postAttributeCollectionConnectorName;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_MicrosoftGraphuserFlowUserAttributeAssignmentUserAttributeValues
+{
+    [Write, Description("The display name of the property displayed to the end user in the user flow.")] String Name;
+    [Write, Description("The value that is set when this item is selected.")] String Value;
+    [Write, Description("Used to set the value as the default.")] Boolean IsDefault;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_MicrosoftGraphuserFlowUserAttributeAssignment
+{
+    [Write, Description("The unique identifier of identityUserFlowAttributeAssignment.")] String Id;
+    [Write, Description("The display name of the identityUserFlowAttribute within a user flow.")] String DisplayName;
+    [Write, Description("Determines whether the identityUserFlowAttribute is optional.")] Boolean IsOptional;
+    [Write, Description("User Flow Attribute Input Type."), ValueMap{"textBox","dateTimeDropdown","radioSingleSelect","dropdownSingleSelect","emailBox","checkboxMultiSelect"}, Values{"textBox","dateTimeDropdown","radioSingleSelect","dropdownSingleSelect","emailBox","checkboxMultiSelect"}] String UserInputType;
+    [Write, Description("The list of user attribute values for this assignment."), EmbeddedInstance("MSFT_MicrosoftGraphuserFlowUserAttributeAssignmentUserAttributeValues")] String UserAttributeValues[];
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADIdentityB2XUserFlow")]
+class MSFT_AADIdentityB2XUserFlow : OMI_BaseResource
+{
+    [Write, Description("Configuration for enabling an API connector for use as part of the self-service sign-up user flow. You can only obtain the value of this object using Get userFlowApiConnectorConfiguration."), EmbeddedInstance("MSFT_MicrosoftGraphuserFlowApiConnectorConfiguration")] String ApiConnectorConfiguration;
+    [Key, Description("The unique identifier for an entity. Read-only.")] String Id;
+    [Write, Description("The identity providers included in the user flow.")] String IdentityProviders[];
+    [Write, Description("The user attribute assignments included in the user flow."), EmbeddedInstance("MSFT_MicrosoftGraphuserFlowUserAttributeAssignment")] String UserAttributeAssignments[];
+    [Write, Description("Present ensures the policy exists, absent ensures it is removed."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
+    [Write, Description("Credentials of the Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Secret of the Azure Active Directory tenant used for authentication."), EmbeddedInstance("MSFT_Credential")] String ApplicationSecret;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

@@ -110,21 +110,21 @@ To authenticate with the Microsoft Graph API, this resource required the followi
 
 - **Read**
 
-    - DeviceManagementApps.Read.All
+    - Group.Read.All, DeviceManagementApps.Read.All
 
 - **Update**
 
-    - DeviceManagementApps.ReadWrite.All
+    - Group.Read.All, DeviceManagementApps.ReadWrite.All
 
 #### Application permissions
 
 - **Read**
 
-    - DeviceManagementApps.Read.All
+    - Group.Read.All, DeviceManagementApps.Read.All
 
 - **Update**
 
-    - DeviceManagementApps.ReadWrite.All
+    - Group.Read.All, DeviceManagementApps.ReadWrite.All
 
 ## Examples
 

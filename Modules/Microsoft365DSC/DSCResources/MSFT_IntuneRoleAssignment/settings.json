@@ -6,10 +6,16 @@
             "delegated": {
                 "read": [
                     {
+                        "name": "Group.Read.All"
+                    },
+                    {
                         "name": "DeviceManagementRBAC.Read.All"
                     }
                 ],
                 "update": [
+                    {
+                        "name": "Group.Read.All"
+                    },
                     {
                         "name": "DeviceManagementRBAC.ReadWrite.All"
                     }
@@ -18,10 +24,16 @@
             "application": {
                 "read": [
                     {
+                        "name": "Group.Read.All"
+                    },
+                    {
                         "name": "DeviceManagementRBAC.Read.All"
                     }
                 ],
                 "update": [
+                    {
+                        "name": "Group.Read.All"
+                    },
                     {
                         "name": "DeviceManagementRBAC.ReadWrite.All"
                     }
