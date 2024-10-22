@@ -26,7 +26,7 @@
         },
         @{
             ModuleName      = 'ExchangeOnlineManagement'
-            RequiredVersion = '3.4.0'
+            RequiredVersion = '3.6.0'
         },
         @{
             ModuleName      = 'Microsoft.Graph.Applications'
@@ -114,15 +114,15 @@
         },
         @{
             ModuleName      = 'Microsoft.PowerApps.Administration.PowerShell'
-            RequiredVersion = '2.0.191'
+            RequiredVersion = '2.0.199'
         },
         @{
             ModuleName      = 'MicrosoftTeams'
-            RequiredVersion = '6.5.0'
+            RequiredVersion = '6.6.0'
         },
         @{
             ModuleName      = "MSCloudLoginAssistant"
-            RequiredVersion = "1.1.25"
+            RequiredVersion = "1.1.27"
         },
         @{
             ModuleName      = 'PnP.PowerShell'

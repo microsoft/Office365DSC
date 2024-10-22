@@ -101,7 +101,7 @@ function Get-TargetResource
         #endregion
 
         #region Get IdentityProviders
-        $getIdentityProviders = Get-MgBetaIdentityB2XUserFlowIdentityProvider -B2XIdentityUserFlowId $Id | Select-Object Id
+        $getIdentityProviders = (Get-MgBetaIdentityB2XUserFlowIdentityProvider -B2XIdentityUserFlowId $Id).id
         if ($getIdentityProviders.Count -eq 0)
         {
             $getIdentityProviders = @()

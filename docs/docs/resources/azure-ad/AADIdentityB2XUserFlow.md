@@ -113,8 +113,8 @@ Configuration Example
             CertificateThumbprint     = $CertificateThumbprint
             ApiConnectorConfiguration = MSFT_MicrosoftGraphuserFlowApiConnectorConfiguration
             {
-                postAttributeCollectionConnectorId = 'RestApi_f6e8e73d-6b17-433e-948f-f578f12bd57c'
-                postFederationSignupConnectorId = 'RestApi_beeb7152-673c-48b3-b143-9975949a93ca'
+                postAttributeCollectionConnectorName = 'RestApi_f6e8e73d-6b17-433e-948f-f578f12bd57c'
+                postFederationSignupConnectorName = 'RestApi_beeb7152-673c-48b3-b143-9975949a93ca'
             };
             Credential                = $Credscredential;
             Ensure                    = "Present";
@@ -195,8 +195,8 @@ Configuration Example
             CertificateThumbprint     = $CertificateThumbprint
             ApiConnectorConfiguration = MSFT_MicrosoftGraphuserFlowApiConnectorConfiguration
             {
-                postAttributeCollectionConnectorId = 'RestApi_f6e8e73d-6b17-433e-948f-f578f12bd57c'
-                postFederationSignupConnectorId = 'RestApi_beeb7152-673c-48b3-b143-9975949a93ca'
+                postAttributeCollectionConnectorName = 'RestApi_f6e8e73d-6b17-433e-948f-f578f12bd57c'
+                postFederationSignupConnectorName = 'RestApi_beeb7152-673c-48b3-b143-9975949a93ca'
             };
             Credential                = $Credscredential;
             Ensure                    = "Present";
