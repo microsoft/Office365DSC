@@ -61,9 +61,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
                     ExpirationDateTime      = "10/25/2025 6:14:57 PM";
                     LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
+                    CertificateUploadStatus = "Success";
+                    CertificateUploadFailureReason = "None";
 
-                    Ensure              = 'Present'
-                    Credential          = $Credential
+                    Ensure                  = 'Present';
+                    Credential              = $Credential;
                 }
 
                 Mock -CommandName Get-MgBetaDeviceManagementApplePushNotificationCertificate -MockWith {
@@ -93,6 +95,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
                     ExpirationDateTime      = "10/25/2025 6:14:57 PM";
                     LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
+                    CertificateUploadStatus = "Success";
+                    CertificateUploadFailureReason = "None";
 
                     Ensure              = 'Absent'
                     Credential          = $Credential
@@ -107,6 +111,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
                         ExpirationDateTime      = "10/25/2025 6:14:57 PM";
                         LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
+                        CertificateUploadStatus = "Success";
+                        CertificateUploadFailureReason = "None";
                     }
                 }
             }
@@ -133,9 +139,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
                     ExpirationDateTime      = "10/25/2025 6:14:57 PM";
                     LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
+                    CertificateUploadStatus = "Success";
+                    CertificateUploadFailureReason = "None";
 
-                    Ensure              = 'Present'
-                    Credential          = $Credential
+                    Ensure                  = 'Present'
+                    Credential              = $Credential
                 }
 
                 Mock -CommandName Get-MgBetaDeviceManagementApplePushNotificationCertificate -MockWith {
@@ -147,6 +155,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
                         ExpirationDateTime      = "10/25/2025 6:14:57 PM";
                         LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
+                        CertificateUploadStatus = "Success";
+                        CertificateUploadFailureReason = "None";
                     }
                 }
             }
@@ -166,6 +176,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
                     ExpirationDateTime      = "10/25/2025 6:14:57 PM";
                     LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
+                    CertificateUploadStatus = "Success";
+                    CertificateUploadFailureReason = "None";
 
                     Ensure                  = 'Present'
                     Credential              = $Credential
@@ -180,6 +192,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
                         ExpirationDateTime      = "10/25/2025 6:14:57 PM";
                         LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
+                        CertificateUploadStatus = "Success";
+                        CertificateUploadFailureReason = "None";
                     }
                 }
             }
@@ -215,6 +229,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
                         ExpirationDateTime      = "10/25/2025 6:14:57 PM";
                         LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
+                        CertificateUploadStatus = "Success";
+                        CertificateUploadFailureReason = "None";
                     }
                 }
             }
