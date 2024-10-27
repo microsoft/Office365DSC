@@ -119,7 +119,6 @@ function Get-TargetResource
         $results = @{
             Id                             = $instance.Id
             AppleIdentifier                = $instance.AppleIdentifier
-            Certificate                    = $instance.Certificate
             TopicIdentifier                = $instance.TopicIdentifier
             CertificateSerialNumber        = $instance.CertificateSerialNumber
             LastModifiedDateTime           = $instance.LastModifiedDateTime
@@ -135,6 +134,13 @@ function Get-TargetResource
             ApplicationSecret              = $ApplicationSecret
             ManagedIdentity                = $ManagedIdentity.IsPresent
             AccessTokens                   = $AccessTokens
+        }
+
+        if (-not [String]::IsNullOrEmpty($instance.Certificate)) {
+            $results.Add('Certificate', $instance.Certificate)
+        }
+        else {
+            $results.Add('Certificate', "")
         }
 
         return [System.Collections.Hashtable] $results
