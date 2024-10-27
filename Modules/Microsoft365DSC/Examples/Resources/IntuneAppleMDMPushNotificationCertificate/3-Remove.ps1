@@ -22,11 +22,14 @@ Configuration Example
     Import-DscResource -ModuleName Microsoft365DSC
     node localhost
     {
-        IntuneAppleMDMPushCertificate "IntuneAppCategory-Data Management"
+        IntuneAppleMDMPushNotificationCertificate "IntuneAppleMDMPushNotificationCertificate-66f4ec83-754f-4a59-a73d-e3182cc636a5"
         {
-            Id                   = "a1fc9fe2-728d-4867-9a72-a61e18f8c606";
-            DisplayName          = "Custom Data Management";
-            Ensure               = "Absent";
+            AppleIdentifier         = ""
+	        Certificate 	        = "";
+
+            Ensure                  = "Absent";
+            ApplicationId           = $ConfigurationData.NonNodeData.ApplicationId;
+            TenantId                = $OrganizationName;
         }
     }
 }

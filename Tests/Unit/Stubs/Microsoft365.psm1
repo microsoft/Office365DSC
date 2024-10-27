@@ -27611,6 +27611,62 @@ function Update-MgBetaRoleManagement
     )
 }
 
+function Get-MgBetaDeviceManagementApplePushNotificationCertificate
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $Id,
+
+        [Parameter()]
+        [System.String]
+        $AppleIdentifier,
+
+        [Parameter()]
+        [System.String]
+        $Certificate,
+
+        [Parameter()]
+        [System.String]
+        $TopicIdentifier,
+
+        [Parameter()]
+        [System.String]
+        $CertificateSerialNumber,
+
+        [Parameter()]
+        [System.DateTime]
+        $LastModifiedDateTime,
+
+        [Parameter()]
+        [System.DateTime]
+        $ExpirationDateTime,
+
+        [Parameter()]
+        [System.String]
+        $CertificateUploadStatus,
+
+        [Parameter()]
+        [System.String]
+        $CertificateUploadFailureReason
+    )
+}
+
+function Update-MgBetaDeviceManagementApplePushNotificationCertificate
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $AppleIdentifier,
+
+        [Parameter()]
+        [System.String]
+        $Certificate
+    )
+}
+
 function Get-MgBetaDeviceManagementMobileThreatDefenseConnector
 {
     [CmdletBinding()]

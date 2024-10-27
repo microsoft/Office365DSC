@@ -12,7 +12,35 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $DisplayName,
+        $AppleIdentifier,
+
+        [Parameter()]
+        [System.String]
+        $Certificate,
+
+        [Parameter()]
+        [System.String]
+        $TopicIdentifier,
+
+        [Parameter()]
+        [System.String]
+        $CertificateSerialNumber,
+
+        [Parameter()]
+        [System.DateTime]
+        $LastModifiedDateTime,
+
+        [Parameter()]
+        [System.DateTime]
+        $ExpirationDateTime,
+
+        [Parameter()]
+        [System.String]
+        $CertificateUploadStatus,
+
+        [Parameter()]
+        [System.String]
+        $CertificateUploadFailureReason,
 
         #endregion Intune params
 
@@ -78,39 +106,37 @@ function Get-TargetResource
 
         if ($null -eq $instance)
         {
-            $instance = Get-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $Id -ErrorAction SilentlyContinue
+            # There is only one Apple push notification certificate per tenant so no need to filter by Id
+            $instance = Get-MgBetaDeviceManagementApplePushNotificationCertificate -ErrorAction Stop
 
             if ($null -eq $instance)
             {
-                Write-Verbose -Message "Could not find MobileAppCategory by Id {$Id}."
-
-                if (-Not [string]::IsNullOrEmpty($DisplayName))
-                {
-                    $instance = Get-MgBetaDeviceAppManagementMobileAppCategory `
-                        -Filter "DisplayName eq '$DisplayName'" `
-                        -ErrorAction SilentlyContinue
-                }
-            }
-
-            if ($null -eq $instance)
-            {
-                Write-Verbose -Message "Could not find MobileAppCategory by DisplayName {$DisplayName}."
+                Write-Verbose -Message "Apple push notification certificate."
                 return $nullResult
             }
         }
 
         $results = @{
-            Id                    = $instance.Id
-            DisplayName           = $instance.DisplayName
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            ApplicationSecret     = $ApplicationSecret
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
+            Id                             = $instance.Id
+            AppleIdentifier                = $instance.AppleIdentifier
+            Certificate                    = $instance.Certificate
+            TopicIdentifier                = $instance.TopicIdentifier
+            CertificateSerialNumber        = $instance.CertificateSerialNumber
+            LastModifiedDateTime           = $instance.LastModifiedDateTime
+            ExpirationDateTime             = $instance.ExpirationDateTime
+            CertificateUploadStatus        = $instance.CertificateUploadStatus
+            CertificateUploadFailureReason = $instance.CertificateUploadFailureReason
+
+            Ensure                         = 'Present'
+            Credential                     = $Credential
+            ApplicationId                  = $ApplicationId
+            TenantId                       = $TenantId
+            CertificateThumbprint          = $CertificateThumbprint
+            ApplicationSecret              = $ApplicationSecret
+            ManagedIdentity                = $ManagedIdentity.IsPresent
+            AccessTokens                   = $AccessTokens
         }
+
         return [System.Collections.Hashtable] $results
     }
     catch
@@ -139,7 +165,35 @@ function Set-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $DisplayName,
+        $AppleIdentifier,
+
+        [Parameter()]
+        [System.String]
+        $Certificate,
+
+        [Parameter()]
+        [System.String]
+        $TopicIdentifier,
+
+        [Parameter()]
+        [System.String]
+        $CertificateSerialNumber,
+
+        [Parameter()]
+        [System.DateTime]
+        $LastModifiedDateTime,
+
+        [Parameter()]
+        [System.DateTime]
+        $ExpirationDateTime,
+
+        [Parameter()]
+        [System.String]
+        $CertificateUploadStatus,
+
+        [Parameter()]
+        [System.String]
+        $CertificateUploadFailureReason,
 
         #endregion Intune params
 
@@ -191,29 +245,37 @@ function Set-TargetResource
 
     $currentInstance = Get-TargetResource @PSBoundParameters
 
-    $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-    $setParameters.Remove('Id') | Out-Null
+    $SetParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+    $SetParameters.Remove('Id') | Out-Null
+    $SetParameters.Remove('TopicIdentifier') | Out-Null
+    $SetParameters.Remove('LastModifiedDateTime') | Out-Null
+    $SetParameters.Remove('ExpirationDateTime') | Out-Null
+    $SetParameters.Remove('CertificateUploadStatus') | Out-Null
+    $SetParameters.Remove('CertificateUploadFailureReason') | Out-Null
+    $SetParameters.Remove('CertificateSerialNumber') | Out-Null
 
     # CREATE
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
-        Write-Verbose -Message "Creating an Intune App Category with DisplayName {$DisplayName}"
+        Write-Verbose -Message "Creating an Intune Apple Push Notification Certificate with Apple ID: '$AppleIdentifier'."
 
-        New-MgBetaDeviceAppManagementMobileAppCategory @SetParameters
+        # There is only PATCH request hence using Update cmdlet to post the certificate
+        Update-MgBetaDeviceManagementApplePushNotificationCertificate @SetParameters
     }
     # UPDATE
     elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
     {
-        Write-Verbose -Message "Updating the Intune App Category with DisplayName {$DisplayName}"
-
-        Update-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $currentInstance.Id @SetParameters
+        Write-Verbose -Message "Updating the Intune Apple Push Notification Certificate with Apple ID: '$AppleIdentifier'."
+        Update-MgBetaDeviceManagementApplePushNotificationCertificate @SetParameters
     }
     # REMOVE
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
-        Write-Verbose -Message "Removing the Intune App Category with DisplayName {$DisplayName}"
+        Write-Verbose -Message "Removing the Intune Apple Push Notification Certificate with Apple ID: '$AppleIdentifier' by patching with empty certificate."
 
-        Remove-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $currentInstance.Id -Confirm:$false
+        # There is only PATCH request hence using Update cmdlet to remove the certificate by passing empty certificate as param.
+        $params = @{}
+        Update-MgBetaDeviceManagementApplePushNotificationCertificate $params
     }
 }
 
@@ -231,7 +293,35 @@ function Test-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $DisplayName,
+        $AppleIdentifier,
+
+        [Parameter()]
+        [System.String]
+        $Certificate,
+
+        [Parameter()]
+        [System.String]
+        $TopicIdentifier,
+
+        [Parameter()]
+        [System.String]
+        $CertificateSerialNumber,
+
+        [Parameter()]
+        [System.DateTime]
+        $LastModifiedDateTime,
+
+        [Parameter()]
+        [System.DateTime]
+        $ExpirationDateTime,
+
+        [Parameter()]
+        [System.String]
+        $CertificateUploadStatus,
+
+        [Parameter()]
+        [System.String]
+        $CertificateUploadFailureReason,
 
         #endregion Intune params
 
@@ -363,7 +453,7 @@ function Export-TargetResource
     try
     {
         $Script:ExportMode = $true
-        [array] $Script:exportedInstances = Get-MgBetaDeviceAppManagementMobileAppCategory -ErrorAction Stop
+        [array] $Script:exportedInstances = Get-MgBetaDeviceManagementApplePushNotificationCertificate -ErrorAction Stop
 
         $i = 1
         $dscContent = ''
@@ -379,17 +469,26 @@ function Export-TargetResource
         {
             $displayedKey = $config.Id
             Write-Host "    |---[$i/$($Script:exportedInstances.Count)] $displayedKey" -NoNewline
+
             $params = @{
-                Id                    = $config.Id
-                DisplayName           = $config.DisplayName
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                ApplicationSecret     = $ApplicationSecret
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
+                Id                             = $config.Id
+                AppleIdentifier                = $config.AppleIdentifier
+                Certificate                    = $config.Certificate
+                TopicIdentifier                = $config.TopicIdentifier
+                CertificateSerialNumber        = $config.CertificateSerialNumber
+                LastModifiedDateTime           = $config.LastModifiedDateTime
+                ExpirationDateTime             = $config.ExpirationDateTime
+                CertificateUploadStatus        = $config.CertificateUploadStatus
+                CertificateUploadFailureReason = $config.CertificateUploadFailureReason
+
+                Ensure                         = 'Present'
+                Credential                     = $Credential
+                ApplicationId                  = $ApplicationId
+                TenantId                       = $TenantId
+                CertificateThumbprint          = $CertificateThumbprint
+                ApplicationSecret              = $ApplicationSecret
+                ManagedIdentity                = $ManagedIdentity.IsPresent
+                AccessTokens                   = $AccessTokens
             }
 
             $Results = Get-TargetResource @Params
