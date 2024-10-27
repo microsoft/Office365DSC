@@ -78,25 +78,25 @@ function Get-TargetResource
 
         if ($null -eq $instance)
         {
-          $instance = Get-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $Id -ErrorAction Stop
+            $instance = Get-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $Id -ErrorAction SilentlyContinue
 
-          if ($null -eq $instance)
-          {
-              Write-Verbose -Message "Could not find MobileAppCategory by Id {$Id}."
+            if ($null -eq $instance)
+            {
+                Write-Verbose -Message "Could not find MobileAppCategory by Id {$Id}."
 
-              if (-Not [string]::IsNullOrEmpty($DisplayName))
-              {
-                  $instance = Get-MgBetaDeviceAppManagementMobileAppConfiguration `
-                      -Filter "DisplayName eq '$DisplayName'" `
-                      -ErrorAction SilentlyContinue
-              }
-          }
+                if (-Not [string]::IsNullOrEmpty($DisplayName))
+                {
+                    $instance = Get-MgBetaDeviceAppManagementMobileAppCategory `
+                        -Filter "DisplayName eq '$DisplayName'" `
+                        -ErrorAction SilentlyContinue
+                }
+            }
 
-          if ($null -eq $instance)
-          {
-              Write-Verbose -Message "Could not find MobileAppCategory by DisplayName {$DisplayName}."
-              return $nullResult
-          }
+            if ($null -eq $instance)
+            {
+                Write-Verbose -Message "Could not find MobileAppCategory by DisplayName {$DisplayName}."
+                return $nullResult
+            }
         }
 
         $results = @{
@@ -192,22 +192,27 @@ function Set-TargetResource
     $currentInstance = Get-TargetResource @PSBoundParameters
 
     $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-    $setParameters.remove('Id') | Out-Null
-    $setParameters.remove('Ensure') | Out-Null
+    $setParameters.Remove('Id') | Out-Null
 
     # CREATE
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
+        Write-Verbose -Message "Creating an Intune App Category with DisplayName {$DisplayName}"
+
         New-MgBetaDeviceAppManagementMobileAppCategory @SetParameters
     }
     # UPDATE
     elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
     {
+        Write-Verbose -Message "Updating the Intune App Category with DisplayName {$DisplayName}"
+
         Update-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $currentInstance.Id @SetParameters
     }
     # REMOVE
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
+        Write-Verbose -Message "Removing the Intune App Category with DisplayName {$DisplayName}"
+
         Remove-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $currentInstance.Id -Confirm:$false
     }
 }
@@ -279,13 +284,26 @@ function Test-TargetResource
     $CurrentValues = Get-TargetResource @PSBoundParameters
     $ValuesToCheck = ([Hashtable]$PSBoundParameters).Clone()
 
+    if ($CurrentValues.Ensure -ne $Ensure)
+    {
+        Write-Verbose -Message "Test-TargetResource returned $false"
+        return $false
+    }
+    $testResult = $true
+
+    $ValuesToCheck = Remove-M365DSCAuthenticationParameter -BoundParameters $ValuesToCheck
+    $ValuesToCheck.Remove('Id') | Out-Null
+
     Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
     Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $ValuesToCheck)"
 
-    $testResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-        -Source $($MyInvocation.MyCommand.Source) `
-        -DesiredValues $PSBoundParameters `
-        -ValuesToCheck $ValuesToCheck.Keys
+    if ($testResult)
+    {
+        $testResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
+            -Source $($MyInvocation.MyCommand.Source) `
+            -DesiredValues $PSBoundParameters `
+            -ValuesToCheck $ValuesToCheck.Keys
+    }
 
     Write-Verbose -Message "Test-TargetResource returned $testResult"
 

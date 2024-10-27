@@ -1,0 +1,36 @@
+{
+    "resourceName": "EXOMailboxAuditBypassAssociation",
+    "description": "",
+    "roles": {
+        "read": [
+            "Global Reader"
+        ],
+        "update": [
+            "Exchange Administrator"
+        ]
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        },
+        "exchange": {
+            "requiredroles": [
+                "Compliance Admin",
+                "View-Only Configuration",
+                "Journaling"
+            ],
+            "requiredrolegroups": [
+                "Organization Management",
+                "Compliance Management",
+                "Records Management"
+            ]
+        }
+    }
+}

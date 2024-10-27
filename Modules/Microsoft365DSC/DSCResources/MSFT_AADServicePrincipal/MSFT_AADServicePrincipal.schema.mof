@@ -12,6 +12,24 @@ class MSFT_AADServicePrincipalDelegatedPermissionClassification
     [Write, Description("Name of the permission")] String PermissionName;
 };
 
+[ClassVersion("1.0.0")]
+class MSFT_AADServicePrincipalAttributeValue
+{
+    [Write, Description("Name of the Attribute")] String AttributeName;
+    [Write, Description("If the attribute has a string array value")] String StringArrayValue[];
+	[Write, Description("If the attribute has a int array value")] UInt32 IntArrayValue[];
+    [Write, Description("If the attribute has a string value")] String StringValue;
+	[Write, Description("If the attribute has a int value")] UInt32 IntValue;
+	[Write, Description("If the attribute has a boolean value")] Boolean BoolValue;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADServicePrincipalAttributeSet
+{
+    [Write, Description("Attribute Set Name.")] String AttributeSetName;
+    [Write, Description("List of attribute values."), EmbeddedInstance("MSFT_AADServicePrincipalAttributeValue")] String AttributeValues[];
+};
+
 [ClassVersion("1.0.0.0"), FriendlyName("AADServicePrincipal")]
 class MSFT_AADServicePrincipal : OMI_BaseResource
 {
@@ -33,6 +51,7 @@ class MSFT_AADServicePrincipal : OMI_BaseResource
     [Write, Description("The type of the service principal.")] String ServicePrincipalType;
     [Write, Description("Tags linked to this service principal.Note that if you intend for this service principal to show up in the All Applications list in the admin portal, you need to set this value to {WindowsAzureActiveDirectoryIntegratedApp}")] String Tags[];
     [Write, Description("The permission classifications for delegated permissions exposed by the app that this service principal represents."), EmbeddedInstance("MSFT_AADServicePrincipalDelegatedPermissionClassification")] String DelegatedPermissionClassifications[];
+    [Write, Description("The list of custom security attributes attached to this SPN"), EmbeddedInstance("MSFT_AADServicePrincipalAttributeSet")] String CustomSecurityAttributes[];
 
     [Write, Description("Specify if the Azure AD App should exist or not."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;

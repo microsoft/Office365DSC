@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "SentinelThreatIntelligenceIndicator",
+    "description": "Configures threat intelligence indicators in Azure Sentinel.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

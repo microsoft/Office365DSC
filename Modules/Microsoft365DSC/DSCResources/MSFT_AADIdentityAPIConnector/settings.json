@@ -1,0 +1,25 @@
+{
+    "resourceName": "AADIdentityAPIConnector",
+    "description": "This resource configures an Azure AD Identity A P I Connector.",
+    "permissions":    {
+    "graph":  {
+                  "delegated":  {
+                                    "read":  [
+
+                                             ],
+                                    "update":  [
+
+                                               ]
+                                },
+                  "application":  {
+                                      "read":  [
+
+                                               ],
+                                      "update":  [
+
+                                                 ]
+                                  }
+              }
+}
+
+}

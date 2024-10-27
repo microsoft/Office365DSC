@@ -967,7 +967,15 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
             -Workload $Workload `
             -CmdLetNoun $CmdLetNoun `
             -ApiVersion $ApiVersion `
-            -UpdateVerb $updateVerb).permissions | ConvertTo-Json -Depth 20
+            -UpdateVerb $updateVerb).permissions
+        if ($ResourceName -like "Intune*")
+        {
+            $resourcePermissions.application.read += @{ name = 'Group.Read.All' }
+            $resourcePermissions.application.update += @{ name = 'Group.Read.All' }
+            $resourcePermissions.delegated.read += @{ name = 'Group.Read.All' }
+            $resourcePermissions.delegated.update += @{ name = 'Group.Read.All' }
+        }
+        $resourcePermissions = $resourcePermissions | ConvertTo-Json -Depth 20
         $resourcePermissions = '    ' + $resourcePermissions
         Write-TokenReplacement -Token '<ResourceFriendlyName>' -Value $ResourceName -FilePath $settingsFilePath
         Write-TokenReplacement -Token '<ResourceDescription>' -Value $resourceDescription -FilePath $settingsFilePath

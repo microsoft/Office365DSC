@@ -38,7 +38,6 @@ Configuration Example
             Owner                 = "";
             PrivacyInformationUrl = "";
             Publisher             = "Contoso";
-            PublishingState       = "published";
             Assignments           = @(
                     MSFT_DeviceManagementMobileAppAssignment {
                         groupDisplayName = 'All devices'

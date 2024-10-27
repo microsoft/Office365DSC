@@ -607,6 +607,14 @@
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
                 }
+                EXOMailboxAuditBypassAssociation 'EXOMailboxAuditBypassAssociation-Test'
+                {
+                    AuditBypassEnabled   = $True;  #Updated Property
+                    Identity             = "TestMailbox109";
+                    ApplicationId         = $ApplicationId;
+                    TenantId              = $TenantId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                }
                 EXOMailboxAutoReplyConfiguration 'EXOMailboxAutoReplyConfiguration'
                 {
                     AutoDeclineFutureRequestsWhenOOF = $False;

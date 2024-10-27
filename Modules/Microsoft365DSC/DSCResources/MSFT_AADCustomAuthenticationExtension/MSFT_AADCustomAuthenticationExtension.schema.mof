@@ -1,0 +1,38 @@
+[ClassVersion("1.0.0.0")]
+class MSFT_AADCustomAuthenticationExtensionEndPointConfiguration
+{
+    [Write, Description("Defines the type of the endpoint configuration")] String EndpointType;
+    [Write, Description("Defines the workflow name for the logic app")] String LogicAppWorkflowName;
+    [Write, Description("Defines the resource group name for the logic app")] String ResourceGroupName;
+    [Write, Description("Defines the subscription id for the logic app")] String SubscriptionId;
+    [Write, Description("Defines the target url for the http endpoint")] String TargetUrl;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADCustomAuthenticationExtensionClaimForTokenConfiguration
+{
+    [Write, Description("Defines the claim id in api response.")] String ClaimIdInApiResponse;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADCustomAuthenticationExtension")]
+class MSFT_AADCustomAuthenticationExtension : OMI_BaseResource
+{
+    [Key, Description("Display Name of the custom security attribute. Must be unique within an attribute set. Can be up to 32 characters long and include Unicode characters. Can't contain spaces or special characters. Can't be changed later. Case sensitive.")] String DisplayName;
+    [Write, Description("Unique identifier of the Attribute Definition.")] String Id;
+    [Write, Description("Defines the custom authentication extension type.")] String CustomAuthenticationExtensionType;
+    [Write, Description("Description of the custom security attribute. Can be up to 128 characters long and include Unicode characters. Can't contain spaces or special characters. Can be changed later. ")] String Description;
+    [Write, Description("Defines the authentication configuration type")] String AuthenticationConfigurationType;
+    [Write, Description("Defines the authentication configuration resource id")] String AuthenticationConfigurationResourceId;
+    [Write, Description("Defines the client configuration timeout in milliseconds")] UInt32 ClientConfigurationTimeoutMilliseconds;
+    [Write, Description("Defines the client configuration max retries")] UInt32 ClientConfigurationMaximumRetries;
+    [Write, Description("Defines the endpoint configuration"), EmbeddedInstance("MSFT_AADCustomAuthenticationExtensionEndPointConfiguration")] String EndpointConfiguration;
+    [Write, Description("Defines the list of claims for token configurations"), EmbeddedInstance("MSFT_AADCustomAuthenticationExtensionClaimForTokenConfiguration")] String ClaimsForTokenConfiguration[];
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

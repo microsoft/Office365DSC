@@ -57,12 +57,12 @@ class MSFT_IntuneMobileAppsMacOSLobApp : OMI_BaseResource
     [Write, Description("The owner of the app. Inherited from mobileApp.")] String Owner;
     [Write, Description("The privacy statement Url. Inherited from mobileApp.")] String PrivacyInformationUrl;
     [Write, Description("The publisher of the app. Inherited from mobileApp.")] String Publisher;
-    [Write, Description("The publishing state for the app. The app cannot be assigned unless the app is published. Inherited from mobileApp."), ValueMap{"notPublished", "processing","published"}, Values{"notPublished", "processing", "published"}] String PublishingState;
     [Write, Description("The bundleId of the app.")] String BundleId;
     [Write, Description("The build number of the app.")] String BuildNumber;
     [Write, Description("The version number of the app.")] String VersionNumber;
     [Write, Description("List of Scope Tag IDs for mobile app.")] String RoleScopeTagIds[];
     [Write, Description("Whether to ignore the version of the app or not.")] Boolean IgnoreVersionDetection;
+    [Write, Description("Install the app as managed. Requires macOS 11.0.")] Boolean InstallAsManaged;
     [Write, Description("The icon for this app."), EmbeddedInstance("MSFT_DeviceManagementMimeContent")] String LargeIcon;
     [Write, Description("The minimum supported operating system to install the app."), EmbeddedInstance("MSFT_DeviceManagementMinimumOperatingSystem")] String MinimumSupportedOperatingSystem;
     [Write, Description("The list of categories for this app."), EmbeddedInstance("MSFT_DeviceManagementMobileAppCategory")] String Categories[];

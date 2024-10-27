@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "SentinelAlertRule",
+    "description": "Configures alert rules in Azure Sentinel.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

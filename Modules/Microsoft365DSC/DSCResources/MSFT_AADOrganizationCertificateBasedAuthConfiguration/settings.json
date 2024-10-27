@@ -1,0 +1,29 @@
+{
+    "resourceName": "AADOrganizationCertificateBasedAuthConfiguration",
+    "description": "This resource configures an Azure AD Organization Certificate Based Auth Configuration.",
+    "permissions":    {
+    "graph":  {
+                  "delegated":  {
+                                    "read":  [
+                                                 {
+                                                     "name":  "Organization.Read.All"
+                                                 }
+                                             ],
+                                    "update":  [
+
+                                               ]
+                                },
+                  "application":  {
+                                      "read":  [
+                                                   {
+                                                       "name":  "Organization.Read.All"
+                                                   }
+                                               ],
+                                      "update":  [
+
+                                                 ]
+                                  }
+              }
+}
+
+}

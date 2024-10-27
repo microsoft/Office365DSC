@@ -1,0 +1,28 @@
+[ClassVersion("1.0.0")]
+class MSFT_AADIdentityAPIConnectionCertificate
+{
+    [Write, Description("Pkcs12Value of the certificate as a secure string in Base64 encoding"), EmbeddedInstance("MSFT_Credential")] String Pkcs12Value;
+    [Write, Description("Thumbprint of the certificate in Base64 encoding")] String Thumbprint;
+    [Write, Description("Password of the certificate as a secure string"), EmbeddedInstance("MSFT_Credential")] String Password;
+    [Write, Description("Tells if the certificate is in use or not")] Boolean IsActive;
+};
+
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADIdentityAPIConnector")]
+class MSFT_AADIdentityAPIConnector : OMI_BaseResource
+{
+    [Required, Description("The name of the API connector.")] String DisplayName;
+    [Write, Description("The URL of the API endpoint to call.")] String TargetUrl;
+    [Key, Description("The unique identifier for an entity. Read-only.")] String Id;
+    [Write, Description("The username of the password")] String Username;
+    [Write, Description("The password of certificate/basic auth"), EmbeddedInstance("MSFT_Credential")] String Password;
+    [Write, Description("List of certificates to be used in the API connector"), EmbeddedInstance("MSFT_AADIdentityAPIConnectionCertificate")] String Certificates[];
+    [Write, Description("Present ensures the policy exists, absent ensures it is removed."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
+    [Write, Description("Credentials of the Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Secret of the Azure Active Directory tenant used for authentication."), EmbeddedInstance("MSFT_Credential")] String ApplicationSecret;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

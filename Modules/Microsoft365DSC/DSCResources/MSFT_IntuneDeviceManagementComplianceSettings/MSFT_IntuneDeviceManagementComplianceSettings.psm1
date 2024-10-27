@@ -225,6 +225,7 @@ function Test-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
+    $ValuesToCheck = $PSBoundParameters
     Write-Verbose -Message "Testing configuration of Intune Device Management Compliance Settings"
 
     $CurrentValues = Get-TargetResource @PSBoundParameters

@@ -1,0 +1,24 @@
+
+[ClassVersion("1.0.0")]
+class MSFT_MicrosoftGraphNetworkaccessPolicyLink
+{
+    [Write, Description("Policy Name. Required")] String Name;
+    [Write, Description("Policy Link Id")] String PolicyLinkId;
+    [Write, Description("status")] String state;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADNetworkAccessForwardingProfile")]
+class MSFT_AADNetworkAccessForwardingProfile : OMI_BaseResource
+{
+    [Key, Description("Profile Name. Required.")] String Name;
+    [Write, Description("Id of the profile. Unique Identifier")] String Id;
+    [Write, Description("status of the profile")] String State;
+    [Write, Description("Traffic forwarding policies associated with this profile."), EmbeddedInstance("MSFT_MicrosoftGraphNetworkaccessPolicyLink")] String Policies[];
+    [Write, Description("Credentials of the Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Secret of the Azure Active Directory tenant used for authentication."), EmbeddedInstance("MSFT_Credential")] String ApplicationSecret;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};
