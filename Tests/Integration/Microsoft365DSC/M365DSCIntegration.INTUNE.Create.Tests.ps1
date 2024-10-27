@@ -2237,6 +2237,27 @@
                     TenantId              = $TenantId;
                     CertificateThumbprint = $CertificateThumbprint;
                 }
+                IntuneDeviceManagmentAndroidDeviceOwnerEnrollmentProfile 'IntuneDeviceManagmentAndroidDeviceOwnerEnrollmentProfile-MyTestEnrollmentProfile'
+                {
+                    AccountId                 = "8d2ac1fd-0ac9-4047-af2f-f1e6323c9a34e";
+                    ApplicationId             = $ApplicationId;
+                    CertificateThumbprint     = $CertificateThumbprint;
+                    ConfigureWifi             = $True;
+                    Description               = "This is my enrollment profile";
+                    DisplayName               = "MyTestEnrollmentProfile";
+                    EnrolledDeviceCount       = 0;
+                    EnrollmentMode            = "corporateOwnedDedicatedDevice";
+                    EnrollmentTokenType       = "default";
+                    EnrollmentTokenUsageCount = 0;
+                    Ensure                    = "Present";
+                    IsTeamsDeviceProfile      = $False;
+                    RoleScopeTagIds           = @("0");
+                    TenantId                  = $TenantId;
+                    TokenCreationDateTime     = "10/26/2024 1:02:29 AM";
+                    TokenExpirationDateTime   = "10/31/2024 3:59:59 AM";
+                    WifiHidden                = $False;
+                    WifiSecurityType          = "none";
+                }
                 IntuneDeviceRemediation 'ConfigureDeviceRemediation'
                 {
                     Assignments              = @(
@@ -2597,6 +2618,30 @@
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
+                }
+                IntuneMobileThreatDefenseConnector 'IntuneMobileThreatDefenseConnector-Microsoft Defender for Endpoint'
+                {
+                    AllowPartnerToCollectIosApplicationMetadata         = $False;
+                    AllowPartnerToCollectIosPersonalApplicationMetadata = $False;
+                    AndroidDeviceBlockedOnMissingPartnerData            = $False;
+                    AndroidEnabled                                      = $False;
+                    AndroidMobileApplicationManagementEnabled           = $False;
+                    DisplayName                                         = "Microsoft Defender for Endpoint";
+                    Id                                                  = "fc780465-2017-40d4-a0c5-307022471b92";
+                    IosDeviceBlockedOnMissingPartnerData                = $False;
+                    IosEnabled                                          = $False;
+                    IosMobileApplicationManagementEnabled               = $False;
+                    LastHeartbeatDateTime                               = "1/1/0001 12:00:00 AM";
+                    MicrosoftDefenderForEndpointAttachEnabled           = $False;
+                    PartnerState                                        = "notSetUp";
+                    PartnerUnresponsivenessThresholdInDays              = 7;
+                    PartnerUnsupportedOSVersionBlocked                  = $False;
+                    WindowsDeviceBlockedOnMissingPartnerData            = $False;
+                    WindowsEnabled                                      = $False;
+                    Ensure                                              = "Present";
+                    ApplicationId         = $ApplicationId;
+                    TenantId              = $TenantId;
+                    CertificateThumbprint = $CertificateThumbprint;
                 }
                 IntunePolicySets 'Example'
                 {

@@ -1,0 +1,32 @@
+﻿{
+    "resourceName": "IntuneMobileThreatDefenseConnector",
+    "description": "This resource configures a connection to Mobile Threat Defense partner.",
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [
+                    {
+                        "name": "DeviceManagementServiceConfig.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "DeviceManagementServiceConfig.ReadWrite.All"
+                    }
+                ]
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "DeviceManagementServiceConfig.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "DeviceManagementServiceConfig.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}
