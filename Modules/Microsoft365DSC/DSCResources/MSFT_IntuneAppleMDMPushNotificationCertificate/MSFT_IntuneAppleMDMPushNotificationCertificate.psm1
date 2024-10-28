@@ -19,28 +19,8 @@ function Get-TargetResource
         $Certificate,
 
         [Parameter()]
-        [System.String]
-        $TopicIdentifier,
-
-        [Parameter()]
-        [System.String]
-        $CertificateSerialNumber,
-
-        [Parameter()]
-        [System.DateTime]
-        $LastModifiedDateTime,
-
-        [Parameter()]
-        [System.DateTime]
-        $ExpirationDateTime,
-
-        [Parameter()]
-        [System.String]
-        $CertificateUploadStatus,
-
-        [Parameter()]
-        [System.String]
-        $CertificateUploadFailureReason,
+        [System.Boolean]
+        $DataSharingConsetGranted,
 
         #endregion Intune params
 
@@ -119,12 +99,6 @@ function Get-TargetResource
         $results = @{
             Id                             = $instance.Id
             AppleIdentifier                = $instance.AppleIdentifier
-            TopicIdentifier                = $instance.TopicIdentifier
-            CertificateSerialNumber        = $instance.CertificateSerialNumber
-            LastModifiedDateTime           = $instance.LastModifiedDateTime
-            ExpirationDateTime             = $instance.ExpirationDateTime
-            CertificateUploadStatus        = $instance.CertificateUploadStatus
-            CertificateUploadFailureReason = $instance.CertificateUploadFailureReason
 
             Ensure                         = 'Present'
             Credential                     = $Credential
@@ -142,6 +116,10 @@ function Get-TargetResource
         else {
             $results.Add('Certificate', "")
         }
+
+        # Get the value of Data sharing consent between Intune and Apple. The id is hardcoded to "appleMDMPushCertificate".
+        $consentInstance = Get-MgBetaDeviceManagementDataSharingConsent -DataSharingConsentId "appleMDMPushCertificate"
+        $results.Add('DataSharingConsetGranted', $consentInstance.Granted)
 
         return [System.Collections.Hashtable] $results
     }
@@ -178,28 +156,8 @@ function Set-TargetResource
         $Certificate,
 
         [Parameter()]
-        [System.String]
-        $TopicIdentifier,
-
-        [Parameter()]
-        [System.String]
-        $CertificateSerialNumber,
-
-        [Parameter()]
-        [System.DateTime]
-        $LastModifiedDateTime,
-
-        [Parameter()]
-        [System.DateTime]
-        $ExpirationDateTime,
-
-        [Parameter()]
-        [System.String]
-        $CertificateUploadStatus,
-
-        [Parameter()]
-        [System.String]
-        $CertificateUploadFailureReason,
+        [System.Boolean]
+        $DataSharingConsetGranted,
 
         #endregion Intune params
 
@@ -253,17 +211,24 @@ function Set-TargetResource
 
     $SetParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
     $SetParameters.Remove('Id') | Out-Null
-    $SetParameters.Remove('TopicIdentifier') | Out-Null
-    $SetParameters.Remove('LastModifiedDateTime') | Out-Null
-    $SetParameters.Remove('ExpirationDateTime') | Out-Null
-    $SetParameters.Remove('CertificateUploadStatus') | Out-Null
-    $SetParameters.Remove('CertificateUploadFailureReason') | Out-Null
-    $SetParameters.Remove('CertificateSerialNumber') | Out-Null
+    $SetParameters.Remove('DataSharingConsetGranted') | Out-Null
 
     # CREATE
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Creating an Intune Apple Push Notification Certificate with Apple ID: '$AppleIdentifier'."
+
+        # Post data sharing consent as granted between Intune and Apple. NOTE: It's a one-way operation. Once agreed, it can't be revoked.
+        # so first check if it is $false, then make a post call to agree to the consent, this set the DataSharingConsetGranted to $true.
+        $consentInstance = Get-MgBetaDeviceManagementDataSharingConsent -DataSharingConsentId "appleMDMPushCertificate"
+        If($consentInstance.Granted -eq $False) {
+
+            Write-Host "Set-TargetResource, in if: consentInstance.Granted" $consentInstance.Granted
+            Invoke-MgGraphRequest -Method POST -Uri "https://graph.microsoft.com/beta/deviceManagement/dataSharingConsents/appleMDMPushCertificate/consentToDataSharing" -Headers @{ "Content-Type" = "application/json" }
+        }
+        else {
+            Write-Host "Data sharing conset is already granted, so it can't be revoked."
+        }
 
         # There is only PATCH request hence using Update cmdlet to post the certificate
         Update-MgBetaDeviceManagementApplePushNotificationCertificate @SetParameters
@@ -280,8 +245,11 @@ function Set-TargetResource
         Write-Verbose -Message "Removing the Intune Apple Push Notification Certificate with Apple ID: '$AppleIdentifier' by patching with empty certificate."
 
         # There is only PATCH request hence using Update cmdlet to remove the certificate by passing empty certificate as param.
-        $params = @{}
-        Update-MgBetaDeviceManagementApplePushNotificationCertificate $params
+        $params = @{
+            appleIdentifier = ""
+            certificate = ""
+        }
+        Update-MgBetaDeviceManagementApplePushNotificationCertificate -BodyParameter $params
     }
 }
 
@@ -306,28 +274,8 @@ function Test-TargetResource
         $Certificate,
 
         [Parameter()]
-        [System.String]
-        $TopicIdentifier,
-
-        [Parameter()]
-        [System.String]
-        $CertificateSerialNumber,
-
-        [Parameter()]
-        [System.DateTime]
-        $LastModifiedDateTime,
-
-        [Parameter()]
-        [System.DateTime]
-        $ExpirationDateTime,
-
-        [Parameter()]
-        [System.String]
-        $CertificateUploadStatus,
-
-        [Parameter()]
-        [System.String]
-        $CertificateUploadFailureReason,
+        [System.Boolean]
+        $DataSharingConsetGranted,
 
         #endregion Intune params
 
@@ -471,21 +419,16 @@ function Export-TargetResource
         {
             Write-Host "`r`n" -NoNewline
         }
+
         foreach ($config in $Script:exportedInstances)
         {
             $displayedKey = $config.Id
             Write-Host "    |---[$i/$($Script:exportedInstances.Count)] $displayedKey" -NoNewline
 
-            $params = @{
+            $Params = @{
                 Id                             = $config.Id
                 AppleIdentifier                = $config.AppleIdentifier
                 Certificate                    = $config.Certificate
-                TopicIdentifier                = $config.TopicIdentifier
-                CertificateSerialNumber        = $config.CertificateSerialNumber
-                LastModifiedDateTime           = $config.LastModifiedDateTime
-                ExpirationDateTime             = $config.ExpirationDateTime
-                CertificateUploadStatus        = $config.CertificateUploadStatus
-                CertificateUploadFailureReason = $config.CertificateUploadFailureReason
 
                 Ensure                         = 'Present'
                 Credential                     = $Credential
@@ -497,7 +440,12 @@ function Export-TargetResource
                 AccessTokens                   = $AccessTokens
             }
 
+            # Get the value of Data sharing consent between Intune and Apple. The id is hardcoded to "appleMDMPushCertificate".
+            $consentInstance = Get-MgBetaDeviceManagementDataSharingConsent -DataSharingConsentId "appleMDMPushCertificate"
+            $Params.Add('DataSharingConsetGranted', $consentInstance.Granted)
+
             $Results = Get-TargetResource @Params
+
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results
 

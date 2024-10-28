@@ -45,6 +45,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Update-MgBetaDeviceManagementApplePushNotificationCertificate -MockWith {
             }
 
+            Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
+            }
+
             $Script:exportedInstances =$null
             $Script:ExportMode = $false
         }
@@ -54,21 +57,20 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name '1. The instance should exist but it DOES NOT' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    AppleIdentifier         = "patched cert";
-                    Certificate 	        = "Fake cert";
-                    CertificateSerialNumber = "315224E2A4374274";
+                    AppleIdentifier         = "Apple ID";
+                    Certificate 	        = "Test cert";
                     Id                      = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
-                    TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
-                    ExpirationDateTime      = "10/25/2025 6:14:57 PM";
-                    LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
-                    CertificateUploadStatus = "Success";
-                    CertificateUploadFailureReason = "None";
+                    DataSharingConsetGranted = $True;
 
                     Ensure                  = 'Present';
                     Credential              = $Credential;
                 }
 
                 Mock -CommandName Get-MgBetaDeviceManagementApplePushNotificationCertificate -MockWith {
+                    return $null
+                }
+
+                Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
                     return $null
                 }
             }
@@ -88,31 +90,27 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name '2. The instance exists but it SHOULD NOT' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    AppleIdentifier         = "patched cert";
-                    Certificate 	        = "Fake cert";
-                    CertificateSerialNumber = "315224E2A4374274";
-                    Id                      = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
-                    TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
-                    ExpirationDateTime      = "10/25/2025 6:14:57 PM";
-                    LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
-                    CertificateUploadStatus = "Success";
-                    CertificateUploadFailureReason = "None";
+                    AppleIdentifier          = "Patched cert";
+                    Certificate 	         = "Test cert";
+                    Id                       = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
+                    DataSharingConsetGranted = $True;
 
-                    Ensure              = 'Absent'
-                    Credential          = $Credential
+                    Ensure                   = 'Absent'
+                    Credential               = $Credential
                 }
 
                 Mock -CommandName Get-MgBetaDeviceManagementApplePushNotificationCertificate -MockWith {
                     return @{
-                        AppleIdentifier         = "patched cert";
-                        Certificate 	        = "Fake cert";
-                        CertificateSerialNumber = "315224E2A4374274";
-                        Id                      = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
-                        TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
-                        ExpirationDateTime      = "10/25/2025 6:14:57 PM";
-                        LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
-                        CertificateUploadStatus = "Success";
-                        CertificateUploadFailureReason = "None";
+                        AppleIdentifier          = "Patched cert";
+                        Certificate 	         = "Test cert";
+                        Id                       = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
+                    }
+                }
+
+                Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
+                    return @{
+                        Id = "appleMDMPushCertificate"
+                        DataSharingConsetGranted = $True;
                     }
                 }
             }
@@ -133,14 +131,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     AppleIdentifier         = "Apple ID";
-                    Certificate 	        = "Fake cert";
-                    CertificateSerialNumber = "315224E2A4374274";
+                    Certificate 	        = "Test cert";
                     Id                      = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
-                    TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
-                    ExpirationDateTime      = "10/25/2025 6:14:57 PM";
-                    LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
-                    CertificateUploadStatus = "Success";
-                    CertificateUploadFailureReason = "None";
 
                     Ensure                  = 'Present'
                     Credential              = $Credential
@@ -148,15 +140,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-MgBetaDeviceManagementApplePushNotificationCertificate -MockWith {
                     return @{
-                        AppleIdentifier         = "Apple ID";
-                        Certificate 	        = "Fake cert";
-                        CertificateSerialNumber = "315224E2A4374274";
-                        Id                      = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
-                        TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
-                        ExpirationDateTime      = "10/25/2025 6:14:57 PM";
-                        LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
-                        CertificateUploadStatus = "Success";
-                        CertificateUploadFailureReason = "None";
+                        AppleIdentifier          = "Apple ID";
+                        Certificate 	         = "Test cert";
+                        Id                       = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
+                    }
+                }
+
+                Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
+                    return @{
+                        Id = "appleMDMPushCertificate"
+                        DataSharingConsetGranted = $True;
                     }
                 }
             }
@@ -169,31 +162,26 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name '4. The instance exists and values are NOT in the desired state' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    AppleIdentifier         = "Apple ID";
-                    Certificate 	        = "Fake cert";
-                    CertificateSerialNumber = "315224E2A4374274";
-                    Id                      = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
-                    TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
-                    ExpirationDateTime      = "10/25/2025 6:14:57 PM";
-                    LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
-                    CertificateUploadStatus = "Success";
-                    CertificateUploadFailureReason = "None";
+                    AppleIdentifier          = "Apple ID";
+                    Certificate 	         = "Test cert";
+                    Id                       = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
 
-                    Ensure                  = 'Present'
-                    Credential              = $Credential
+                    Ensure                   = 'Present'
+                    Credential               = $Credential
                 }
 
                 Mock -CommandName Get-MgBetaDeviceManagementApplePushNotificationCertificate -MockWith {
                     return @{
-                        AppleIdentifier         = "Apple ID"; #drift
-                        Certificate 	        = "Patched cert base64 string"; #drift
-                        CertificateSerialNumber = "315224E2A4374274";
-                        Id                      = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
-                        TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
-                        ExpirationDateTime      = "10/25/2025 6:14:57 PM";
-                        LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
-                        CertificateUploadStatus = "Success";
-                        CertificateUploadFailureReason = "None";
+                        AppleIdentifier          = "Apple ID"; #drift
+                        Certificate 	         = "Patched cert base64 string"; #drift
+                        Id                       = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
+                    }
+                }
+
+                Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
+                    return @{
+                        Id = "appleMDMPushCertificate"
+                        DataSharingConsetGranted = $True;
                     }
                 }
             }
@@ -222,15 +210,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-MgBetaDeviceManagementApplePushNotificationCertificate -MockWith {
                     return @{
-                        AppleIdentifier         = "Apple ID";
-                        Certificate 	        = "Fake cert";
-                        CertificateSerialNumber = "315224E2A4374274";
-                        Id                      = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
-                        TopicIdentifier         = "com.apple.mgmt.External.0055e7e9-492b-4d46-967a-28fc5d49edb6";
-                        ExpirationDateTime      = "10/25/2025 6:14:57 PM";
-                        LastModifiedDateTime    = "10/27/2024 5:55:44 AM";
-                        CertificateUploadStatus = "Success";
-                        CertificateUploadFailureReason = "None";
+                        AppleIdentifier          = "Apple ID";
+                        Certificate 	         = "Test cert";
+                        Id                       = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
+                    }
+                }
+
+                Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
+                    return @{
+                        Id = "appleMDMPushCertificate"
+                        DataSharingConsetGranted = $True;
                     }
                 }
             }

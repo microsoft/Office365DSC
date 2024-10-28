@@ -2,6 +2,8 @@
 
 # UNRELEASED
 
+* IntuneAppleMDMPushNotificationCertificate
+  * Initial release.
 * IntuneMobileThreatDefenseConnector
   * Initial release.
 * AADAccessReviewDefinition

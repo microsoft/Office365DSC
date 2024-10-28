@@ -27625,31 +27625,21 @@ function Get-MgBetaDeviceManagementApplePushNotificationCertificate
 
         [Parameter()]
         [System.String]
-        $Certificate,
+        $Certificate
+    )
+}
 
+function Get-MgBetaDeviceManagementDataSharingConsent
+{
+    [CmdletBinding()]
+    param(
         [Parameter()]
         [System.String]
-        $TopicIdentifier,
+        $Id,
 
         [Parameter()]
-        [System.String]
-        $CertificateSerialNumber,
-
-        [Parameter()]
-        [System.DateTime]
-        $LastModifiedDateTime,
-
-        [Parameter()]
-        [System.DateTime]
-        $ExpirationDateTime,
-
-        [Parameter()]
-        [System.String]
-        $CertificateUploadStatus,
-
-        [Parameter()]
-        [System.String]
-        $CertificateUploadFailureReason
+        [System.Boolean]
+        $DataSharingConsetGranted
     )
 }
 
