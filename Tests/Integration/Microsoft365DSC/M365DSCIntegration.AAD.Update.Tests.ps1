@@ -1149,6 +1149,14 @@
                     DisplayName             = "Example";
                     Ensure                  = "Present";
                 }
+                AADIdentityProtectionPolicySettings 'AADIdentityProtectionPolicySettings'
+                {
+                    IsUserRiskClearedOnPasswordReset = $false; #drift
+                    IsSingleInstance              = "Yes";
+                    ApplicationId                 = $ApplicationId
+                    TenantId                      = $TenantId
+                    CertificateThumbprint         = $CertificateThumbprint
+                }
                 AADLifecycleWorkflowSettings 'AADLifecycleWorkflowSettings'
                 {
                     ApplicationId                   = $ApplicationId;
@@ -1317,6 +1325,33 @@
                     Office             = "Ottawa - Queen"
                     UsageLocation      = "US"
                     Ensure             = "Present"
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
+                AADUserFlowAttribute 'SaiTest'
+                {
+                    Id                 = "testIdSai"
+                    DisplayName        = "saitest"
+                    Description        = "sai test description"
+                    DataType           = "string"
+                    Ensure             = "Present"
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
+                AADVerifiedIdAuthority 'AADVerifiedIdAuthority-Contoso'
+                {
+                    DidMethod            = "web";
+                    Ensure               = "Present";
+                    KeyVaultMetadata     = MSFT_AADVerifiedIdAuthorityKeyVaultMetadata{
+                        SubscriptionId = '2ff65b89-ab22-4489-b84d-e60d1dc30a62'
+                        ResourceName = 'xtakeyvault'
+                        ResourceUrl = 'https://xtakeyvault.vault.azure.net/'
+                        ResourceGroup = 'TBD'
+                    };
+                    LinkedDomainUrl      = "https://nik-charlebois.com/";
+                    Name                 = "Contoso 2"; # drift
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint

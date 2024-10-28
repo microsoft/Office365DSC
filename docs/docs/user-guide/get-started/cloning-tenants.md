@@ -29,7 +29,15 @@ $SourceCredential = Get-Credential
 Update-M365DSCAllowedGraphScopes -ResourceNameList @("AADGroupsNamingPolicy") -Type Read
 
 Export-M365DSCConfiguration -Components @("AADGroupsNamingPolicy") -Credential $SourceCredential -Path C:\Dsc
+```
 
+Now browse to the specified export folder and open the generated ConfigurationData.psd1 file. Update all tenant specific information in this file with the correct information for the target tenant. For example, a UPN suffix (tenantname.onmicrosoft.com) or the SharePoint URL (tenantname.sharepoint.com).
+
+Then open the M365TenantConfig.ps1 file and replace all instances of tenant specific information in this file.
+
+> **NOTE:** Our goal is to save all tenant specific information to just the ConfigurationData.psd1 file during export. Unfortunately, at the moment there are a couple of instances where this isn't implemented consistently and tenant specific information is also written in the M365TenantConfig.ps1 file.
+
+```PowerShell
 $TargetCredential = Get-Credential
 
 Update-M365DSCAllowedGraphScopes -ResourceNameList @("AADGroupsNamingPolicy") -Type Update

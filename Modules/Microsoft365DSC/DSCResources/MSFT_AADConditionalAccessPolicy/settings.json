@@ -27,6 +27,9 @@
                     },
                     {
                         "name": "User.Read.All"
+                    },
+                    {
+                        "name": "CustomSecAttributeDefinition.Read.All"
                     }
                 ],
                 "update": [
@@ -47,6 +50,9 @@
                     },
                     {
                         "name": "User.Read.All"
+                    },
+                    {
+                        "name": "CustomSecAttributeDefinition.Read.All"
                     }
                 ]
             },
@@ -69,6 +75,9 @@
                     },
                     {
                         "name": "User.Read.All"
+                    },
+                    {
+                        "name": "CustomSecAttributeDefinition.Read.All"
                     }
                 ],
                 "update": [
@@ -92,6 +101,9 @@
                     },
                     {
                         "name": "User.Read.All"
+                    },
+                    {
+                        "name": "CustomSecAttributeDefinition.Read.All"
                     }
                 ]
             }
