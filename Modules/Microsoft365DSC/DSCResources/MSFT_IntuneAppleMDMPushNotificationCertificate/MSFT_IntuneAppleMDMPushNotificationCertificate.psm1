@@ -222,8 +222,6 @@ function Set-TargetResource
         # so first check if it is $false, then make a post call to agree to the consent, this set the DataSharingConsetGranted to $true.
         $consentInstance = Get-MgBetaDeviceManagementDataSharingConsent -DataSharingConsentId "appleMDMPushCertificate"
         If($consentInstance.Granted -eq $False) {
-
-            Write-Host "Set-TargetResource, in if: consentInstance.Granted" $consentInstance.Granted
             Invoke-MgGraphRequest -Method POST -Uri "https://graph.microsoft.com/beta/deviceManagement/dataSharingConsents/appleMDMPushCertificate/consentToDataSharing" -Headers @{ "Content-Type" = "application/json" }
         }
         else {
@@ -460,6 +458,7 @@ function Export-TargetResource
             $i++
             Write-Host $Global:M365DSCEmojiGreenCheckMark
         }
+
         return $dscContent
     }
     catch

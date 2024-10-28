@@ -27635,7 +27635,7 @@ function Get-MgBetaDeviceManagementDataSharingConsent
     param(
         [Parameter()]
         [System.String]
-        $Id,
+        $DataSharingConsentId,
 
         [Parameter()]
         [System.Boolean]
@@ -27653,7 +27653,11 @@ function Update-MgBetaDeviceManagementApplePushNotificationCertificate
 
         [Parameter()]
         [System.String]
-        $Certificate
+        $Certificate,
+
+        [Parameter()]
+        [System.String]
+        $BodyParameter
     )
 }
 

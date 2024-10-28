@@ -90,13 +90,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name '2. The instance exists but it SHOULD NOT' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    AppleIdentifier          = "Patched cert";
-                    Certificate 	         = "Test cert";
-                    Id                       = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
-                    DataSharingConsetGranted = $True;
+                    AppleIdentifier = "Apple ID";
+                    Certificate 	= "Test cert";
+                    Id              = "66f4ec83-754f-4a59-a73d-e3182cc636a5";
+                    DataSharingConsetGranted         = $True;
 
-                    Ensure                   = 'Absent'
-                    Credential               = $Credential
+                    Ensure          = 'Absent'
+                    Credential      = $Credential
                 }
 
                 Mock -CommandName Get-MgBetaDeviceManagementApplePushNotificationCertificate -MockWith {
@@ -109,8 +109,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
                     return @{
-                        Id = "appleMDMPushCertificate"
-                        DataSharingConsetGranted = $True;
+                        DataSharingConsentId = "appleMDMPushCertificate"
+                        Granted              = $True;
                     }
                 }
             }
@@ -148,8 +148,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
                     return @{
-                        Id = "appleMDMPushCertificate"
-                        DataSharingConsetGranted = $True;
+                        DataSharingConsentId = "appleMDMPushCertificate"
+                        Granted              = $True;
                     }
                 }
             }
@@ -180,8 +180,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
                     return @{
-                        Id = "appleMDMPushCertificate"
-                        DataSharingConsetGranted = $True;
+                        DataSharingConsentId = "appleMDMPushCertificate"
+                        Granted              = $True;
                     }
                 }
             }
@@ -218,8 +218,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-MgBetaDeviceManagementDataSharingConsent -MockWith {
                     return @{
-                        Id = "appleMDMPushCertificate"
-                        DataSharingConsetGranted = $True;
+                        DataSharingConsentId = "appleMDMPushCertificate"
+                        Granted              = $True;
                     }
                 }
             }
