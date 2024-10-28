@@ -92,6 +92,23 @@ function Get-TargetResource
         [System.String[]]
         $ExcludeExternalTenantsMembers,
 
+        [Parameter()]
+        [System.String[]]
+        $IncludeServicePrincipals,
+
+        [Parameter()]
+        [System.String[]]
+        $ExcludeServicePrincipals,
+
+        [Parameter()]
+        [ValidateSet('include', 'exclude')]
+        [System.String]
+        $ServicePrincipalFilterMode,
+
+        [Parameter()]
+        [System.String]
+        $ServicePrincipalFilterRule,
+
         #ConditionalAccessPlatformCondition
         [Parameter()]
         [System.String[]]
@@ -642,6 +659,11 @@ function Get-TargetResource
         ExcludeExternalTenantsMembershipKind     = [System.String]$Policy.Conditions.Users.ExcludeGuestsOrExternalUsers.ExternalTenants.MembershipKind
         ExcludeExternalTenantsMembers            = [System.String[]](@() + $Policy.Conditions.Users.ExcludeGuestsOrExternalUsers.ExternalTenants.AdditionalProperties.members)
 
+        IncludeServicePrincipals                 = $Policy.Conditions.ClientApplications.IncludeServicePrincipals
+        ExcludeServicePrincipals                 = $Policy.Conditions.ClientApplications.ExcludeServicePrincipals
+        ServicePrincipalFilterMode               = $Policy.Conditions.ClientApplications.ServicePrincipalFilter.Mode
+        ServicePrincipalFilterRule               = $Policy.Conditions.ClientApplications.ServicePrincipalFilter.Rule
+
         IncludePlatforms                         = [System.String[]](@() + $Policy.Conditions.Platforms.IncludePlatforms)
         #no translation needed, return empty string array if undefined
         ExcludePlatforms                         = [System.String[]](@() + $Policy.Conditions.Platforms.ExcludePlatforms)
@@ -793,6 +815,23 @@ function Set-TargetResource
         [Parameter()]
         [System.String[]]
         $ExcludeExternalTenantsMembers,
+
+        [Parameter()]
+        [System.String[]]
+        $IncludeServicePrincipals,
+
+        [Parameter()]
+        [System.String[]]
+        $ExcludeServicePrincipals,
+
+        [Parameter()]
+        [ValidateSet('include', 'exclude')]
+        [System.String]
+        $ServicePrincipalFilterMode,
+
+        [Parameter()]
+        [System.String]
+        $ServicePrincipalFilterRule,
 
         #ConditionalAccessPlatformCondition
         [Parameter()]
@@ -1340,6 +1379,49 @@ function Set-TargetResource
             $conditions.Users.Add('excludeGuestsOrExternalUsers', $excludeGuestsOrExternalUsers)
         }
 
+        Write-Verbose -Message 'Set-Targetresource: process includeServicePrincipals'
+        if ($currentParameters.ContainsKey('IncludeServicePrincipals'))
+        {
+            if (-not $conditions.ContainsKey('clientApplications')) {
+                $conditions.Add('clientApplications', @{})
+            }
+            $conditions.clientApplications.Add('includeServicePrincipals', $IncludeServicePrincipals)
+        }
+
+        Write-Verbose -Message 'Set-Targetresource: process excludeServicePrincipals'
+        if ($currentParameters.ContainsKey('ExcludeServicePrincipals'))
+        {
+            if (-not $conditions.ContainsKey('clientApplications')) {
+                $conditions.Add('clientApplications', @{})
+            }
+            $conditions.clientApplications.Add('excludeServicePrincipals', $ExcludeServicePrincipals)
+        }
+
+        Write-Verbose -Message 'Set-Targetresource: process servicePrincipalFilter'
+        if ($currentParameters.ContainsKey('ServicePrincipalFilterMode') -and $currentParameters.ContainsKey('ServicePrincipalFilterRule'))
+        {
+            #check if the custom attribute exist.
+            $customattribute = Invoke-MgGraphRequest -Method GET -Uri https://graph.microsoft.com/v1.0/directory/customSecurityAttributeDefinitions
+            $ServicePrincipalFilterRule -match "CustomSecurityAttribute.(?<attribute>.*) -.*"
+            $attrinrule = $matches.attribute
+            if ($customattribute.value.id -contains $attrinrule){
+                if (-not $conditions.ContainsKey('clientApplications')) {
+                    $conditions.Add('clientApplications', @{})
+                }
+                $conditions.clientApplications.Add('servicePrincipalFilter', @{})
+                $conditions.clientApplications.servicePrincipalFilter.Add('mode', $ServicePrincipalFilterMode)
+                $conditions.clientApplications.servicePrincipalFilter.Add('rule', $ServicePrincipalFilterRule)
+            }
+            else{
+                $message = "Couldn't find the custom attribute $attrinrule in the tenant, couldn't add the filter to policy $DisplayName"
+                Write-Verbose -Message $message
+                New-M365DSCLogEntry -Message $message `
+                    -Source $($MyInvocation.MyCommand.Source) `
+                    -TenantId $TenantId `
+                    -Credential $Credential
+            }
+        }
+
         Write-Verbose -Message 'Set-Targetresource: process platform condition'
         if ($currentParameters.ContainsKey('IncludePlatforms') -or $currentParameters.ContainsKey('ExcludePlatforms'))
         {
@@ -1661,6 +1743,9 @@ function Set-TargetResource
         $NewParameters.Add('sessionControls', $sessioncontrols)
         #add SessionControls to the parameter list
     }
+
+    Write-Host "newparameters: $($NewParameters | ConvertTo-Json -Depth 5)"
+
     if ($Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Present')
     {
         Write-Verbose -Message "Set-Targetresource: Change policy $DisplayName"
@@ -1828,6 +1913,23 @@ function Test-TargetResource
         [Parameter()]
         [System.String[]]
         $ExcludeExternalTenantsMembers,
+
+        [Parameter()]
+        [System.String[]]
+        $IncludeServicePrincipals,
+
+        [Parameter()]
+        [System.String[]]
+        $ExcludeServicePrincipals,
+
+        [Parameter()]
+        [ValidateSet('include', 'exclude')]
+        [System.String]
+        $ServicePrincipalFilterMode,
+
+        [Parameter()]
+        [System.String]
+        $ServicePrincipalFilterRule,
 
         #ConditionalAccessPlatformCondition
         [Parameter()]

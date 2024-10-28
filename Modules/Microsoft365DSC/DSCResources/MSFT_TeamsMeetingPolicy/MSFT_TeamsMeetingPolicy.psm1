@@ -46,6 +46,7 @@ function Get-TargetResource
         $AllowCloudRecording,
 
         [Parameter()]
+        [ValidateSet('Enabled', 'Disabled')]
         [System.String]
         $AllowDocumentCollaboration,
 
@@ -54,9 +55,13 @@ function Get-TargetResource
         $AllowedStreamingMediaInput,
 
         [Parameter()]
-        [ValidateSet('Enabled', 'Disabled')]
+        [ValidateSet('Enabled', 'Disabled', 'ForceEnabled')]
         [System.String]
         $AllowEngagementReport = 'Disabled',
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowExternalNonTrustedMeetingChat,
 
         [Parameter()]
         [System.Boolean]
@@ -108,15 +113,15 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $AllowPrivateMeetNow,
-
-        [Parameter()]
-        [System.Boolean]
         $AllowPowerPointSharing,
 
         [Parameter()]
         [System.Boolean]
         $AllowPrivateMeetingScheduling,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowPrivateMeetNow,
 
         [Parameter()]
         [System.Boolean]
@@ -152,17 +157,52 @@ function Get-TargetResource
         $AllowWhiteboard,
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled', 'DisabledUserOverride')]
+        [System.String]
+        $AttendeeIdentityMasking,
+
+        [Parameter()]
         [System.String]
         [ValidateSet('EveryoneInCompany', 'Everyone', 'EveryoneInSameAndFederatedCompany', 'OrganizerOnly', 'InvitedUsers', 'EveryoneInCompanyExcludingGuests')]
         $AutoAdmittedUsers,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $AutomaticallyStartCopilot,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $AutoRecording,
 
         [Parameter()]
         [System.String]
         $BlockedAnonymousJoinClientTypes,
 
         [Parameter()]
+        [ValidateSet('Allow', 'Block')]
         [System.String]
         $ChannelRecordingDownload,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $ConnectToMeetingControls,
+
+        [Parameter()]
+        [ValidateSet('EnabledForAnyone', 'EnabledForTrustedOrgs', 'Disabled')]
+        [System.String]
+        $ContentSharingInExternalMeetings,
+
+        [Parameter()]
+        [ValidateSet('Enabled', 'EnabledWithTranscript')]
+        [System.String]
+        $Copilot,
+
+        [Parameter()]
+        [System.Boolean]
+        $CopyRestriction,
 
         [Parameter()]
         [ValidateSet('OrganizerOnlyUserOverride', 'EveryoneInCompanyUserOverride', 'EveryoneUserOverride')]
@@ -170,13 +210,23 @@ function Get-TargetResource
         $DesignatedPresenterRoleMode = 'EveryoneUserOverride',
 
         [Parameter()]
+        [System.Boolean]
+        $DetectSensitiveContentDuringScreenSharing,
+
+        [Parameter()]
         [ValidateSet('Disabled', 'Enabled')]
         [System.String]
         $EnrollUserOverride = 'Disabled',
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
         [System.String]
         $ExplicitRecordingConsent,
+
+        [Parameter()]
+        [ValidateSet('EnabledForAnyone', 'EnabledForTrustedOrgs', 'Disabled')]
+        [System.String]
+        $ExternalMeetingJoin,
 
         [Parameter()]
         [System.String]
@@ -229,11 +279,17 @@ function Get-TargetResource
         $NewMeetingRecordingExpirationDays,
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $ParticipantNameChange,
+
+        [Parameter()]
         [System.String]
         [ValidateSet('TeamsAndSfb', 'Teams')]
         $PreferredMeetingProviderForIslandsMode,
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
         [System.String]
         $QnAEngagementMode,
 
@@ -243,6 +299,7 @@ function Get-TargetResource
         $RoomAttributeUserOverride = 'Off',
 
         [Parameter()]
+        [ValidateSet('Off', 'On')]
         [System.String]
         $RoomPeopleNameUserOverride,
 
@@ -253,7 +310,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Disabled', 'EnabledUserOverride')]
+        [ValidateSet('Disabled', 'DisabledUserOverride', 'EnabledUserOverride', 'Enabled')]
         $SpeakerAttributionMode,
 
         [Parameter()]
@@ -270,6 +327,11 @@ function Get-TargetResource
         [System.String]
         [ValidateSet('NoFilters', 'BlurOnly', 'BlurAndDefaultBackgrounds', 'AllFilters')]
         $VideoFiltersMode,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $VoiceIsolation,
 
         [Parameter()]
         [ValidateSet('Everyone', 'EveryoneInCompany')]
@@ -350,6 +412,7 @@ function Get-TargetResource
             AllowDocumentCollaboration                 = $policy.AllowDocumentCollaboration
             AllowedStreamingMediaInput                 = $policy.AllowedStreamingMediaInput
             AllowEngagementReport                      = $policy.AllowEngagementReport
+            AllowExternalNonTrustedMeetingChat         = $policy.AllowExternalNonTrustedMeetingChat
             AllowExternalParticipantGiveRequestControl = $policy.AllowExternalParticipantGiveRequestControl
             AllowIPAudio                               = $policy.AllowIPAudio
             AllowIPVideo                               = $policy.AllowIPVideo
@@ -373,13 +436,21 @@ function Get-TargetResource
             AllowWatermarkForCameraVideo               = $policy.AllowWatermarkForCameraVideo
             AllowWatermarkForScreenSharing             = $policy.AllowWatermarkForScreenSharing
             AllowWhiteboard                            = $policy.AllowWhiteboard
+            AttendeeIdentityMasking                    = $policy.AttendeeIdentityMasking
             AutoAdmittedUsers                          = $policy.AutoAdmittedUsers
+            AutomaticallyStartCopilot                  = $policy.AutomaticallyStartCopilot
+            AutoRecording                              = $policy.AutoRecording
             BlockedAnonymousJoinClientTypes            = $policy.BlockedAnonymousJoinClientTypes
             ChannelRecordingDownload                   = $policy.ChannelRecordingDownload
+            ConnectToMeetingControls                   = $policy.ConnectToMeetingControls
+            ContentSharingInExternalMeetings           = $policy.ContentSharingInExternalMeetings
+            Copilot                                    = $policy.Copilot
+            CopyRestriction                            = $policy.CopyRestriction
             DesignatedPresenterRoleMode                = $policy.DesignatedPresenterRoleMode
+            DetectSensitiveContentDuringScreenSharing  = $policy.DetectSensitiveContentDuringScreenSharing
             EnrollUserOverride                         = $policy.EnrollUserOverride
             ExplicitRecordingConsent                   = $policy.ExplicitRecordingConsent
-            ForceStreamingAttendeeMode                 = $policy.ForceStreamingAttendeeMode
+            ExternalMeetingJoin                        = $policy.ExternalMeetingJoin
             InfoShownInReportMode                      = $policy.InfoShownInReportMode
             IPAudioMode                                = $policy.IPAudioMode
             IPVideoMode                                = $policy.IPVideoMode
@@ -390,6 +461,7 @@ function Get-TargetResource
             MeetingChatEnabledType                     = $policy.MeetingChatEnabledType
             MeetingInviteLanguages                     = $policy.MeetingInviteLanguages
             NewMeetingRecordingExpirationDays          = $policy.NewMeetingRecordingExpirationDays
+            ParticipantNameChange                      = $policy.ParticipantNameChange
             PreferredMeetingProviderForIslandsMode     = $policy.PreferredMeetingProviderForIslandsMode
             QnAEngagementMode                          = $policy.QnAEngagementMode
             RoomPeopleNameUserOverride                 = $policy.RoomPeopleNameUserOverride
@@ -397,15 +469,10 @@ function Get-TargetResource
             SpeakerAttributionMode                     = $policy.SpeakerAttributionMode
             StreamingAttendeeMode                      = $policy.StreamingAttendeeMode
             VideoFiltersMode                           = $policy.VideoFiltersMode
+            VoiceIsolation                             = $policy.VoiceIsolation
             TeamsCameraFarEndPTZMode                   = $policy.TeamsCameraFarEndPTZMode
             WhoCanRegister                             = $policy.WhoCanRegister
             Ensure                                     = 'Present'
-            Credential                                 = $Credential
-            ApplicationId                              = $ApplicationId
-            TenantId                                   = $TenantId
-            CertificateThumbprint                      = $CertificateThumbprint
-            ManagedIdentity                            = $ManagedIdentity.IsPresent
-            AccessTokens                               = $AccessTokens
         }
     }
     catch
@@ -467,6 +534,7 @@ function Set-TargetResource
         $AllowCloudRecording,
 
         [Parameter()]
+        [ValidateSet('Enabled', 'Disabled')]
         [System.String]
         $AllowDocumentCollaboration,
 
@@ -475,9 +543,13 @@ function Set-TargetResource
         $AllowedStreamingMediaInput,
 
         [Parameter()]
-        [ValidateSet('Enabled', 'Disabled')]
+        [ValidateSet('Enabled', 'Disabled', 'ForceEnabled')]
         [System.String]
         $AllowEngagementReport = 'Disabled',
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowExternalNonTrustedMeetingChat,
 
         [Parameter()]
         [System.Boolean]
@@ -529,15 +601,15 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $AllowPrivateMeetNow,
-
-        [Parameter()]
-        [System.Boolean]
         $AllowPowerPointSharing,
 
         [Parameter()]
         [System.Boolean]
         $AllowPrivateMeetingScheduling,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowPrivateMeetNow,
 
         [Parameter()]
         [System.Boolean]
@@ -573,17 +645,52 @@ function Set-TargetResource
         $AllowWhiteboard,
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled', 'DisabledUserOverride')]
+        [System.String]
+        $AttendeeIdentityMasking,
+
+        [Parameter()]
         [System.String]
         [ValidateSet('EveryoneInCompany', 'Everyone', 'EveryoneInSameAndFederatedCompany', 'OrganizerOnly', 'InvitedUsers', 'EveryoneInCompanyExcludingGuests')]
         $AutoAdmittedUsers,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $AutomaticallyStartCopilot,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $AutoRecording,
 
         [Parameter()]
         [System.String]
         $BlockedAnonymousJoinClientTypes,
 
         [Parameter()]
+        [ValidateSet('Allow', 'Block')]
         [System.String]
         $ChannelRecordingDownload,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $ConnectToMeetingControls,
+
+        [Parameter()]
+        [ValidateSet('EnabledForAnyone', 'EnabledForTrustedOrgs', 'Disabled')]
+        [System.String]
+        $ContentSharingInExternalMeetings,
+
+        [Parameter()]
+        [ValidateSet('Enabled', 'EnabledWithTranscript')]
+        [System.String]
+        $Copilot,
+
+        [Parameter()]
+        [System.Boolean]
+        $CopyRestriction,
 
         [Parameter()]
         [ValidateSet('OrganizerOnlyUserOverride', 'EveryoneInCompanyUserOverride', 'EveryoneUserOverride')]
@@ -591,13 +698,23 @@ function Set-TargetResource
         $DesignatedPresenterRoleMode = 'EveryoneUserOverride',
 
         [Parameter()]
+        [System.Boolean]
+        $DetectSensitiveContentDuringScreenSharing,
+
+        [Parameter()]
         [ValidateSet('Disabled', 'Enabled')]
         [System.String]
         $EnrollUserOverride = 'Disabled',
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
         [System.String]
         $ExplicitRecordingConsent,
+
+        [Parameter()]
+        [ValidateSet('EnabledForAnyone', 'EnabledForTrustedOrgs', 'Disabled')]
+        [System.String]
+        $ExternalMeetingJoin,
 
         [Parameter()]
         [System.String]
@@ -650,11 +767,17 @@ function Set-TargetResource
         $NewMeetingRecordingExpirationDays,
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $ParticipantNameChange,
+
+        [Parameter()]
         [System.String]
         [ValidateSet('TeamsAndSfb', 'Teams')]
         $PreferredMeetingProviderForIslandsMode,
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
         [System.String]
         $QnAEngagementMode,
 
@@ -664,6 +787,7 @@ function Set-TargetResource
         $RoomAttributeUserOverride = 'Off',
 
         [Parameter()]
+        [ValidateSet('Off', 'On')]
         [System.String]
         $RoomPeopleNameUserOverride,
 
@@ -674,7 +798,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Disabled', 'EnabledUserOverride')]
+        [ValidateSet('Disabled', 'DisabledUserOverride', 'EnabledUserOverride', 'Enabled')]
         $SpeakerAttributionMode,
 
         [Parameter()]
@@ -691,6 +815,11 @@ function Set-TargetResource
         [System.String]
         [ValidateSet('NoFilters', 'BlurOnly', 'BlurAndDefaultBackgrounds', 'AllFilters')]
         $VideoFiltersMode,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $VoiceIsolation,
 
         [Parameter()]
         [ValidateSet('Everyone', 'EveryoneInCompany')]
@@ -755,6 +884,10 @@ function Set-TargetResource
     $SetParameters.Remove('ManagedIdentity') | Out-Null
     $SetParameters.Remove('Verbose') | Out-Null # Needs to be implicitly removed for the cmdlet to work
     $SetParameters.Remove('AccessTokens') | Out-Null
+
+    # Parameter is Deprecated
+    $SetParameters.Remove('ForceStreamingAttendeeMode') | Out-Null
+
     if ($AllowCloudRecording -eq $false -and $SetParameters.Keys -contains 'AllowRecordingStorageOutsideRegion')
     {
         $SetParameters.Remove('AllowRecordingStorageOutsideRegion') | Out-Null
@@ -849,6 +982,7 @@ function Test-TargetResource
         $AllowCloudRecording,
 
         [Parameter()]
+        [ValidateSet('Enabled', 'Disabled')]
         [System.String]
         $AllowDocumentCollaboration,
 
@@ -857,9 +991,13 @@ function Test-TargetResource
         $AllowedStreamingMediaInput,
 
         [Parameter()]
-        [ValidateSet('Enabled', 'Disabled')]
+        [ValidateSet('Enabled', 'Disabled', 'ForceEnabled')]
         [System.String]
         $AllowEngagementReport = 'Disabled',
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowExternalNonTrustedMeetingChat,
 
         [Parameter()]
         [System.Boolean]
@@ -911,15 +1049,15 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $AllowPrivateMeetNow,
-
-        [Parameter()]
-        [System.Boolean]
         $AllowPowerPointSharing,
 
         [Parameter()]
         [System.Boolean]
         $AllowPrivateMeetingScheduling,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowPrivateMeetNow,
 
         [Parameter()]
         [System.Boolean]
@@ -955,17 +1093,52 @@ function Test-TargetResource
         $AllowWhiteboard,
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled', 'DisabledUserOverride')]
+        [System.String]
+        $AttendeeIdentityMasking,
+
+        [Parameter()]
         [System.String]
         [ValidateSet('EveryoneInCompany', 'Everyone', 'EveryoneInSameAndFederatedCompany', 'OrganizerOnly', 'InvitedUsers', 'EveryoneInCompanyExcludingGuests')]
         $AutoAdmittedUsers,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $AutomaticallyStartCopilot,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $AutoRecording,
 
         [Parameter()]
         [System.String]
         $BlockedAnonymousJoinClientTypes,
 
         [Parameter()]
+        [ValidateSet('Allow', 'Block')]
         [System.String]
         $ChannelRecordingDownload,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $ConnectToMeetingControls,
+
+        [Parameter()]
+        [ValidateSet('EnabledForAnyone', 'EnabledForTrustedOrgs', 'Disabled')]
+        [System.String]
+        $ContentSharingInExternalMeetings,
+
+        [Parameter()]
+        [ValidateSet('Enabled', 'EnabledWithTranscript')]
+        [System.String]
+        $Copilot,
+
+        [Parameter()]
+        [System.Boolean]
+        $CopyRestriction,
 
         [Parameter()]
         [ValidateSet('OrganizerOnlyUserOverride', 'EveryoneInCompanyUserOverride', 'EveryoneUserOverride')]
@@ -973,13 +1146,23 @@ function Test-TargetResource
         $DesignatedPresenterRoleMode = 'EveryoneUserOverride',
 
         [Parameter()]
+        [System.Boolean]
+        $DetectSensitiveContentDuringScreenSharing,
+
+        [Parameter()]
         [ValidateSet('Disabled', 'Enabled')]
         [System.String]
         $EnrollUserOverride = 'Disabled',
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
         [System.String]
         $ExplicitRecordingConsent,
+
+        [Parameter()]
+        [ValidateSet('EnabledForAnyone', 'EnabledForTrustedOrgs', 'Disabled')]
+        [System.String]
+        $ExternalMeetingJoin,
 
         [Parameter()]
         [System.String]
@@ -1032,11 +1215,17 @@ function Test-TargetResource
         $NewMeetingRecordingExpirationDays,
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $ParticipantNameChange,
+
+        [Parameter()]
         [System.String]
         [ValidateSet('TeamsAndSfb', 'Teams')]
         $PreferredMeetingProviderForIslandsMode,
 
         [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
         [System.String]
         $QnAEngagementMode,
 
@@ -1046,6 +1235,7 @@ function Test-TargetResource
         $RoomAttributeUserOverride = 'Off',
 
         [Parameter()]
+        [ValidateSet('Off', 'On')]
         [System.String]
         $RoomPeopleNameUserOverride,
 
@@ -1056,7 +1246,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Disabled', 'EnabledUserOverride')]
+        [ValidateSet('Disabled', 'DisabledUserOverride', 'EnabledUserOverride', 'Enabled')]
         $SpeakerAttributionMode,
 
         [Parameter()]
@@ -1073,6 +1263,11 @@ function Test-TargetResource
         [System.String]
         [ValidateSet('NoFilters', 'BlurOnly', 'BlurAndDefaultBackgrounds', 'AllFilters')]
         $VideoFiltersMode,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $VoiceIsolation,
 
         [Parameter()]
         [ValidateSet('Everyone', 'EveryoneInCompany')]
@@ -1138,6 +1333,9 @@ function Test-TargetResource
 
     # The AllowUserToJoinExternalMeeting doesn't do anything based on official documentation
     $ValuesToCheck.Remove('AllowUserToJoinExternalMeeting') | Out-Null
+
+    # Parameter is Deprecated
+    $ValuesToCheck.Remove('ForceStreamingAttendeeMode') | Out-Null
 
     if ($AllowCloudRecording -eq $false -and $ValuesToCheck.Keys -contains 'AllowRecordingStorageOutsideRegion')
     {

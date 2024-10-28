@@ -190,7 +190,7 @@ function Get-M365DSCDRGComplexTypeToHashtable
     }
     else
     {
-        $keys = $ComplexObject | Get-Member | Where-Object -FilterScript { $_.MemberType -eq 'Property' }
+        $keys = $ComplexObject | Get-Member | Where-Object -FilterScript { $_.MemberType -eq 'Property' -or $_.MemberType -eq 'NoteProperty' }
     }
 
     foreach ($key in $keys)
@@ -606,12 +606,12 @@ function Compare-M365DSCComplexObject
 
     if ($Source.GetType().FullName -like '*CimInstance[[\]]' -or $Source.GetType().FullName -like '*Hashtable[[\]]')
     {
-        if ($Source.Count -ne $Target.Count)
+        if ($Source.Length -ne $Target.Length)
         {
-            Write-Verbose -Message "Configuration drift - The complex array have different number of items: Source {$($Source.Count)} Target {$($Target.Count)}"
+            Write-Verbose -Message "Configuration drift - The complex array have different number of items: Source {$($Source.Length)} Target {$($Target.Length)}"
             return $false
         }
-        if ($Source.Count -eq 0)
+        if ($Source.Length -eq 0)
         {
             return $true
         }
@@ -712,7 +712,7 @@ function Compare-M365DSCComplexObject
         }
 
         #One of the item is null and not the other
-        if (($null -eq $Source.$key) -xor ($null -eq $targetValue))
+        if (($Source.$key.Length -eq 0) -xor ($targetValue.Length -eq 0))
         {
             if ($null -eq $Source.$key)
             {

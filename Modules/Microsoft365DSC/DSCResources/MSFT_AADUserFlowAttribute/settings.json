@@ -1,0 +1,29 @@
+﻿{
+    "resourceName": "AADUserflowAttribute",
+    "description": "This resource configures an Azure User Flow attribute..",
+    "roles": {
+        "read": [],
+        "update": [
+            "External ID User Flow Attribute Administrator"
+        ]
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [
+                    {
+                        "name": "IdentityUserFlow.Read.All"
+                    },
+                    {
+                        "name": "IdentityUserFlow.ReadWrite.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "IdentityUserFlow.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}
