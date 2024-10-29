@@ -628,6 +628,29 @@
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
                 }
+                AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension 'AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension-My Custom'
+                {
+                    ApplicationId         = $ApplicationId;
+                    CallbackConfiguration = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionCallbackConfiguration{
+                        TimeoutDuration = 'PT34M'
+                        AuthorizedApps = @('M365DSC')
+                    };
+                    CertificateThumbprint = $CertificateThumbprint;
+                    ClientConfiguration   = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionClientConfiguration{
+                        MaximumRetries = 1
+                        TimeoutInMilliseconds = 1000
+                    };
+                    Description           = "My Description";
+                    DisplayName           = "My Custom Extension";
+                    EndpointConfiguration = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionEndpointConfiguration{
+                        SubscriptionId =       '63e62ab2-fd92-46ce-a393-2cb338039cc7'
+                        logicAppWorkflowName = 'MyTestApp'
+                        resourceGroupName =    'TestRG'
+                        url = 'https://prod-35.eastus.logic.azure.com:443/workflows/xxxxxxxxxxx/triggers/manual/paths/invoke?api-version=2016-10-01'
+                    };
+                    Ensure                = "Present";
+                    TenantId              = $TenantId;
+                }
                 AADIdentityGovernanceProgram 'AADIdentityGovernanceProgram-Example'
                 {
                     ApplicationId           = $ApplicationId
@@ -751,6 +774,104 @@
                     Office             = "Ottawa - Queen"
                     UsageLocation      = "US"
                     Ensure             = "Present"
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
+                AADUserFlowAttribute 'SaiTest'
+                {
+                    Id                 = "testIdSai"
+                    DisplayName        = "saitest"
+                    Description        = "sai test description"
+                    DataType           = "string"
+                    Ensure             = "Present"
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
+                AADVerifiedIdAuthority 'AADVerifiedIdAuthority-Contoso'
+                {
+                    DidMethod            = "web";
+                    Ensure               = "Present";
+                    KeyVaultMetadata     = MSFT_AADVerifiedIdAuthorityKeyVaultMetadata{
+                        SubscriptionId = '2ff65b89-ab22-4489-b84d-e60d1dc30a62'
+                        ResourceName = 'xtakeyvault'
+                        ResourceUrl = 'https://xtakeyvault.vault.azure.net/'
+                        ResourceGroup = 'TBD'
+                    };
+                    LinkedDomainUrl      = "https://nik-charlebois.com/";
+                    Name                 = "Contoso";
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
+                AADVerifiedIdAuthorityContract 'AADVerifiedIdAuthorityContract-Sample Custom Verified Credentials'
+                {
+                    displays             = @(
+                        MSFT_AADVerifiedIdAuthorityContractDisplayModel{
+                            consent = MSFT_AADVerifiedIdAuthorityContractDisplayConsent{
+                                instructions = 'Sign in with your account to get your card.'
+                                title = 'Do you want to get your Verified Credential?'
+                            }
+                            card = MSFT_AADVerifiedIdAuthorityContractDisplayCard{
+                                description = 'Use your verified credential to prove to anyone that you know all about verifiable credentials.'
+                                issuedBy = 'Microsoft'
+                                backgroundColor = '#000000'
+                                textColor = '#ffffff'
+                                logo = MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo{
+                                    uri = 'https://didcustomerplayground.z13.web.core.windows.net/VerifiedCredentialExpert_icon.png'
+                                    description = 'Verified Credential Expert Logo'
+                                }
+                                title = 'Verified Credential Expert'
+                            }
+                            locale = 'en-US'
+                            claims = @(
+                                MSFT_AADVerifiedIdAuthorityContractDisplayClaims{
+                                    label = 'First name'
+                                    claim = 'vc.credentialSubject.firstName'
+                                    type = 'String'
+                                }
+                                MSFT_AADVerifiedIdAuthorityContractDisplayClaims{
+                                    label = 'Last name'
+                                    claim = 'vc.credentialSubject.lastName'
+                                    type = 'String'
+                                }
+                            )
+        
+                        }
+                    );
+                    Ensure               = "Present";
+                    linkedDomainUrl      = "https://$OrganizationName/";
+                    name                 = "Sample Custom Verified Credentials";
+                    rules                = MSFT_AADVerifiedIdAuthorityContractRulesModel{
+                        validityInterval = 2592000
+                        vc = MSFT_AADVerifiedIdAuthorityContractVcType{
+                            type = @('VerifiedCredentialExpert')
+                        }
+                                    attestations = MSFT_AADVerifiedIdAuthorityContractAttestations{
+                            idTokenHints = @(
+                                MSFT_AADVerifiedIdAuthorityContractAttestationValues{
+                                    mapping = @(
+                                        MSFT_AADVerifiedIdAuthorityContractClaimMapping{
+                                            inputClaim = '$.given_name'
+                                            indexed = $False
+                                            outputClaim = 'firstName'
+                                            required = $True
+                                        }
+                                        MSFT_AADVerifiedIdAuthorityContractClaimMapping{
+                                            inputClaim = '$.family_name'
+                                            indexed = $True
+                                            outputClaim = 'lastName'
+                                            required = $True
+                                        }
+                                    )
+                                    required = $False
+                                }
+                            )
+        
+                        }
+                    
+                    };
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint

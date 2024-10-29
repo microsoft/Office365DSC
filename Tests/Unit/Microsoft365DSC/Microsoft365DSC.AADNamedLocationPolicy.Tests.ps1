@@ -193,6 +193,52 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
+        Context -Name 'Policies with duplicate names exist' -Fixture {
+            BeforeAll {
+                $testParams = @{
+                    DisplayName = 'Company Network'
+                    Ensure      = 'Present'
+                    IpRanges    = @('2.1.1.1/32', '1.2.2.2/32')
+                    IsTrusted   = $True
+                    OdataType   = '#microsoft.graph.ipNamedLocation'
+                    Credential  = $Credscredential
+                }
+
+                Mock -CommandName Get-MgBetaIdentityConditionalAccessNamedLocation -MockWith {
+                    return @(
+                        @{
+                            DisplayName          = 'Company Network'
+                            Id                   = '046956df-2367-4dd4-b7fd-c6175ec11cd5'
+                            AdditionalProperties = @{
+                                ipRanges      = @(@{cidrAddress = '2.1.1.1/32' }, @{cidrAddress = '1.2.2.2/32' })
+                                isTrusted     = $False
+                                '@odata.type' = '#microsoft.graph.ipNamedLocation'
+                            }
+                        }
+                        @{
+                            DisplayName          = 'Company Network'
+                            Id                   = '046956df-2367-4dd4-b7fd-c6175ec11cd6'
+                            AdditionalProperties = @{
+                                ipRanges      = @(@{cidrAddress = '2.1.1.1/32' }, @{cidrAddress = '1.2.2.2/32' })
+                                isTrusted     = $False
+                                '@odata.type' = '#microsoft.graph.ipNamedLocation'
+                            }
+                        }
+                    )
+                }
+            }
+
+            It 'Should return values from the get method' {
+                $result = Get-TargetResource @testParams
+                $result.Ensure | Should -Be 'Absent'
+                Should -Invoke -CommandName 'Get-MgBetaIdentityConditionalAccessNamedLocation' -Exactly 1
+            }
+
+            It 'Should call the set method' {
+                { Set-TargetResource @testParams } | Should -Throw "More than one instance of a Named Location Policy with name {Company Network} was found. Please provide the ID parameter."
+            }
+        }
+
         Context -Name 'ReverseDSC Tests' -Fixture {
             BeforeAll {
                 $Global:CurrentModeIsExport = $true
