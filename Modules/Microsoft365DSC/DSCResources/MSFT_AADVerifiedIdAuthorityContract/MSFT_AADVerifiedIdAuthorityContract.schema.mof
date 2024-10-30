@@ -1,0 +1,105 @@
+[ClassVersion("1.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo {
+    [Write, Description("URI of the logo. If this is a URL, it must be reachable over the public internet anonymously.")] String uri;
+    [Write, Description("Description of the logo.")] String description;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractDisplayCard {
+    [Write, Description("Title of the credential.")] String title;
+    [Write, Description("The name of the issuer of the credential.")] String issuedBy;
+    [Write, Description("Background color of the credential in hex, for example, #FFAABB.")] String backgroundColor;
+    [Write, Description("Text color of the credential in hex, for example, #FFAABB.")] String textColor;
+    [Write, Description("Supplemental text displayed alongside each credential.")] String description;
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo"), Description("The logo to use for the credential.")] String logo;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractDisplayConsent {
+    [Write, Description("Title of the consent.")] String title;
+    [Write, Description("Supplemental text to use when displaying consent.")] String instructions;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractDisplayClaims {
+    [Write, Description("The label of the claim in display.")] String label;
+    [Write, Description("The name of the claim to which the label applies.")] String claim;
+    [Write, Description("The type of the claim.")] String type;
+    [Write, Description("The description of the claim.")] String description;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractDisplayModel {
+    [Write, Description("The locale of this display.")] String locale;
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractDisplayCard"), Description("The display properties of the verifiable credential.")] String card;
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractDisplayConsent"), Description("Supplemental data when the verifiable credential is issued.")] String consent;
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractDisplayClaims"), Description("Labels for the claims included in the verifiable credential.")] String claims[];
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractClaimMapping {
+    [Write, Description("The name of the claim to use from the input.")] String inputClaim;
+    [Write, Description("The name of the claim in the verifiable credential.")] String outputClaim;
+    [Write, Description("Indicating whether the value of this claim is used for searching.")] Boolean indexed;
+    [Write, Description("Indicating whether this mapping is required or not.")] Boolean required;
+    [Write, Description("Type of claim.")] String type;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractAttestationValues {
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractClaimMapping"), Description("Rules to map input claims into output claims in the verifiable credential.")] String mapping[];
+    [Write, Description("Indicating whether this attestation is required or not.")] Boolean required;
+    [Write, Description("A list of DIDs allowed to issue the verifiable credential for this contract.")] String trustedIssuers[];
+    [Write, Description("Required credential type of the input.")] String credentialType;
+    [Write, Description("Location of the identity provider's configuration document.")] String configuration;
+    [Write, Description("Client ID to use when obtaining the ID token.")] String clientId;
+    [Write, Description("Redirect URI to use when obtaining the ID token. MUST BE vcclient://openid/")] String redirectUri;
+    [Write, Description("Space delimited list of scopes to use when obtaining the ID token.")] String scopeValue;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractAttestations {
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractAttestationValues"), Description("Id token hints attestations.")] String idTokenHints[];
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractAttestationValues"), Description("Id token attestations.")] String idTokens[];
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractAttestationValues"), Description("Presentations attestations.")] String presentations[];
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractAttestationValues"), Description("Self Issued attestations.")] String selfIssued[];
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractAttestationValues"), Description("Access Token attestations.")] String accessTokens[];
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractCustomStatusEndpoint {
+    [Write, Description("The URL of the custom status endpoint.")] String url;
+    [Write, Description("The type of the endpoint.")] String type;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractVcType {
+    [Write, Description("The type of the vc.")] String type[];
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADVerifiedIdAuthorityContractRulesModel {
+   [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractAttestations"), Description("Describing supported inputs for the rules.")] String attestations;
+    [Write, Description("This value shows the lifespan of the credential.")] UInt32 validityInterval;
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractVcType"), Description("Types for this contract.")] String vc;
+    [Write, EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractCustomStatusEndpoint"), Description("Status endpoint to include in the verifiable credential for this contract.")] String customStatusEndpoint;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADVerifiedIdAuthorityContract")]
+class MSFT_AADVerifiedIdAuthorityContract : OMI_BaseResource
+{
+    [Write, Description("Id of the Verified ID Authority Contract.")] String id;
+    [Key, Description("URL of the linked domain of the authority.")] String linkedDomainUrl;
+    [Write, Description("Id of the Verified ID Authority.")] String authorityId;
+    [Key, Description("Name of the Verified ID Authority Contract.")] String name;
+    [Write, Description("Display settings of the Authority Contract."), EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractDisplayModel")] String displays[];
+    [Write, Description("Rules settings of the Authority Contract."), EmbeddedInstance("MSFT_AADVerifiedIdAuthorityContractRulesModel")] String rules;
+    [Write, Description("Present ensures the policy exists, absent ensures it is removed."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
+    [Write, Description("Credentials of the Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Secret of the Azure Active Directory tenant used for authentication."), EmbeddedInstance("MSFT_Credential")] String ApplicationSecret;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

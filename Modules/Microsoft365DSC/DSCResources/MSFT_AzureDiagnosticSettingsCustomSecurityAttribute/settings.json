@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "AzureDiagnosticSettingsCustomSecurityAttribute",
+    "description": "Configures Diagnostics settings custom security attributes in Azure.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

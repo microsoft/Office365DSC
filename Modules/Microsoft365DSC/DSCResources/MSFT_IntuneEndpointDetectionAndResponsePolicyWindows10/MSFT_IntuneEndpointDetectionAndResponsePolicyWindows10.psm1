@@ -126,18 +126,11 @@ function Get-TargetResource
 
         $policySettings = @{}
         $policySettings = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $policySettings
-        if ($policySettings.ClientConfigurationPackageType -eq 'onboarding_fromconnector')
-        {
-            $policySettings.Add('ConfigurationType', 'AutoFromConnector')
-        }
-        else
-        {
-            $policySettings.Add('ConfigurationType', $policySettings.ClientConfigurationPackageType)
-        }
+        $policySettings.Add('ConfigurationType', $policySettings.ClientConfigurationPackageType)
         $policySettings.Remove('ClientConfigurationPackageType')
         $policySettings.Remove('onboarding')
         $policySettings.Remove('offboarding')
-        $policySettings.Remove('onboarding_fromconnector')
+        $policySettings.Remove('autofromconnector')
 
         # Removing TelemetryReportingFrequency because it's deprecated and doesn't need to be evaluated and enforced
         $policySettings.Remove('telemetryreportingfrequency')
@@ -273,8 +266,8 @@ function Set-TargetResource
     {
         'AutoFromConnector'
         {
-            $BoundParameters.Add('ClientConfigurationPackageType', 'onboarding_fromconnector')
-            $BoundParameters.Add('onboarding_fromconnector', $ConfigurationBlob)
+            $BoundParameters.Add('ClientConfigurationPackageType', 'autofromconnector')
+            $BoundParameters.Add('onboarding_fromconnector', 'autoConnectPlaceholder')
             $BoundParameters.Remove('ConfigurationBlob') | Out-Null
         }
         'Onboard'
@@ -291,9 +284,9 @@ function Set-TargetResource
         }
     }
 
-    if ([System.String]::IsNullOrEmpty($ConfigurationBlob))
+    if ($ConfigurationType -ne 'AutoFromConnector' -and [System.String]::IsNullOrEmpty($ConfigurationBlob))
     {
-        throw "ConfigurationBlob is required for configurationType '$($DSCParams.ConfigurationType)'"
+        throw "ConfigurationBlob is required for configurationType '$($ConfigurationType)'"
     }
     $BoundParameters.Remove('ConfigurationType') | Out-Null
 

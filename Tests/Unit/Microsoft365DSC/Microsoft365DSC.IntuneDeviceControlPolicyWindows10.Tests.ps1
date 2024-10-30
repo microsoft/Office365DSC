@@ -78,17 +78,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             SettingInstanceTemplateReference = @{
                                 SettingInstanceTemplateId = '47d9b9c4-e714-4a51-a099-33f548e4ea49'
                             }
-                            AdditionalProperties = @(
-                                @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
-                                    simpleSettingCollectionValue = @(
-                                        @{
-                                            '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                            value = 'abcd'
-                                        }
-                                    )
-                                }
-                            )
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
+                                simpleSettingCollectionValue = @(
+                                    @{
+                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
+                                        value = 'abcd'
+                                    }
+                                )
+                            }
                         }
                     },
                     @{
@@ -102,21 +100,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 }
                             }
                         )
-                        SettingInstance = @(
-                            @{
-                                SettingDefinitionId = 'device_vendor_msft_policy_config_connectivity_allowusbconnection'
-                                SettingInstanceTemplateReference = @{
-                                    SettingInstanceTemplateId = 'bc92aa99-0993-4c65-a005-d5e5e6701486'
-                                }
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                    choiceSettingValue = @{
-                                        children = @()
-                                        value = '1'
-                                    }
+                        SettingInstance = @{
+                            SettingDefinitionId = 'device_vendor_msft_policy_config_connectivity_allowusbconnection'
+                            SettingInstanceTemplateReference = @{
+                                SettingInstanceTemplateId = 'bc92aa99-0993-4c65-a005-d5e5e6701486'
+                            }
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                choiceSettingValue = @{
+                                    children = @()
+                                    value = '1'
                                 }
                             }
-                        )
+                        }
                     },
                     @{
                         Id = '2'

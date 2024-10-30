@@ -575,6 +575,17 @@
                     Ensure               = "Absent";
                     Identity             = "_Exe:SecOpsOverrid:ca3c51ac-925c-49f4-af42-43e26b874245";
                 }
+                EXOServicePrincipal 'ServicePrincipal'
+                {
+                    AppId                = "c6871074-3ded-4935-a5dc-b8f8d91d7d06";
+                    AppName              = "ISV Portal";
+                    DisplayName          = "Arpita";
+                    Ensure               = "Absent";
+                    Identity             = "00f6b0e4-1d00-427b-9a5b-ce6c43c43fc7";
+                    ApplicationId         = $ApplicationId;
+                    TenantId              = $TenantId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                }
                 EXOSharedMailbox 'SharedMailbox'
                 {
                     DisplayName        = "Integration"

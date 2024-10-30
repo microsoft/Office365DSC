@@ -1,0 +1,14 @@
+[ClassVersion("1.0.0.0"), FriendlyName("AADEnrichedAuditLogs")]
+class MSFT_AADEnrichedAuditLogs : OMI_BaseResource
+{
+    [Key, Description("Only valid value is 'Yes'."), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
+    [Write, Description("Accepted values are enabled or disabled.")] String Exchange;
+    [Write, Description("Accepted values are enabled or disabled.")] String SharePoint;
+    [Write, Description("Accepted values are enabled or disabled.")] String Teams;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

@@ -1133,14 +1133,14 @@ function Set-TargetResource
         try
         {
             Write-Verbose -Message "Creating Label {$Name}"
-            New-Label @CreationParams -ErrorAction Stop
+            $newLabel = New-Label @CreationParams -ErrorAction Stop
 
             ## Can't set priority until label created
-            if ($PSBoundParameters.ContainsKey('Priority'))
+            if ($PSBoundParameters.ContainsKey('Priority') -and $Priority -lt $newLabel.Priority)
             {
                 Start-Sleep 5
                 Write-Verbose -Message "Updating the priority for newly created label {$Name}"
-                Set-label -Identity $Name -priority $Priority -ErrorAction Stop
+                Set-Label -Identity $Name -priority $Priority -ErrorAction Stop
             }
         }
         catch
@@ -1705,7 +1705,7 @@ function Convert-StringToAdvancedSettings
         $settingString = $setting.Replace('[', '').Replace(']', '')
         $settingKey = $settingString.Split(',')[0]
 
-        if ($settingKey -notin @('displayname', 'contenttype', 'tooltip'))
+        if ($settingKey -notin @('displayname', 'contenttype', 'tooltip', 'parentid'))
         {
             $startPos = $settingString.IndexOf(',', 0) + 1
             $valueString = $settingString.Substring($startPos, $settingString.Length - $startPos).Trim()

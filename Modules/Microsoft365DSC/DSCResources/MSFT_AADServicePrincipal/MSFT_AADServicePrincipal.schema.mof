@@ -62,4 +62,29 @@ class MSFT_AADServicePrincipal : OMI_BaseResource
     [Write, Description("Credentials of the Azure AD Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
     [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
     [Write, Description("Access token used for authentication.")] String AccessTokens[];
+    [Write, Description("The collection of password credentials associated with the service principal. Not nullable."), EmbeddedInstance("MSFT_MicrosoftGraphpasswordCredential")] String PasswordCredentials[];
+    [Write, Description("The collection of key credentials associated with the service principal. Not nullable. Supports $filter (eq, NOT, ge, le)."), EmbeddedInstance("MSFT_MicrosoftGraphkeyCredential")] String KeyCredentials[];
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_MicrosoftGraphKeyCredential
+{
+    [Write, Description("A 40-character binary type that can be used to identify the credential. Optional. When not provided in the payload, defaults to the thumbprint of the certificate.")] String CustomKeyIdentifier;
+    [Write, Description("Friendly name for the key. Optional.")] String DisplayName;
+    [Write, Description("The date and time at which the credential expires. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.")] String EndDateTime;
+    [Write, Description("The unique identifier (GUID) for the key.")] String KeyId;
+    [Write, Description("The certificate's raw data in byte array converted to Base64 string.")] String Key;
+    [Write, Description("The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.")] String StartDateTime;
+    [Write, Description("The type of key credential for example, Symmetric, AsymmetricX509Cert.")] String Type;
+    [Write, Description("A string that describes the purpose for which the key can be used for example, Verify.")] String Usage;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_MicrosoftGraphPasswordCredential
+{
+    [Write, Description("Friendly name for the password. Optional.")] String DisplayName;
+    [Write, Description("The date and time at which the password expires represented using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.")] String EndDateTime;
+    [Write, Description("Contains the first three characters of the password. Read-only.")] String Hint;
+    [Write, Description("The unique identifier for the password.")] String KeyId;
+    [Write, Description("The date and time at which the password becomes valid. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.")] String StartDateTime;
 };

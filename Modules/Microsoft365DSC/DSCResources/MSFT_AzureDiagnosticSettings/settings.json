@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "AzureDiagnosticSettings",
+    "description": "Configures Diagnostics settings in Azure.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

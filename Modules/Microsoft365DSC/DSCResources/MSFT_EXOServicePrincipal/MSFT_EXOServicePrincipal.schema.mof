@@ -1,0 +1,16 @@
+[ClassVersion("1.0.0.0"), FriendlyName("EXOServicePrincipal")]
+class MSFT_EXOServicePrincipal : OMI_BaseResource
+{
+    [Key, Description("The AppName parameter specifies the corresponding friendly name of the unique AppId GUID value for the service principal.")] string AppName;
+    [Write, Description("The DisplayName parameter specifies the friendly name of the service principal.")] string DisplayName;
+    [Write, Description("The Identity parameter specifies the service principal that you want to view.")] string Identity;
+    [Write, Description("The AppId parameter specifies the unique AppId GUID value for the service principal.")] string AppId;
+    [Write, Description("Present ensures the group exists, absent ensures it is removed"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
+    [Write, Description("Credentials of the Exchange Global Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};
+

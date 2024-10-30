@@ -1401,6 +1401,17 @@
                     TenantId                                 = $TenantId
                     CertificateThumbprint                    = $CertificateThumbprint
                 }
+                EXOServicePrincipal 'ServicePrincipal'
+                {
+                    AppId                = "c6871074-3ded-4935-a5dc-b8f8d91d7d06";
+                    AppName              = "ISV Portal";
+                    DisplayName          = "Kartikeya";
+                    Ensure               = "Present";
+                    Identity             = "00f6b0e4-1d00-427b-9a5b-ce6c43c43fc7";
+                    ApplicationId         = $ApplicationId;
+                    TenantId              = $TenantId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                }
                 EXOSharedMailbox 'SharedMailbox'
                 {
                     DisplayName        = "Integration"

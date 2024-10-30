@@ -1,0 +1,24 @@
+{
+    "resourceName": "EXOServicePrincipal",
+    "description": "Use this resource to to view information about service principals, create service principals, to remove service principals, to change service principals in your cloud-based organization.",
+    "roles": {
+        "read": [
+            "Exchange Admin"
+        ],
+        "update": [
+            "Exchange Admin"
+        ]
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

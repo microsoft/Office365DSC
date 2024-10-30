@@ -1,0 +1,60 @@
+[ClassVersion("1.0.0")]
+class MSFT_AADRemoteNetworkDeviceLinkbgpConfiguration
+{
+	[Write, Description("LocalIpAddress.")] String LocalIPAddress;
+	[Write, Description("PeerIpAddress.")] String PeerIPAddress;
+	[Write, Description("Asn.")] UInt32 Asn;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADRemoteNetworkDeviceLinkRedundancyConfiguration
+{
+	[Write, Description("ZoneLocalIpAddress.")] String ZoneLocalIPAddress;
+	[Write, Description("RedundancyTier.")] String RedundancyTier;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADRemoteNetworkDeviceLinkTunnelConfiguration
+{
+	[Write, Description("PreSharedKey")] String PreSharedKey;
+	[Write, Description("ZoneRedundancyPreSharedKey")] String ZoneRedundancyPreSharedKey;
+	[Write, Description("SaLifeTimeSeconds")] UInt32 SaLifeTimeSeconds;
+	[Write, Description("IpSecEncryption")] String IPSecEncryption;
+	[Write, Description("IpSecIntegrity")] String IPSecIntegrity;
+	[Write, Description("IkeEncryption")] String IKEEncryption;
+	[Write, Description("IkeIntegrity")] String IKEIntegrity;
+	[Write, Description("DhGroup")] String DHGroup;
+	[Write, Description("PfsGroup")] String PFSGroup;
+    [Write, Description("ODataType")] String ODataType;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADRemoteNetworkDeviceLink
+{
+	[Write, Description("Name of the Device Link")] String Name;
+    [Write, Description("IP Address")] String IPAddress;
+    [Write, Description("Bandwidth Capacity in Mbps")] String BandwidthCapacityInMbps;
+    [Write, Description("Device Vendor")] String DeviceVendor;
+
+	[Write, Description("BgpConfiguration."), EmbeddedInstance("MSFT_AADRemoteNetworkDeviceLinkbgpConfiguration")] String BgpConfiguration;
+    [Write, Description("redundancyConfiguration."), EmbeddedInstance("MSFT_AADRemoteNetworkDeviceLinkRedundancyConfiguration")] String RedundancyConfiguration;
+    [Write, Description("tunnelConfiguration"), EmbeddedInstance("MSFT_AADRemoteNetworkDeviceLinkTunnelConfiguration")] String TunnelConfiguration;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADRemoteNetwork")]
+class MSFT_AADRemoteNetwork : OMI_BaseResource
+{
+    [Key, Description("Name of the remote network.")] String Name;
+    [Write, Description("Id of the remote network")] String Id;
+    [Write, Description("Region")] String Region;
+    [Write, Description("List of the forwarding profile names associated to this remote network")] String ForwardingProfiles[];
+    [Write, Description("Device Links associated to this remote network"), EmbeddedInstance("MSFT_AADRemoteNetworkDeviceLink")] String DeviceLinks[];
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

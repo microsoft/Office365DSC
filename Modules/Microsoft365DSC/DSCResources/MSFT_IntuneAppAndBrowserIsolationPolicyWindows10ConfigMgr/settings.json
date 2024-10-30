@@ -1,0 +1,33 @@
+{
+    "resourceName": "IntuneAppAndBrowserIsolationPolicyWindows10ConfigMgr",
+    "description": "This resource configures an Intune App And Browser Isolation Policy for Windows10 Config Mgr.",
+    "permissions":    {
+  "graph": {
+    "application": {
+      "read": [
+        {
+          "name": "DeviceManagementConfiguration.Read.All"
+        }
+      ],
+      "update": [
+        {
+          "name": "DeviceManagementConfiguration.ReadWrite.All"
+        }
+      ]
+    },
+    "delegated": {
+      "read": [
+        {
+          "name": "DeviceManagementConfiguration.Read.All"
+        }
+      ],
+      "update": [
+        {
+          "name": "DeviceManagementConfiguration.ReadWrite.All"
+        }
+      ]
+    }
+  }
+}
+
+}

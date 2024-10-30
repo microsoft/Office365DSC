@@ -457,7 +457,6 @@ function Export-TargetResource
         $AccessTokens
     )
 
-    ##TODO - Replace workload
     $ConnectionMode = New-M365DSCConnection -Workload 'AzureDevOPS' `
         -InboundParameters $PSBoundParameters
 

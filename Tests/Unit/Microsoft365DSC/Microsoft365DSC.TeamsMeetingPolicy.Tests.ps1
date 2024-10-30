@@ -104,6 +104,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     AllowAnonymousUsersToStartMeeting          = $False
                     AllowChannelMeetingScheduling              = $True
                     AllowCloudRecording                        = $True
+                    AllowExternalNonTrustedMeetingChat         = $True
                     AllowExternalParticipantGiveRequestControl = $False
                     AllowIPVideo                               = $True
                     AllowMeetNow                               = $True
@@ -114,10 +115,22 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     AllowSharedNotes                           = $True
                     AllowTranscription                         = $False
                     AllowWhiteboard                            = $True
+                    AttendeeIdentityMasking                    = 'DisabledUserOverride'
                     AutoAdmittedUsers                          = 'Everyone'
+                    AutomaticallyStartCopilot                  = 'Disabled'
+                    AutoRecording                              = 'Enabled'
+                    ChannelRecordingDownload                   = 'Allow'
+                    ConnectToMeetingControls                   = 'Enabled'
+                    ContentSharingInExternalMeetings           = 'EnabledForAnyone'
+                    Copilot                                    = 'EnabledWithTranscript'
+                    CopyRestriction                            = $True
+                    DetectSensitiveContentDuringScreenSharing  = $True
                     Description                                = $null
+                    ExternalMeetingJoin                        = 'EnabledForAnyone'
                     MediaBitRateKb                             = 50000
+                    ParticipantNameChange                      = 'Disabled'
                     ScreenSharingMode                          = 'EntireScreen'
+                    VoiceIsolation                             = 'Enabled'
                     WhoCanRegister                             = 'EveryoneInCompany'
                     Ensure                                     = 'Present'
                     Credential                                 = $Credential
@@ -129,6 +142,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         AllowAnonymousUsersToStartMeeting          = $False
                         AllowChannelMeetingScheduling              = $True
                         AllowCloudRecording                        = $True
+                        AllowExternalNonTrustedMeetingChat         = $True
                         AllowExternalParticipantGiveRequestControl = $False
                         AllowIPVideo                               = $True
                         AllowMeetNow                               = $True
@@ -138,12 +152,24 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         AllowPrivateMeetingScheduling              = $True
                         AllowSharedNotes                           = $True
                         AllowTranscription                         = $False
-                        AllowWhiteboard                            = $False; #Variant
+                        AllowWhiteboard                            = $False
+                        AttendeeIdentityMasking                    = 'DisabledUserOverride'
                         AutoAdmittedUsers                          = 'Everyone'
-                        WhoCanRegister                             = 'EveryoneInCompany'
+                        AutomaticallyStartCopilot                  = 'Disabled'
+                        AutoRecording                              = 'Enabled'
+                        ChannelRecordingDownload                   = 'Allow'
+                        ConnectToMeetingControls                   = 'Enabled'
+                        ContentSharingInExternalMeetings           = 'EnabledForAnyone'
+                        Copilot                                    = 'EnabledWithTranscript'
+                        CopyRestriction                            = $True
+                        DetectSensitiveContentDuringScreenSharing  = $True
+                        ExternalMeetingJoin                        = 'EnabledForAnyone'
                         Description                                = $null
                         MediaBitRateKb                             = 50000
+                        ParticipantNameChange                      = 'Enabled'
                         ScreenSharingMode                          = 'EntireScreen'
+                        VoiceIsolation                             = 'Disabled'
+                        WhoCanRegister                             = 'EveryoneInCompany'
                     }
                 }
             }
@@ -195,6 +221,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         AllowAnonymousUsersToStartMeeting          = $False
                         AllowChannelMeetingScheduling              = $True
                         AllowCloudRecording                        = $True
+                        AllowExternalNonTrustedMeetingChat         = $True
                         AllowExternalParticipantGiveRequestControl = $False
                         AllowIPVideo                               = $True
                         AllowMeetNow                               = $True
@@ -205,10 +232,22 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         AllowSharedNotes                           = $True
                         AllowTranscription                         = $False
                         AllowWhiteboard                            = $True
+                        AttendeeIdentityMasking                    = 'DisabledUserOverride'
                         AutoAdmittedUsers                          = 'Everyone'
+                        AutomaticallyStartCopilot                  = 'Disabled'
+                        AutoRecording                              = 'Enabled'
+                        ChannelRecordingDownload                   = 'Allow'
+                        ConnectToMeetingControls                   = 'Enabled'
+                        ContentSharingInExternalMeetings           = 'EnabledForAnyone'
+                        Copilot                                    = 'EnabledWithTranscript'
+                        CopyRestriction                            = $True
+                        DetectSensitiveContentDuringScreenSharing  = $True
+                        ExternalMeetingJoin                        = 'EnabledForAnyone'
                         Description                                = $null
                         MediaBitRateKb                             = 50000
+                        ParticipantNameChange                      = 'Enabled'
                         ScreenSharingMode                          = 'EntireScreen'
+                        VoiceIsolation                             = 'Disabled'
                         WhoCanRegister                             = 'EveryoneInCompany'
                     }
                 }
@@ -255,6 +294,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         AllowAnonymousUsersToStartMeeting          = $False
                         AllowChannelMeetingScheduling              = $True
                         AllowCloudRecording                        = $True
+                        AllowExternalNonTrustedMeetingChat         = $True
                         AllowExternalParticipantGiveRequestControl = $False
                         AllowIPVideo                               = $True
                         AllowMeetNow                               = $True
@@ -264,11 +304,23 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         AllowPrivateMeetingScheduling              = $True
                         AllowSharedNotes                           = $True
                         AllowTranscription                         = $False
-                        AllowWhiteboard                            = $False; #Variant
+                        AllowWhiteboard                            = $False
+                        AttendeeIdentityMasking                    = 'DisabledUserOverride'
                         AutoAdmittedUsers                          = 'Everyone'
+                        AutomaticallyStartCopilot                  = 'Disabled'
+                        AutoRecording                              = 'Enabled'
+                        ChannelRecordingDownload                   = 'Allow'
+                        ConnectToMeetingControls                   = 'Enabled'
+                        ContentSharingInExternalMeetings           = 'EnabledForAnyone'
+                        Copilot                                    = 'EnabledWithTranscript'
+                        CopyRestriction                            = $True
+                        DetectSensitiveContentDuringScreenSharing  = $True
+                        ExternalMeetingJoin                        = 'EnabledForAnyone'
                         Description                                = $null
                         MediaBitRateKb                             = 50000
+                        ParticipantNameChange                      = 'Enabled'
                         ScreenSharingMode                          = 'EntireScreen'
+                        VoiceIsolation                             = 'Disabled'
                         WhoCanRegister                             = 'EveryoneInCompany'
                     }
                 }
@@ -302,6 +354,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         AllowAnonymousUsersToStartMeeting          = $False
                         AllowChannelMeetingScheduling              = $True
                         AllowCloudRecording                        = $True
+                        AllowExternalNonTrustedMeetingChat         = $True
                         AllowExternalParticipantGiveRequestControl = $False
                         AllowIPVideo                               = $True
                         AllowMeetNow                               = $True
@@ -311,11 +364,23 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         AllowPrivateMeetingScheduling              = $True
                         AllowSharedNotes                           = $True
                         AllowTranscription                         = $False
-                        AllowWhiteboard                            = $False; #Variant
+                        AllowWhiteboard                            = $False
+                        AttendeeIdentityMasking                    = 'DisabledUserOverride'
                         AutoAdmittedUsers                          = 'Everyone'
+                        AutomaticallyStartCopilot                  = 'Disabled'
+                        AutoRecording                              = 'Enabled'
+                        ChannelRecordingDownload                   = 'Allow'
+                        ConnectToMeetingControls                   = 'Enabled'
+                        ContentSharingInExternalMeetings           = 'EnabledForAnyone'
+                        Copilot                                    = 'EnabledWithTranscript'
+                        CopyRestriction                            = $True
+                        DetectSensitiveContentDuringScreenSharing  = $True
+                        ExternalMeetingJoin                        = 'EnabledForAnyone'
                         Description                                = $null
                         MediaBitRateKb                             = 50000
+                        ParticipantNameChange                      = 'Enabled'
                         ScreenSharingMode                          = 'EntireScreen'
+                        VoiceIsolation                             = 'Disabled'
                         WhoCanRegister                             = 'EveryoneInCompany'
                     }
                 }

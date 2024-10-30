@@ -1,0 +1,28 @@
+﻿{
+    "resourceName": "AADFilteringPolicyRule",
+    "description": "Configures filtering rules in Entra Id.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "NetworkAccess.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "NetworkAccess.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+[ClassVersion("1.0.0.0")]
+class MSFT_AADFilteringProfilePolicyLink
+{
+    [Write, Description("Logging state for the associated policy.")] String LoggingState;
+    [Write, Description("Priority of the associated policy.")] UInt32 Priority;
+    [Write, Description("State of the associated policy.")] String State;
+    [Write, Description("Name of the associated policy.")] String PolicyName;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADFilteringProfile")]
+class MSFT_AADFilteringProfile : OMI_BaseResource
+{
+    [Key, Description("Profile name.")] String Name;
+    [Write, Description("Unique identifier for the profile.")] String Id;
+    [Write, Description("Description of the profile.")] String Description;
+    [Write, Description("State of the profile.")] String State;
+    [Write, Description("Priority level for the profile.")] UInt32 Priority;
+    [Write, Description("List of filtering policy names associated with the profile."), EmbeddedInstance("MSFT_AADFilteringProfilePolicyLink")] String Policies[];
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

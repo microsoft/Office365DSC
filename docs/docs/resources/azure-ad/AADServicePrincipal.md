@@ -31,6 +31,8 @@
 | **Credential** | Write | PSCredential | Credentials of the Azure AD Admin | |
 | **ManagedIdentity** | Write | Boolean | Managed ID being used for authentication. | |
 | **AccessTokens** | Write | StringArray[] | Access token used for authentication. | |
+| **PasswordCredentials** | Write | MSFT_MicrosoftGraphpasswordCredential[] | The collection of password credentials associated with the service principal. Not nullable. | |
+| **KeyCredentials** | Write | MSFT_MicrosoftGraphkeyCredential[] | The collection of key credentials associated with the service principal. Not nullable. Supports $filter (eq, NOT, ge, le). | |
 
 ### MSFT_AADServicePrincipalRoleAssignment
 
@@ -71,6 +73,33 @@
 | --- | --- | --- | --- | --- |
 | **AttributeSetName** | Write | String | Attribute Set Name. | |
 | **AttributeValues** | Write | MSFT_AADServicePrincipalAttributeValue[] | List of attribute values. | |
+
+### MSFT_MicrosoftGraphKeyCredential
+
+#### Parameters
+
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **CustomKeyIdentifier** | Write | String | A 40-character binary type that can be used to identify the credential. Optional. When not provided in the payload, defaults to the thumbprint of the certificate. | |
+| **DisplayName** | Write | String | Friendly name for the key. Optional. | |
+| **EndDateTime** | Write | String | The date and time at which the credential expires. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. | |
+| **KeyId** | Write | String | The unique identifier (GUID) for the key. | |
+| **Key** | Write | String | The certificate's raw data in byte array converted to Base64 string. | |
+| **StartDateTime** | Write | String | The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. | |
+| **Type** | Write | String | The type of key credential for example, Symmetric, AsymmetricX509Cert. | |
+| **Usage** | Write | String | A string that describes the purpose for which the key can be used for example, Verify. | |
+
+### MSFT_MicrosoftGraphPasswordCredential
+
+#### Parameters
+
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **DisplayName** | Write | String | Friendly name for the password. Optional. | |
+| **EndDateTime** | Write | String | The date and time at which the password expires represented using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional. | |
+| **Hint** | Write | String | Contains the first three characters of the password. Read-only. | |
+| **KeyId** | Write | String | The unique identifier for the password. | |
+| **StartDateTime** | Write | String | The date and time at which the password becomes valid. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional. | |
 
 ## Description
 
