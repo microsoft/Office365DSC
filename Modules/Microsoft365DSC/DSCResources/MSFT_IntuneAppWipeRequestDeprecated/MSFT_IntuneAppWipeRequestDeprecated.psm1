@@ -221,21 +221,38 @@ function Set-TargetResource
     # CREATE
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
-        ##TODO - Replace by the New cmdlet for the resource
-        New-Cmdlet @SetParameters
-    }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        ##TODO - Replace by the Update/Set cmdlet for the resource
-        Set-cmdlet @SetParameters
+        Write-Host "Creating a new Windows Information Protection Wipe Action..."
+
+        try {
+            $newParams = @{
+                TargetedUserId              = $TargetedUserId
+                TargetedDeviceRegistrationId = $TargetedDeviceRegistrationId
+                TargetedDeviceName          = $TargetedDeviceName
+                TargetedDeviceMacAddress    = $TargetedDeviceMacAddress
+                Status                      = $Status
+                LastCheckInDateTime         = (Get-Date).ToString("o")
+            }
+
+            if ((Get-Command -Name "New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction" -ErrorAction SilentlyContinue) -and $SupportsPost) {
+                New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction @newParams
+            }
+            else {
+                Write-Output "Creation of WindowsInformationProtectionWipeAction is unsupported or unavailable."
+            }
+        }
+        catch {
+            Write-Output "Creation failed: $_"
+        }
+
     }
     # REMOVE
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
-        ##TODO - Replace by the Remove cmdlet for the resource
-        Remove-cmdlet @SetParameters
-    }
+       Write-Verbose "Removing the existing Windows Information Protection Wipe Action with ID: $Id"
+
+       # Call Remove cmdlet to delete the resource by its ID
+       Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -WindowsInformationProtectionWipeActionId $Id
+   }
 }
 
 function Test-TargetResource
