@@ -24,94 +24,92 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
     InModuleScope -ModuleName $Global:DscHelper.ModuleName -ScriptBlock {
         Invoke-Command -ScriptBlock $Global:DscHelper.InitializeScript -NoNewScope
         BeforeAll {
-
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
 
-            Mock -CommandName Confirm-M365DSCDependencies -MockWith {
-            }
-
-            Mock -CommandName New-M365DSCConnection -MockWith {
-                return "Credentials"
-            }
-
-            ##TODO - Mock any Remove/Set/New cmdlets
+            Mock -CommandName Confirm-M365DSCDependencies -MockWith { }
+            Mock -CommandName New-M365DSCConnection -MockWith { return "Credentials" }
 
             # Mock Write-Host to hide output during the tests
-            Mock -CommandName Write-Host -MockWith {
-            }
-            $Script:exportedInstances =$null
+            Mock -CommandName Write-Host -MockWith { }
+            $Script:exportedInstances = $null
             $Script:ExportMode = $false
         }
+
         # Test contexts
         Context -Name "The instance should exist but it DOES NOT" -Fixture {
             BeforeAll {
                 $testParams = @{
-                    ##TODO - Add Parameters
                     Ensure              = 'Present'
                     Credential          = $Credential;
+                    Id                  = 'testId'
+                    TargetedUserId      = 'targetUserId'
+                    TargetedDeviceName  = 'deviceName'
+                    Status              = 'status'
                 }
 
-                ##TODO - Mock the Get-Cmdlet to return $null
-                Mock -CommandName Get-Cmdlet -MockWith {
+                Mock -CommandName Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
                     return $null
                 }
             }
+
             It 'Should return Values from the Get method' {
                 (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
             }
+
             It 'Should return false from the Test method' {
                 Test-TargetResource @testParams | Should -Be $false
             }
 
             It 'Should create a new instance from the Set method' {
-                ##TODO - Replace the New-Cmdlet by the appropriate one
+                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
                 Set-TargetResource @testParams
-                Should -Invoke -CommandName New-Cmdlet -Exactly 1
+                Should -Invoke -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -Exactly 1
             }
         }
 
         Context -Name "The instance exists but it SHOULD NOT" -Fixture {
             BeforeAll {
                 $testParams = @{
-                    ##TODO - Add Parameters
                     Ensure              = 'Absent'
                     Credential          = $Credential;
+                    Id                  = 'testId'
                 }
 
-                ##TODO - Mock the Get-Cmdlet to return an instance
-                Mock -CommandName Get-Cmdlet -MockWith {
+                Mock -CommandName Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
                     return @{
-
+                        Id = 'testId'
                     }
                 }
             }
+
             It 'Should return Values from the Get method' {
                 (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
             }
+
             It 'Should return false from the Test method' {
                 Test-TargetResource @testParams | Should -Be $false
             }
 
             It 'Should remove the instance from the Set method' {
+                Mock -CommandName Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
                 Set-TargetResource @testParams
-                ##TODO - Replace the Remove-Cmdlet by the appropriate one
-                Should -Invoke -CommandName Remove-Cmdlet -Exactly 1
+                Should -Invoke -CommandName Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -Exactly 1
             }
         }
 
         Context -Name "The instance exists and values are already in the desired state" -Fixture {
             BeforeAll {
                 $testParams = @{
-                    ##TODO - Add Parameters
                     Ensure              = 'Present'
                     Credential          = $Credential;
+                    Id                  = 'testId'
                 }
 
-                ##TODO - Mock the Get-Cmdlet to return the desired values
-                Mock -CommandName Get-Cmdlet -MockWith {
+                Mock -CommandName Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
                     return @{
-
+                        Id = 'testId'
+                        Status = 'status'
                     }
                 }
             }
@@ -124,15 +122,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name "The instance exists and values are NOT in the desired state" -Fixture {
             BeforeAll {
                 $testParams = @{
-                    ##TODO - Add Parameters
                     Ensure              = 'Present'
                     Credential          = $Credential;
+                    Id                  = 'testId'
+                    Status              = 'desiredStatus'
                 }
 
-                ##TODO - Mock the Get-Cmdlet to return a drift
-                Mock -CommandName Get-Cmdlet -MockWith {
+                Mock -CommandName Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
                     return @{
-
+                        Id = 'testId'
+                        Status = 'differentStatus'
                     }
                 }
             }
@@ -146,9 +145,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should call the Set method' {
+                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
                 Set-TargetResource @testParams
-                ##TODO - Replace the Update-Cmdlet by the appropriate one
-                Should -Invoke -CommandName Update-Cmdlet -Exactly 1
+                Should -Invoke -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -Exactly 1
             }
         }
 
@@ -160,13 +159,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential  = $Credential;
                 }
 
-                ##TODO - Mock the Get-Cmdlet to return an instance
-                Mock -CommandName Get-Cmdlet -MockWith {
+                Mock -CommandName Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
                     return @{
-
+                        Id = 'testId'
                     }
                 }
             }
+
             It 'Should Reverse Engineer resource from the Export method' {
                 $result = Export-TargetResource @testParams
                 $result | Should -Not -BeNullOrEmpty

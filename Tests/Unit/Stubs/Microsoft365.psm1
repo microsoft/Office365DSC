@@ -20084,6 +20084,74 @@ function Remove-MgBetaDeviceAppManagementMobileApp {
     )
 }
 
+function Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction {
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $WindowsInformationProtectionWipeActionId,
+
+        [Parameter()]
+        [System.String]
+        $Status,
+
+        [Parameter()]
+        [System.String]
+        $TargetedUserId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceRegistrationId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceName,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceMacAddress
+    )
+}
+function New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction {
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $WindowsInformationProtectionWipeActionId,
+
+        [Parameter()]
+        [System.String]
+        $Status,
+
+        [Parameter()]
+        [System.String]
+        $TargetedUserId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceRegistrationId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceName,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceMacAddress
+    )
+}
+function Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction {
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $WindowsInformationProtectionWipeActionId,
+
+        [Parameter()]
+        [System.Boolean] $
+        Confirm
+    )
+}
 function Get-MgBetaDeviceManagementGroupPolicyConfigurationDefinitionValue
 {
     [CmdletBinding()]
