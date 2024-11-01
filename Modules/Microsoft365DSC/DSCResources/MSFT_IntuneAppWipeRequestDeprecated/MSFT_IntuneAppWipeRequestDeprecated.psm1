@@ -219,8 +219,8 @@ function Set-TargetResource
     $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
 
     # CREATE
-    #if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    #{
+    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+    {
         Write-Host "Creating a new Windows Information Protection Wipe Action..."
 
         try {
@@ -232,18 +232,18 @@ function Set-TargetResource
                 Status                      = $Status
             }
 
-            #if ((Get-Command -Name "New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction" -ErrorAction SilentlyContinue) -and $SupportsPost) {
+            if ((Get-Command -Name "New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction" -ErrorAction SilentlyContinue) -and $SupportsPost) {
                 New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction @newParams
-            #}
-            #else {
+            }
+            else {
                 Write-Output "Creation of WindowsInformationProtectionWipeAction is unsupported or unavailable."
-            #}
+            }
         }
         catch {
             Write-Output "Creation failed: $_"
         }
 
-    #}
+    }
     # REMOVE
     if ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
