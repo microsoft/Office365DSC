@@ -1,6 +1,7 @@
 [CmdletBinding()]
-param(
+param (
 )
+
 $M365DSCTestFolder = Join-Path -Path $PSScriptRoot `
                         -ChildPath '..\..\Unit' `
                         -Resolve
@@ -30,8 +31,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Confirm-M365DSCDependencies -MockWith { }
             Mock -CommandName New-M365DSCConnection -MockWith { return "Credentials" }
 
-            # Mock Write-Host to hide output during the tests
+            # Mock Write-Host and Write-Verbose to capture output during tests
             Mock -CommandName Write-Host -MockWith { }
+            Mock -CommandName Write-Verbose -MockWith { }
+            Mock -CommandName Write-Output -MockWith { }
             $Script:exportedInstances = $null
             $Script:ExportMode = $false
         }
@@ -51,7 +54,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Mock -CommandName Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
                     return $null
                 }
-                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
+
+                # Simulate 400 error for New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction
+                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
+                    throw [System.Net.WebException]::new("No OData route exists that match template", [System.Net.HttpStatusCode]::BadRequest)
+                }
             }
 
             It 'Should return Values from the Get method' {
@@ -62,9 +69,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Test-TargetResource @testParams | Should -Be $false
             }
 
-            It 'Should create a new instance from the Set method' {
+            It 'Should handle error from New cmdlet gracefully in Set method' {
                 Set-TargetResource @testParams
-                Should -Invoke -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -Exactly 1
+                Should -Invoke -CommandName Write-Output -Exactly 1 -ParameterFilter { $_ -match "Creation failed:" }
             }
         }
 
@@ -79,9 +86,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Mock -CommandName Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
                     return @{
                         Id = 'testId'
+                        Ensure = 'Present'
                     }
                 }
-                Mock -CommandName Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
+
+                # Simulate 400 error for Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction
+                Mock -CommandName Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
+                    throw [System.Net.WebException]::new("No OData route exists that match template", [System.Net.HttpStatusCode]::BadRequest)
+                }
             }
 
             It 'Should return Values from the Get method' {
@@ -92,9 +104,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Test-TargetResource @testParams | Should -Be $false
             }
 
-            It 'Should remove the instance from the Set method' {
+            It 'Should handle error from Remove cmdlet gracefully in Set method' {
                 Set-TargetResource @testParams
-                Should -Invoke -CommandName Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -Exactly 1
+                Should -Invoke -CommandName Write-Output -Exactly 1 -ParameterFilter { $_ -match "Deletion failed:" }
             }
         }
 
@@ -134,7 +146,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         Status = 'differentStatus'
                     }
                 }
-                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
+
+                # Simulate 400 error for New cmdlet to test fallback
+                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
+                    throw [System.Net.WebException]::new("No OData route exists that match template", [System.Net.HttpStatusCode]::BadRequest)
+                }
             }
 
             It 'Should return Values from the Get method' {
@@ -145,9 +161,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Test-TargetResource @testParams | Should -Be $false
             }
 
-            It 'Should call the Set method' {
+            It 'Should handle error from New cmdlet gracefully in Set method' {
                 Set-TargetResource @testParams
-                Should -Invoke -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -Exactly 1
+                Should -Invoke -CommandName Write-Output -Exactly 1 -ParameterFilter { $_ -match "Creation failed:" }
             }
         }
 
