@@ -1,0 +1,32 @@
+﻿{
+    "resourceName": "ResourceName",
+    "description": "Description of what the resource is about.",
+    "roles": {
+        "read": [
+            "Role"
+        ],
+        "update": [
+            "Role"
+        ]
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "Permission for Monitoring and Export"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "Permission for deploying"
+                    }
+                ]
+            }
+        }
+    }
+}
