@@ -1,14 +1,18 @@
-[ClassVersion("1.0.0.0"), FriendlyName("ResourceName")]
-class MSFT_ResourceName : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("IntuneAppWipeRequestDeprecated")]
+class MSFT_IntuneAppWipeRequestDeprecated : OMI_BaseResource
 {
-    [Key, Description("")] String PrimaryKey;
-    [Write, Description("")] String OtherProperties;
-
-    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
-    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
-    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
-    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
-    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
-    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
-    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+    [Key, Description("The unique identifier (GUID) for the wipe action")] String Id;
+    [Write, Description("The status of the wipe action")] String Status;
+    [Write, Description("The targeted user's ID for the wipe action")] String TargetedUserId;
+    [Write, Description("The targeted device's registration ID for the wipe action")] String TargetedDeviceRegistrationId;
+    [Write, Description("The targeted device's name for the wipe action")] String TargetedDeviceName;
+    [Write, Description("The targeted device's MAC address for the wipe action")] String TargetedDeviceMacAddress;
+    [Write, ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}, Description("Ensure that the resource is present or absent")] String Ensure;
+    [Write, Description("Credential to use for authentication")] String Credential;
+    [Write, Description("Application ID for authentication")] String ApplicationId;
+    [Write, Description("Secret for the application, used for authentication")] String ApplicationSecret;
+    [Write, Description("Tenant ID for authentication")] String TenantId;
+    [Write, Description("Thumbprint of the certificate used for authentication")] String CertificateThumbprint;
+    [Write, Description("Managed Identity flag, indicating if a managed identity is being used")] Boolean ManagedIdentity;
+    [Write, Description("Access tokens for authentication purposes")] String AccessTokens[];
 };
