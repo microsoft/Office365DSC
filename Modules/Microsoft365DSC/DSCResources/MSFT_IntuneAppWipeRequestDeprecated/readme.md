@@ -1,6 +1,6 @@
 
-# ResourceName
+# IntuneAppWipeRequestDeprecated
 
 ## Description
 
-##TODO - Provide a short description of what the resource is set to configure.
+This resource configures and manages Windows Information Protection wipe actions for targeted devices within Microsoft Intune to ensure device data security compliance.

@@ -1,29 +1,41 @@
 ﻿{
-    "resourceName": "ResourceName",
-    "description": "Description of what the resource is about.",
-    "roles": {
-        "read": [
-            "Role"
-        ],
-        "update": [
-            "Role"
-        ]
-    },
+    "resourceName": "IntuneAppWipeRequestDeprecated",
+    "description": "This resource configures a Windows Information Protection wipe action for a targeted device in Intune.",
     "permissions": {
         "graph": {
             "delegated": {
-                "read": [],
-                "update": []
-            },
-            "application": {
                 "read": [
                     {
-                        "name": "Permission for Monitoring and Export"
+                        "name": "DeviceManagementApps.Read.All"
+                    },
+                    {
+                        "name": "DeviceManagementManagedDevices.Read.All"
                     }
                 ],
                 "update": [
                     {
-                        "name": "Permission for deploying"
+                        "name": "DeviceManagementApps.ReadWrite.All"
+                    },
+                    {
+                        "name": "DeviceManagementManagedDevices.ReadWrite.All"
+                    }
+                ]
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "DeviceManagementApps.Read.All"
+                    },
+                    {
+                        "name": "DeviceManagementManagedDevices.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "DeviceManagementApps.ReadWrite.All"
+                    },
+                    {
+                        "name": "DeviceManagementManagedDevices.ReadWrite.All"
                     }
                 ]
             }
