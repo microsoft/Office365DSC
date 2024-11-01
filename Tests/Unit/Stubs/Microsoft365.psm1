@@ -20148,8 +20148,8 @@ function Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction 
         $WindowsInformationProtectionWipeActionId,
 
         [Parameter()]
-        [System.Boolean] $
-        Confirm
+        [System.Boolean]
+        $Confirm
     )
 }
 function Get-MgBetaDeviceManagementGroupPolicyConfigurationDefinitionValue

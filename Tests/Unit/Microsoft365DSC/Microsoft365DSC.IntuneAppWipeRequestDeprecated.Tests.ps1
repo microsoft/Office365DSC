@@ -51,6 +51,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Mock -CommandName Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith {
                     return $null
                 }
+                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
             }
 
             It 'Should return Values from the Get method' {
@@ -62,7 +63,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should create a new instance from the Set method' {
-                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
                 Set-TargetResource @testParams
                 Should -Invoke -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -Exactly 1
             }
@@ -81,6 +81,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         Id = 'testId'
                     }
                 }
+                Mock -CommandName Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
             }
 
             It 'Should return Values from the Get method' {
@@ -92,7 +93,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should remove the instance from the Set method' {
-                Mock -CommandName Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
                 Set-TargetResource @testParams
                 Should -Invoke -CommandName Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -Exactly 1
             }
@@ -134,6 +134,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         Status = 'differentStatus'
                     }
                 }
+                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
             }
 
             It 'Should return Values from the Get method' {
@@ -145,7 +146,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should call the Set method' {
-                Mock -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -MockWith { }
                 Set-TargetResource @testParams
                 Should -Invoke -CommandName New-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -Exactly 1
             }
