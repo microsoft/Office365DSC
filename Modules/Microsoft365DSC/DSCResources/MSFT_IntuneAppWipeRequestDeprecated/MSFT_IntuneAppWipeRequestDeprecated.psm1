@@ -81,8 +81,13 @@ function Get-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
-    $nullResult = $PSBoundParameters
-    $nullResult.Ensure = 'Absent'
+    $nullResult = @{
+        Ensure = 'Absent'
+    }
+    # Add relevant properties from $PSBoundParameters to $nullResult
+    foreach ($param in $PSBoundParameters.Keys) {
+        $nullResult[$param] = $PSBoundParameters[$param]
+    }
     try
     {
         try {
@@ -116,6 +121,7 @@ function Get-TargetResource
             Credential                   = $Credential
             ApplicationId                = $ApplicationId
             TenantId                     = $TenantId
+            Ensure                       = 'Present'
             CertificateThumbprint        = $CertificateThumbprint
             ManagedIdentity              = $ManagedIdentity.IsPresent
             AccessTokens                 = $AccessTokens
@@ -247,7 +253,7 @@ function Set-TargetResource
     # REMOVE
     if ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
-       Write-Verbose "Removing the existing Windows Information Protection Wipe Action with ID: $Id"
+       Write-Output "Removing the existing Windows Information Protection Wipe Action with ID: $Id"
 
        # Call Remove cmdlet to delete the resource by its ID
        Remove-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -WindowsInformationProtectionWipeActionId $Id
