@@ -324,12 +324,10 @@ function Test-TargetResource
     return $testResult
 }
 
-function Export-TargetResource
-{
+function Export-TargetResource {
     [CmdletBinding()]
     [OutputType([System.String])]
-    param
-    (
+    param (
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
@@ -343,12 +341,12 @@ function Export-TargetResource
         $TenantId,
 
         [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
         [System.String]
         $CertificateThumbprint,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $ApplicationSecret,
 
         [Parameter()]
         [Switch]
@@ -359,59 +357,72 @@ function Export-TargetResource
         $AccessTokens
     )
 
-    ##TODO - Replace workload
-    $ConnectionMode = New-M365DSCConnection -Workload 'Workload' `
+    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters
 
-    #Ensure the proper dependencies are installed in the current environment.
+    # Ensure the proper dependencies are installed in the current environment.
     Confirm-M365DSCDependencies
 
-    #region Telemetry
+    # Telemetry data
     $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
     $CommandName = $MyInvocation.MyCommand
     $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
         -CommandName $CommandName `
         -Parameters $PSBoundParameters
     Add-M365DSCTelemetryEvent -Data $data
-    #endregion
 
-    try
-    {
+    try {
         $Script:ExportMode = $true
-        ##TODO - Replace Get-Cmdlet by the cmdlet to retrieve all instances
-        [array] $Script:exportedInstances = Get-Cmdlet -ErrorAction Stop
+        Write-Verbose "Attempting to retrieve wipe actions using Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction..."
 
-        $i = 1
+        # Check if the cmdlet exists to handle deprecation
+        if (Get-Command -Name 'Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction' -ErrorAction SilentlyContinue) {
+            try {
+                [array]$Script:exportedInstances = Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -ErrorAction Stop
+            }
+            catch {
+                Write-Verbose "Cmdlet Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction did not return any data or encountered an issue."
+                return ''
+            }
+        }
+        else {
+            Write-Verbose "Cmdlet Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction is not available or deprecated."
+            return ''
+        }
+
+        if (-not $Script:exportedInstances -or $Script:exportedInstances.Count -eq 0) {
+            Write-Verbose "No Windows Information Protection Wipe Action instances found."
+            return ''
+        }
+
         $dscContent = ''
-        if ($Script:exportedInstances.Length -eq 0)
-        {
-            Write-Host $Global:M365DSCEmojiGreenCheckMark
-        }
-        else
-        {
-            Write-Host "`r`n" -NoNewline
-        }
-        foreach ($config in $Script:exportedInstances)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
+        $i = 1
+        foreach ($config in $Script:exportedInstances) {
+            if ($null -ne $Global:M365DSCExportResourceInstancesCount) {
                 $Global:M365DSCExportResourceInstancesCount++
             }
 
             $displayedKey = $config.Id
-            Write-Host "    |---[$i/$($Script:exportedInstances.Count)] $displayedKey" -NoNewline
+            Write-Host "Processing [$i/$($Script:exportedInstances.Count)] $displayedKey"
+
             $params = @{
-                ##TODO - Specify the Primary Key
-                #PrimaryKey            = $config.PrimaryKey
+                Id                    = $config.Id
+                Ensure                = 'Present'
                 Credential            = $Credential
                 ApplicationId         = $ApplicationId
                 TenantId              = $TenantId
                 CertificateThumbprint = $CertificateThumbprint
+                ApplicationSecret     = $ApplicationSecret
                 ManagedIdentity       = $ManagedIdentity.IsPresent
                 AccessTokens          = $AccessTokens
             }
 
-            $Results = Get-TargetResource @Params
+            $Results = Get-TargetResource @params
+            if (-not $Results) {
+                Write-Verbose "Warning: No results returned for config with Id $displayedKey."
+                continue
+            }
+
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results
 
@@ -420,18 +431,17 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential
+
             $dscContent += $currentDSCBlock
             Save-M365DSCPartialExport -Content $currentDSCBlock `
                 -FileName $Global:PartialExportFileName
             $i++
-            Write-Host $Global:M365DSCEmojiGreenCheckMark
         }
+
         return $dscContent
     }
-    catch
-    {
+    catch {
         Write-Host $Global:M365DSCEmojiRedX
-
         New-M365DSCLogEntry -Message 'Error during Export:' `
             -Exception $_ `
             -Source $($MyInvocation.MyCommand.Source) `
