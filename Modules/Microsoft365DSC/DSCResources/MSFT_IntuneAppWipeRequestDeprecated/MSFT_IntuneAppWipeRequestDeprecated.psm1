@@ -4,12 +4,33 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        ##TODO - Replace the PrimaryKey
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrimaryKey,
+        #region Intune resource parameters
 
-        ##TODO - Add the list of Parameters
+        [Parameter()]
+        [System.String]
+        $Id,
+
+        [Parameter()]
+        [System.String]
+        $Status,
+
+        [Parameter()]
+        [System.String]
+        $TargetedUserId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceRegistrationId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceName,
+
+        [Parameter()]
+        [System.Boolean]
+        $TargetedDeviceMacAddress,
+
+        #endregion
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -106,12 +127,33 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        ##TODO - Replace the PrimaryKey
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrimaryKey,
+        #region Intune resource parameters
 
-        ##TODO - Add the list of Parameters
+        [Parameter()]
+        [System.String]
+        $Id,
+
+        [Parameter()]
+        [System.String]
+        $Status,
+
+        [Parameter()]
+        [System.String]
+        $TargetedUserId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceRegistrationId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceName,
+
+        [Parameter()]
+        [System.Boolean]
+        $TargetedDeviceMacAddress,
+
+        #endregion
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -185,12 +227,33 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        ##TODO - Replace the PrimaryKey
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrimaryKey,
+        #region Intune resource parameters
 
-        ##TODO - Add the list of Parameters
+        [Parameter()]
+        [System.String]
+        $Id,
+
+        [Parameter()]
+        [System.String]
+        $Status,
+
+        [Parameter()]
+        [System.String]
+        $TargetedUserId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceRegistrationId,
+
+        [Parameter()]
+        [System.String]
+        $TargetedDeviceName,
+
+        [Parameter()]
+        [System.Boolean]
+        $TargetedDeviceMacAddress,
+
+        #endregion
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
