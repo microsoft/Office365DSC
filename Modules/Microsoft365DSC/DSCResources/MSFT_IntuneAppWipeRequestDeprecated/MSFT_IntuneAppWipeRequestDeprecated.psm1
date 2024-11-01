@@ -62,8 +62,7 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    ##TODO - Replace the workload by the one associated to your resource
-    New-M365DSCConnection -Workload 'Workload' `
+    New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters | Out-Null
 
     #Ensure the proper dependencies are installed in the current environment.
@@ -82,32 +81,32 @@ function Get-TargetResource
     $nullResult.Ensure = 'Absent'
     try
     {
-        if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
-        {
-            ##TODO - Replace the PrimaryKey in the Filter by the one for the resource
-            $instance = $Script:exportedInstances | Where-Object -FilterScript {$_.PrimaryKey -eq $PrimaryKey}
-        }
-        else
-        {
-            ##TODO - Replace the cmdlet by the one to retrieve a specific instance.
-            $instance = Get-cmdlet -PrimaryKey $PrimaryKey -ErrorAction Stop
-        }
-        if ($null -eq $instance)
-        {
+        # Retrieve all Wipe Actions for Windows Information Protection
+        $allActions = Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction
+
+        # Filter the results to find the specific action by ID
+        $specificAction = $allActions | Where-Object { $_.id -eq $Id }
+
+        if (-not $specificAction) {
+            Write-Verbose "No Windows Information Protection Wipe Action found with Id $Id."
             return $nullResult
         }
 
         $results = @{
-            ##TODO - Add the list of parameters to be returned
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
+            Id                           = $specificAction.id
+            Status                       = $specificAction.status
+            TargetedUserId               = $specificAction.targetedUserId
+            TargetedDeviceRegistrationId = $specificAction.targetedDeviceRegistrationId
+            TargetedDeviceName           = $specificAction.targetedDeviceName
+            TargetedDeviceMacAddress     = $specificAction.targetedDeviceMacAddressEnsure                = 'Present'
+            Credential                   = $Credential
+            ApplicationId                = $ApplicationId
+            TenantId                     = $TenantId
+            CertificateThumbprint        = $CertificateThumbprint
+            ManagedIdentity              = $ManagedIdentity.IsPresent
+            AccessTokens                 = $AccessTokens
         }
-        return [System.Collections.Hashtable] $results
+        return $results
     }
     catch
     {
