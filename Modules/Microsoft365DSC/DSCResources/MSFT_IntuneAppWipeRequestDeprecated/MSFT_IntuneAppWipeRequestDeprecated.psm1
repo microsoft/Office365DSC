@@ -27,7 +27,7 @@ function Get-TargetResource
         $TargetedDeviceName,
 
         [Parameter()]
-        [System.Boolean]
+        [System.String]
         $TargetedDeviceMacAddress,
 
         #endregion
@@ -44,6 +44,10 @@ function Get-TargetResource
         [Parameter()]
         [System.String]
         $ApplicationId,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $ApplicationSecret,
 
         [Parameter()]
         [System.String]
@@ -168,6 +172,10 @@ function Set-TargetResource
         $ApplicationId,
 
         [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $ApplicationSecret,
+
+        [Parameter()]
         [System.String]
         $TenantId,
 
@@ -266,6 +274,10 @@ function Test-TargetResource
         [Parameter()]
         [System.String]
         $ApplicationId,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $ApplicationSecret,
 
         [Parameter()]
         [System.String]
