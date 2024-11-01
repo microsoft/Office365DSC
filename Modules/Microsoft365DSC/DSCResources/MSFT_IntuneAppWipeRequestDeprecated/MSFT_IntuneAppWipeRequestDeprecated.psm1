@@ -85,8 +85,18 @@ function Get-TargetResource
     $nullResult.Ensure = 'Absent'
     try
     {
+        try {
         # Retrieve all Wipe Actions for Windows Information Protection
-        $allActions = Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction
+        $allActions = Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction -ErrorAction Stop
+        } catch {
+            Write-Verbose "Cmdlet Get-MgBetaDeviceAppManagementWindowsInformationProtectionWipeAction did not return any data or encountered an issue."
+            return $nullResult
+        }
+        # Check if $allActions is null or empty
+        if (-not $allActions) {
+            Write-Verbose "No Windows Information Protection Wipe Action instances found."
+            return $nullResult
+        }
 
         # Filter the results to find the specific action by ID
         $specificAction = $allActions | Where-Object { $_.id -eq $Id }
@@ -153,7 +163,7 @@ function Set-TargetResource
         $TargetedDeviceName,
 
         [Parameter()]
-        [System.Boolean]
+        [System.String]
         $TargetedDeviceMacAddress,
 
         #endregion
@@ -257,7 +267,7 @@ function Test-TargetResource
         $TargetedDeviceName,
 
         [Parameter()]
-        [System.Boolean]
+        [System.String]
         $TargetedDeviceMacAddress,
 
         #endregion
@@ -309,6 +319,18 @@ function Test-TargetResource
     #endregion
 
     $CurrentValues = Get-TargetResource @PSBoundParameters
+    if (-not $CurrentValues) {
+        Write-Verbose "Get-TargetResource returned null. Assuming resource is Absent."
+
+        # Determine if resource is absent based on Ensure value
+        if ($Ensure -eq 'Absent') {
+            Write-Verbose "Test-TargetResource: Desired state is 'Absent', and resource is not present. Returning $true."
+            return $true
+        } else {
+            Write-Verbose "Test-TargetResource: Desired state is 'Present', but resource is not present. Returning $false."
+            return $false
+        }
+    }
     $ValuesToCheck = ([Hashtable]$PSBoundParameters).Clone()
 
     Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
