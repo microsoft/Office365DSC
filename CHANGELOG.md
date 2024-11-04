@@ -105,6 +105,8 @@
   * Added a few verbose messages
 * IntuneDeviceManagmentAndroidDeviceOwnerEnrollmentProfile
   * Initial release.
+* IntuneDeviceManagementComplianceManagementPartner
+  * Initial release
 * IntuneEndpointDetectionAndResponsePolicyWindows10
   * Fixes an issue with `AutoFromConnector` as the Configuration package type.
     FIXES [#5246](https://github.com/microsoft/Microsoft365DSC/issues/5246)
