@@ -1,0 +1,37 @@
+[ClassVersion("1.0.0")]
+class MSFT_IntuneComplianceManagementPartnerAssignment
+{
+    [Write, Description("Group assignment target."), EmbeddedInstance("MSFT_IntuneDeviceAndAppManagementAssignmentTarget")] String Target;
+};
+[ClassVersion("1.0.0")]
+class MSFT_IntuneDeviceAndAppManagementAssignmentTarget
+{
+    [Write, Description("The ID of the filter for the target assignment.")] String DeviceAndAppManagementAssignmentFilterId;
+    [Write, Description("The type of filter of the target assignment i.e. Exclude or Include. Possible values are: none, include, exclude."), ValueMap{"none","include","exclude"}, Values{"none","include","exclude"}] String DeviceAndAppManagementAssignmentFilterType;
+    [Write, Description("AAD Group Id.")] String GroupId;
+    [Write, Description("The collection Id that is the target of the assignment.")] String CollectionId;
+    [Write, Description("The type of the entity."), ValueMap{"#microsoft.graph.allDevicesAssignmentTarget","#microsoft.graph.allLicensedUsersAssignmentTarget","#microsoft.graph.androidFotaDeploymentAssignmentTarget","#microsoft.graph.configurationManagerCollectionAssignmentTarget","#microsoft.graph.groupAssignmentTarget"}, Values{"#microsoft.graph.allDevicesAssignmentTarget","#microsoft.graph.allLicensedUsersAssignmentTarget","#microsoft.graph.androidFotaDeploymentAssignmentTarget","#microsoft.graph.configurationManagerCollectionAssignmentTarget","#microsoft.graph.groupAssignmentTarget"}] String odataType;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("IntuneDeviceManagementComplianceManagementPartner")]
+class MSFT_IntuneDeviceManagementComplianceManagementPartner : OMI_BaseResource
+{
+    [Write, Description("User groups which enroll Android devices through partner."), EmbeddedInstance("MSFT_IntunecomplianceManagementPartnerAssignment")] String AndroidEnrollmentAssignments[];
+    [Write, Description("Partner onboarded for Android devices.")] Boolean AndroidOnboarded;
+    [Key, Description("Partner display name")] String DisplayName;
+    [Write, Description("User groups which enroll ios devices through partner."), EmbeddedInstance("MSFT_IntunecomplianceManagementPartnerAssignment")] String IosEnrollmentAssignments[];
+    [Write, Description("Partner onboarded for ios devices.")] Boolean IosOnboarded;
+    [Write, Description("Timestamp of last heartbeat after admin onboarded to the compliance management partner")] String LastHeartbeatDateTime;
+    [Write, Description("User groups which enroll Mac devices through partner."), EmbeddedInstance("MSFT_IntunecomplianceManagementPartnerAssignment")] String MacOsEnrollmentAssignments[];
+    [Write, Description("Partner onboarded for Mac devices.")] Boolean MacOsOnboarded;
+    [Write, Description("Partner state of this tenant. Possible values are: unknown, unavailable, enabled, terminated, rejected, unresponsive."), ValueMap{"unknown","unavailable","enabled","terminated","rejected","unresponsive"}, Values{"unknown","unavailable","enabled","terminated","rejected","unresponsive"}] String PartnerState;
+    [Write, Description("The unique identifier for an entity. Read-only.")] String Id;
+    [Write, Description("Present ensures the policy exists, absent ensures it is removed."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
+    [Write, Description("Credentials of the Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Secret of the Azure Active Directory tenant used for authentication."), EmbeddedInstance("MSFT_Credential")] String ApplicationSecret;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

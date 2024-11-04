@@ -1,0 +1,57 @@
+{
+    "resourceName": "IntuneDeviceManagementComplianceManagementPartner",
+    "description": "This resource configures an Intune Device Management Compliance Management Partner.",
+    "permissions":    {
+    "graph":  {
+                  "delegated":  {
+                                    "read":  [
+                                                 {
+                                                     "name":  "DeviceManagementServiceConfig.Read.All"
+                                                 },
+                                                 {
+                                                     "name":  "DeviceManagementConfiguration.Read.All"
+                                                 },
+                                                 {
+                                                     "name":  "Group.Read.All"
+                                                 }
+                                             ],
+                                    "update":  [
+                                                   {
+                                                       "name":  "DeviceManagementServiceConfig.ReadWrite.All"
+                                                   },
+                                                   {
+                                                       "name":  "DeviceManagementConfiguration.ReadWrite.All"
+                                                   },
+                                                   {
+                                                       "name":  "Group.Read.All"
+                                                   }
+                                               ]
+                                },
+                  "application":  {
+                                      "read":  [
+                                                   {
+                                                       "name":  "DeviceManagementServiceConfig.Read.All"
+                                                   },
+                                                   {
+                                                       "name":  "DeviceManagementConfiguration.Read.All"
+                                                   },
+                                                   {
+                                                       "name":  "Group.Read.All"
+                                                   }
+                                               ],
+                                      "update":  [
+                                                     {
+                                                         "name":  "DeviceManagementServiceConfig.ReadWrite.All"
+                                                     },
+                                                     {
+                                                         "name":  "DeviceManagementConfiguration.ReadWrite.All"
+                                                     },
+                                                     {
+                                                         "name":  "Group.Read.All"
+                                                     }
+                                                 ]
+                                  }
+              }
+}
+
+}
