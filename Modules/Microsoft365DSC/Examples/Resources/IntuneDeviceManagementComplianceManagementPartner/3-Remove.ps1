@@ -29,3 +29,5 @@ Configuration Example
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint;
         }
+    }
+}
