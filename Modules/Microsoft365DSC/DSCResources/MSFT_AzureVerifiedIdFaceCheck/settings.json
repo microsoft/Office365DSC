@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "AzureVerifiedIdFaceCheck",
+    "description": "Configures Azure Verified Id FaceCheck.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

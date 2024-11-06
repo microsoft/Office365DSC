@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "DefenderDeviceAuthenticatedScanDefinition",
+    "description": "Configures device authenticated scan definitions in Defender.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

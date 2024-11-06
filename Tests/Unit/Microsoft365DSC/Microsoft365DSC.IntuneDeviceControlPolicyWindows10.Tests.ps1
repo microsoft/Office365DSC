@@ -68,6 +68,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_policy_config_bluetooth_servicesallowedlist'
                                 Name = 'ServicesAllowedList'
+                                OffsetUri = '/Config/Bluetooth/ServicesAllowedList'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionDefinition'
                                 }
@@ -78,17 +79,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             SettingInstanceTemplateReference = @{
                                 SettingInstanceTemplateId = '47d9b9c4-e714-4a51-a099-33f548e4ea49'
                             }
-                            AdditionalProperties = @(
-                                @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
-                                    simpleSettingCollectionValue = @(
-                                        @{
-                                            '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                            value = 'abcd'
-                                        }
-                                    )
-                                }
-                            )
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
+                                simpleSettingCollectionValue = @(
+                                    @{
+                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
+                                        value = 'abcd'
+                                    }
+                                )
+                            }
                         }
                     },
                     @{
@@ -97,26 +96,25 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_policy_config_connectivity_allowusbconnection'
                                 Name = 'AllowUSBConnection'
+                                OffsetUri = '/Config/Connectivity/AllowUSBConnection'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
                             }
                         )
-                        SettingInstance = @(
-                            @{
-                                SettingDefinitionId = 'device_vendor_msft_policy_config_connectivity_allowusbconnection'
-                                SettingInstanceTemplateReference = @{
-                                    SettingInstanceTemplateId = 'bc92aa99-0993-4c65-a005-d5e5e6701486'
-                                }
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                    choiceSettingValue = @{
-                                        children = @()
-                                        value = '1'
-                                    }
+                        SettingInstance = @{
+                            SettingDefinitionId = 'device_vendor_msft_policy_config_connectivity_allowusbconnection'
+                            SettingInstanceTemplateReference = @{
+                                SettingInstanceTemplateId = 'bc92aa99-0993-4c65-a005-d5e5e6701486'
+                            }
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                choiceSettingValue = @{
+                                    children = @()
+                                    value = '1'
                                 }
                             }
-                        )
+                        }
                     },
                     @{
                         Id = '2'
@@ -124,6 +122,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_entry'
                                 Name = 'Entry'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                     childIds = @(
@@ -147,6 +146,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_entry_options'
                                 Name = 'Options'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                     options = @(
@@ -171,6 +171,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_entry_type'
                                 Name = 'Type'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                     options = @(
@@ -191,6 +192,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_excludedidlist_groupid'
                                 Name = 'GroupId'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
                                     dependentOn = @(
@@ -204,6 +206,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_name'
                                 Name = 'Name'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
                                     dependentOn = @(
@@ -217,6 +220,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}'
                                 Name = 'ruleid'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                     childIds = @(
@@ -229,6 +233,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_excludedidlist'
                                 Name = 'ExcludedIdList'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                     childIds = @(
@@ -247,6 +252,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_entry_sid'
                                 Name = 'Sid'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
                                     dependentOn = @(
@@ -274,6 +280,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_includedidlist'
                                 Name = 'IncludedIdList'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                     dependentOn = @(
@@ -287,6 +294,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata'
                                 Name = 'PolicyRule'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                     childIds = @(
@@ -309,6 +317,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_includedidlist_groupid'
                                 Name = 'GroupId'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
                                     dependentOn = @(
@@ -322,6 +331,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_entry_accesmask'
                                 Name = 'AccessMask'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingCollectionDefinition'
                                     maximumCount = 100
@@ -368,6 +378,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_defender_configuration_devicecontrol_policyrules_{ruleid}_ruledata_entry_computersid'
                                 Name = 'ComputerSid'
+                                OffsetUri = '/configuration/devicecontrol/policyrules/{0}/ruledata'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
                                     dependentOn = @(
@@ -657,7 +668,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential;
                 }
             }
-
 
             It 'Should return true from the Test method' {
                 Test-TargetResource @testParams | Should -Be $true

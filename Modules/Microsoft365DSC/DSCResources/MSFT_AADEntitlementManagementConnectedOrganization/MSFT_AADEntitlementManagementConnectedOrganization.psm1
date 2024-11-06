@@ -446,7 +446,7 @@ function Set-TargetResource
             $directoryObjectType=$directoryObject.AdditionalProperties."@odata.type"
             $directoryObjectType=($directoryObject.AdditionalProperties."@odata.type").split(".")|select-object -last 1
             $directoryObjectRef=@{
-                "@odata.id" = "https://graph.microsoft.com/beta/$($directoryObjectType)s/$($sponsor)"
+                "@odata.id" = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/$($directoryObjectType)s/$($sponsor)"
             }
 
             New-MgBetaEntitlementManagementConnectedOrganizationExternalSponsorByRef `
@@ -459,7 +459,7 @@ function Set-TargetResource
             $directoryObject = Get-MgBetaDirectoryObject -DirectoryObjectId $sponsor
             $directoryObjectType=($directoryObject.AdditionalProperties."@odata.type").split(".")|select-object -last 1
             $directoryObjectRef=@{
-                "@odata.id" = "https://graph.microsoft.com/beta/$($directoryObjectType)s/$($sponsor)"
+                "@odata.id" = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/$($directoryObjectType)s/$($sponsor)"
             }
 
             New-MgBetaEntitlementManagementConnectedOrganizationInternalSponsorByRef `
@@ -515,7 +515,7 @@ function Set-TargetResource
             $directoryObjectType=$directoryObject.AdditionalProperties."@odata.type"
             $directoryObjectType=($directoryObject.AdditionalProperties."@odata.type").split(".")|select-object -last 1
             $directoryObjectRef=@{
-                "@odata.id" = "https://graph.microsoft.com/beta/$($directoryObjectType)s/$($sponsor)"
+                "@odata.id" = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/$($directoryObjectType)s/$($sponsor)"
             }
 
             New-MgBetaEntitlementManagementConnectedOrganizationExternalSponsorByRef `
@@ -553,7 +553,7 @@ function Set-TargetResource
             $directoryObjectType=$directoryObject.AdditionalProperties."@odata.type"
             $directoryObjectType=($directoryObject.AdditionalProperties."@odata.type").split(".")|select-object -last 1
             $directoryObjectRef=@{
-                "@odata.id" = "https://graph.microsoft.com/beta/$($directoryObjectType)s/$($sponsor)"
+                "@odata.id" = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/$($directoryObjectType)s/$($sponsor)"
             }
 
             New-MgBetaEntitlementManagementConnectedOrganizationInternalSponsorByRef `

@@ -55,6 +55,68 @@
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
                 }
+                EXOActiveSyncMailboxPolicy 'TestActiveSyncMailboxPolicy'
+                {
+                    AllowApplePushNotifications              = $True;
+                    AllowBluetooth                           = "Allow";
+                    AllowBrowser                             = $True;
+                    AllowCamera                              = $False; #drift
+                    AllowConsumerEmail                       = $True;
+                    AllowDesktopSync                         = $True;
+                    AllowExternalDeviceManagement            = $False;
+                    AllowHTMLEmail                           = $True;
+                    AllowInternetSharing                     = $True;
+                    AllowIrDA                                = $True;
+                    AllowMobileOTAUpdate                     = $True;
+                    AllowNonProvisionableDevices             = $True;
+                    AllowPOPIMAPEmail                        = $True;
+                    AllowRemoteDesktop                       = $True;
+                    AllowSimpleDevicePassword                = $True;
+                    AllowSMIMEEncryptionAlgorithmNegotiation = "AllowAnyAlgorithmNegotiation";
+                    AllowSMIMESoftCerts                      = $True;
+                    AllowStorageCard                         = $True;
+                    AllowTextMessaging                       = $True;
+                    AllowUnsignedApplications                = $True;
+                    AllowUnsignedInstallationPackages        = $True;
+                    AllowWiFi                                = $True;
+                    AlphanumericDevicePasswordRequired       = $False;
+                    ApprovedApplicationList                  = @();
+                    AttachmentsEnabled                       = $True;
+                    DeviceEncryptionEnabled                  = $False;
+                    DevicePasswordEnabled                    = $False;
+                    DevicePasswordExpiration                 = "Unlimited";
+                    DevicePasswordHistory                    = 0;
+                    DevicePolicyRefreshInterval              = "Unlimited";
+                    Identity                                 = "Test";
+                    IrmEnabled                               = $True;
+                    IsDefault                                = $True;
+                    IsDefaultPolicy                          = $True;
+                    MaxAttachmentSize                        = "Unlimited";
+                    MaxCalendarAgeFilter                     = "All";
+                    MaxDevicePasswordFailedAttempts          = "Unlimited";
+                    MaxEmailAgeFilter                        = "All";
+                    MaxEmailBodyTruncationSize               = "Unlimited";
+                    MaxEmailHTMLBodyTruncationSize           = "Unlimited";
+                    MaxInactivityTimeDeviceLock              = "Unlimited";
+                    MinDevicePasswordComplexCharacters       = 1;
+                    MinDevicePasswordLength                  = 1;
+                    Name                                     = "Test";
+                    PasswordRecoveryEnabled                  = $False;
+                    RequireDeviceEncryption                  = $False;
+                    RequireEncryptedSMIMEMessages            = $False;
+                    RequireEncryptionSMIMEAlgorithm          = "TripleDES";
+                    RequireManualSyncWhenRoaming             = $False;
+                    RequireSignedSMIMEAlgorithm              = "SHA1";
+                    RequireSignedSMIMEMessages               = $False;
+                    RequireStorageCardEncryption             = $False;
+                    UnapprovedInROMApplicationList           = @();
+                    UNCAccessEnabled                         = $True;
+                    WSSAccessEnabled                         = $True;
+                    Ensure               = "Present"
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
                 EXOAddressBookPolicy 'ConfigureAddressBookPolicy'
                 {
                     Name                 = "All Fabrikam ABP"
@@ -606,6 +668,14 @@
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
+                }
+                EXOMailboxAuditBypassAssociation 'EXOMailboxAuditBypassAssociation-Test'
+                {
+                    AuditBypassEnabled   = $True;  #Updated Property
+                    Identity             = "TestMailbox109";
+                    ApplicationId         = $ApplicationId;
+                    TenantId              = $TenantId;
+                    CertificateThumbprint = $CertificateThumbprint;
                 }
                 EXOMailboxAutoReplyConfiguration 'EXOMailboxAutoReplyConfiguration'
                 {
@@ -1393,6 +1463,17 @@
                     TenantId                                 = $TenantId
                     CertificateThumbprint                    = $CertificateThumbprint
                 }
+                EXOServicePrincipal 'ServicePrincipal'
+                {
+                    AppId                = "c6871074-3ded-4935-a5dc-b8f8d91d7d06";
+                    AppName              = "ISV Portal";
+                    DisplayName          = "Kartikeya";
+                    Ensure               = "Present";
+                    Identity             = "00f6b0e4-1d00-427b-9a5b-ce6c43c43fc7";
+                    ApplicationId         = $ApplicationId;
+                    TenantId              = $TenantId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                }
                 EXOSharedMailbox 'SharedMailbox'
                 {
                     DisplayName        = "Integration"
@@ -1443,6 +1524,17 @@
                     Notes                 = "Test block with updated notes";
                     SubmissionID          = "Non-Submission";
                     Value                 = "example.com";
+                }
+                EXOTenantAllowBlockListSpoofItems 'EXOTenantAllowBlockListSpoofItems-b66ffa0c-ad85-df9d-0a16-ad3cb9956f71'
+                {
+                    Action                = "Block"; #Drift
+                    ApplicationId         = $ApplicationId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                    Ensure                = "Present";
+                    SendingInfrastructure = "121.0.0.7";
+                    SpoofedUser           = "contoso.com";
+                    SpoofType             = "Internal";
+                    TenantId              = $TenantId;
                 }
                 EXOTransportConfig 'EXOTransportConfig '
                 {

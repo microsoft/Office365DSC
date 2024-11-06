@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "AADVerifiedIdAuthorityContract",
+    "description": "This resource configures an Azure AD Verified Identity Authority Contracts.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

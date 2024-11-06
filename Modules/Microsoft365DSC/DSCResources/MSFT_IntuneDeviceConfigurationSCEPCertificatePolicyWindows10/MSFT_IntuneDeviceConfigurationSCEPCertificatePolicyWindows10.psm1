@@ -1011,8 +1011,7 @@ function Get-DeviceConfigurationPolicyRootCertificate
         [System.String]
         $DeviceConfigurationPolicyId
     )
-
-    $Uri = " https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate"
+    $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate"
     $result = Invoke-MgGraphRequest -Method Get -Uri $Uri -ErrorAction Stop
 
     return $result
@@ -1031,8 +1030,8 @@ function Update-DeviceConfigurationPolicyRootCertificateId
         [System.String]
         $RootCertificateId
     )
-
-    $Uri = " https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate/`$ref"
+    
+    $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate/`$ref"
     $ref = @{
         '@odata.id' = "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations('$RootCertificateId')"
     }

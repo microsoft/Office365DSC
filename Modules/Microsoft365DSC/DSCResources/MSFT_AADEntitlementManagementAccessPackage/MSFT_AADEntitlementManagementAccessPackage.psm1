@@ -355,7 +355,7 @@ function Set-TargetResource
         foreach ($incompatibleAccessPackage in $IncompatibleAccessPackages)
         {
             $ref = @{
-                '@odata.id' = "https://graph.microsoft.com/beta/identityGovernance/entitlementManagement/accessPackages/$incompatibleAccessPackage"
+                '@odata.id' = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/identityGovernance/entitlementManagement/accessPackages/$incompatibleAccessPackage"
             }
 
             New-MgBetaEntitlementManagementAccessPackageIncompatibleAccessPackageByRef `
@@ -368,7 +368,7 @@ function Set-TargetResource
         foreach ($IncompatibleGroup in $IncompatibleGroups)
         {
             $ref = @{
-                '@odata.id' = "https://graph.microsoft.com/beta/groups/$IncompatibleGroup"
+                '@odata.id' = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/groups/$IncompatibleGroup"
             }
 
             New-MgBetaEntitlementManagementAccessPackageIncompatibleGroupByRef `
@@ -485,7 +485,7 @@ function Set-TargetResource
         foreach ($incompatibleAccessPackage in $toBeAdded.InputObject)
         {
             $ref = @{
-                '@odata.id' = "https://graph.microsoft.com/beta/identityGovernance/entitlementManagement/accessPackages/$incompatibleAccessPackage"
+                '@odata.id' = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/identityGovernance/entitlementManagement/accessPackages/$incompatibleAccessPackage"
             }
 
             New-MgBetaEntitlementManagementAccessPackageIncompatibleAccessPackageByRef `
@@ -522,7 +522,7 @@ function Set-TargetResource
         {
 
             $ref = @{
-                '@odata.id' = "https://graph.microsoft.com/beta/groups/$incompatibleGroup"
+                '@odata.id' = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/groups/$incompatibleGroup"
             }
 
             New-MgBetaEntitlementManagementAccessPackageIncompatibleGroupByRef `

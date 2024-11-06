@@ -5,6 +5,10 @@
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **DisplayName** | Key | String | The display name of the Shared Mailbox | |
+| **RetentionPolicy** | Write | String | Associated retention policy. | |
+| **AddressBookPolicy** | Write | String | Associated address book policy. | |
+| **RoleAssignmentPolicy** | Write | String | Associated role assignment policy. | |
+| **SharingPolicy** | Write | String | Associated sharing policy. | |
 | **TimeZone** | Write | String | The name of the Time Zone to assign to the mailbox | |
 | **Locale** | Write | String | The code of the Locale to assign to the mailbox | |
 | **Ensure** | Write | String | Present ensures the Mailbox Settings are applied | `Present` |

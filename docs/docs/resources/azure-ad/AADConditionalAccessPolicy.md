@@ -24,6 +24,10 @@
 | **ExcludeGuestOrExternalUserTypes** | Write | StringArray[] | Represents the Excluded internal guests or external user types. This is a multi-valued property. Supported values are: b2bCollaborationGuest, b2bCollaborationMember, b2bDirectConnectUser, internalGuest, OtherExternalUser, serviceProvider and unknownFutureValue. | `none`, `internalGuest`, `b2bCollaborationGuest`, `b2bCollaborationMember`, `b2bDirectConnectUser`, `otherExternalUser`, `serviceProvider`, `unknownFutureValue` |
 | **ExcludeExternalTenantsMembershipKind** | Write | String | Represents the Excluded Tenants membership kind. The possible values are: all, enumerated, unknownFutureValue. enumerated references an object of conditionalAccessEnumeratedExternalTenants derived type. | ``, `all`, `enumerated`, `unknownFutureValue` |
 | **ExcludeExternalTenantsMembers** | Write | StringArray[] | Represents the Excluded collection of tenant ids in the scope of Conditional Access for guests and external users policy targeting. | |
+| **IncludeServicePrincipals** | Write | StringArray[] | Service Principals in scope of the Policy. 'Attribute Definition Reader' role is needed. | |
+| **ExcludeServicePrincipals** | Write | StringArray[] | Service Principals out of scope of the Policy. 'Attribute Definition Reader' role is needed. | |
+| **ServicePrincipalFilterMode** | Write | String | Mode to use for the Service Principal filter. Possible values are include or exclude. 'Attribute Definition Reader' role is needed. | `include`, `exclude` |
+| **ServicePrincipalFilterRule** | Write | String | Rule syntax for the Service Principal filter. 'Attribute Definition Reader' role is needed. | |
 | **IncludePlatforms** | Write | StringArray[] | Client Device Platforms in scope of the Policy. | |
 | **ExcludePlatforms** | Write | StringArray[] | Client Device Platforms out of scope of the Policy. | |
 | **IncludeLocations** | Write | StringArray[] | AAD Named Locations in scope of the Policy. | |
@@ -49,6 +53,7 @@
 | **AuthenticationStrength** | Write | String | Name of the associated authentication strength policy. | |
 | **TransferMethods** | Write | String | Names of the associated authentication flow transfer methods. Possible values are '', 'deviceCodeFlow', 'authenticationTransfer', or 'deviceCodeFlow,authenticationTransfer'. | |
 | **AuthenticationContexts** | Write | StringArray[] | Authentication context class references. | |
+| **InsiderRiskLevels** | Write | String | Insider risk levels conditions. | |
 | **Ensure** | Write | String | Specify if the Azure AD CA Policy should exist or not. | `Present`, `Absent` |
 | **Credential** | Write | PSCredential | Credentials for the Microsoft Graph delegated permissions. | |
 | **ApplicationId** | Write | String | Id of the Azure Active Directory application to authenticate with. | |
@@ -72,21 +77,21 @@ To authenticate with the Microsoft Graph API, this resource required the followi
 
 - **Read**
 
-    - Agreement.Read.All, Group.Read.All, Policy.Read.All, RoleManagement.Read.Directory, User.Read.All
+    - Agreement.Read.All, Group.Read.All, Policy.Read.All, RoleManagement.Read.Directory, User.Read.All, CustomSecAttributeDefinition.Read.All
 
 - **Update**
 
-    - Agreement.Read.All, Group.Read.All, Policy.Read.All, Policy.ReadWrite.ConditionalAccess, RoleManagement.Read.Directory, User.Read.All
+    - Agreement.Read.All, Group.Read.All, Policy.Read.All, Policy.ReadWrite.ConditionalAccess, RoleManagement.Read.Directory, User.Read.All, CustomSecAttributeDefinition.Read.All
 
 #### Application permissions
 
 - **Read**
 
-    - Agreement.Read.All, Application.Read.All, Group.Read.All, Policy.Read.All, RoleManagement.Read.Directory, User.Read.All
+    - Agreement.Read.All, Application.Read.All, Group.Read.All, Policy.Read.All, RoleManagement.Read.Directory, User.Read.All, CustomSecAttributeDefinition.Read.All
 
 - **Update**
 
-    - Agreement.Read.All, Application.Read.All, Group.Read.All, Policy.Read.All, Policy.ReadWrite.ConditionalAccess, RoleManagement.Read.Directory, User.Read.All
+    - Agreement.Read.All, Application.Read.All, Group.Read.All, Policy.Read.All, Policy.ReadWrite.ConditionalAccess, RoleManagement.Read.Directory, User.Read.All, CustomSecAttributeDefinition.Read.All
 
 ## Examples
 

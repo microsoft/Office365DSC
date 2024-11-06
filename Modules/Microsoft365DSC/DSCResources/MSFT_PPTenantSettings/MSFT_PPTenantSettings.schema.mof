@@ -2,6 +2,42 @@
 class MSFT_PPTenantSettings : OMI_BaseResource
 {
     [Key, Description("Should be set to yes"),ValueMap{"Yes"},Values{"Yes"}] string IsSingleInstance;
+    [Write, Description("TBD")] Boolean DisableCopilotFeedback;
+    [Write, Description("TBD")] Boolean DisableMakerMatch;
+    [Write, Description("TBD")] Boolean DisableUnusedLicenseAssignment;
+    [Write, Description("TBD")] Boolean DisableCreateFromImage;
+    [Write, Description("TBD")] Boolean DisableConnectionSharingWithEveryone;
+    [Write, Description("TBD")] Boolean AllowNewOrgChannelDefault;
+    [Write, Description("TBD")] Boolean DisableCopilot;
+    [Write, Description("TBD")] Boolean DisableCopilotWithBing;
+    [Write, Description("TBD")] Boolean DisableAdminDigest;
+    [Write, Description("TBD")] Boolean DisablePreferredDataLocationForTeamsEnvironment;
+    [Write, Description("TBD")] Boolean DisableDeveloperEnvironmentCreationByNonAdminUsers;
+    [Write, Description("TBD")] Boolean EnvironmentRoutingAllMakers;
+    [Write, Description("TBD")] Boolean EnableDefaultEnvironmentRouting;
+    [Write, Description("TBD")] String EnableDesktopFlowDataPolicyManagement;
+    [Write, Description("TBD")] Boolean EnableCanvasAppInsights;
+    [Write, Description("TBD")] Boolean DisableCreateFromFigma;
+
+    [Write, Description("TBD")] Boolean DisableBillingPolicyCreationByNonAdminUsers;
+    [Write, Description("TBD")] UInt32 StorageCapacityConsumptionWarningThreshold;
+    [Write, Description("TBD")] Boolean EnableTenantCapacityReportForEnvironmentAdmins;
+    [Write, Description("TBD")] Boolean EnableTenantLicensingReportForEnvironmentAdmins;
+    [Write, Description("TBD")] Boolean DisableUseOfUnassignedAIBuilderCredits;
+    [Write, Description("TBD")] String EnableGenerativeAIFeaturesForSiteUsers;
+    [Write, Description("TBD")] String EnableExternalAuthenticationProvidersInPowerPages;
+    [Write, Description("TBD")] Boolean DisableChampionsInvitationReachout;
+    [Write, Description("TBD")] Boolean DisableSkillsMatchInvitationReachout;
+    [Write, Description("TBD")] Boolean EnableOpenAiBotPublishing;
+    [Write, Description("TBD")] Boolean DisableAiPrompts;
+    [Write, Description("TBD")] Boolean DisableCopilotFeedbackMetadata;
+
+    [Write, Description("TBD")] Boolean EnableModelDataSharing;
+    [Write, Description("TBD")] Boolean DisableDataLogging;
+    [Write, Description("TBD")] String PowerCatalogAudienceSetting;
+    [Write, Description("TBD")] Boolean EnableDeleteDisabledUserinAllEnvironments;
+    [Write, Description("TBD")] Boolean DisableHelpSupportCopilot;
+    [Write, Description("TBD")] Boolean DisableSurveyScreenshots;
     [Write, Description("When set to true this will disable the Walk Me guidance.")] boolean WalkMeOptOut;
     [Write, Description("When set to true this will disable the NPS Comments Reachout.")] boolean DisableNPSCommentsReachout;
     [Write, Description("When set to true this will disable the monthly newsletters.")] boolean DisableNewsletterSendout;

@@ -115,7 +115,15 @@ function Update-MgServicePrincipal
 
         [Parameter()]
         [System.String[]]
-        $Tags
+        $Tags,
+
+        [Parameter()]
+        [PSObject]
+        $PasswordCredentials,
+
+        [Parameter()]
+        [PSObject]
+        $KeyCredentials
     )
 }
 
@@ -187,7 +195,15 @@ function New-MGServicePrincipal
 
         [Parameter()]
         [System.String[]]
-        $Tags
+        $Tags,
+
+        [Parameter()]
+        [PSObject]
+        $PasswordCredentials,
+
+        [Parameter()]
+        [PSObject]
+        $KeyCredentials
     )
 }
 

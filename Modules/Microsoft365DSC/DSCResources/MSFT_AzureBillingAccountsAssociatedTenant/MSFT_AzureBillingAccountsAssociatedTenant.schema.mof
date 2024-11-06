@@ -1,0 +1,17 @@
+[ClassVersion("1.0.0.0"), FriendlyName("AzureBillingAccountsAssociatedTenant")]
+class MSFT_AzureBillingAccountsAssociatedTenant : OMI_BaseResource
+{
+    [Key, Description("The ID that uniquely identifies a tenant.")] String AssociatedTenantId;
+    [Write, Description("The name of the associated tenant.")] String DisplayName;
+    [Write, Description("Name of the billing account.")] String BillingAccount;
+    [Write, Description("The state determines whether users from the associated tenant can be assigned roles for commerce activities like viewing and downloading invoices, managing payments, and making purchases.")] String BillingManagementState;
+    [Write, Description("The state determines whether subscriptions and licenses can be provisioned in the associated tenant. It can be set to 'Pending' to initiate a billing request.")] String ProvisioningManagementState;
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

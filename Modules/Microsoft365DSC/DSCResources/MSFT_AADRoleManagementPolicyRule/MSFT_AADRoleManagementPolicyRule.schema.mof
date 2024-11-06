@@ -1,0 +1,85 @@
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADRoleManagementPolicyExpirationRule
+{
+    [Write, Description("Specifies if expiration is required.")] Boolean isExpirationRequired;
+    [Write, Description("The maximum duration for the expiration.")] String maximumDuration;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADRoleManagementPolicyNotificationRule
+{
+    [Write, Description("Notification type for the rule.")] String notificationType;
+    [Write, Description("Type of the recipient for the notification.")] String recipientType;
+    [Write, Description("Level of the notification.")] String notificationLevel;
+    [Write, Description("Indicates if default recipients are enabled.")] Boolean isDefaultRecipientsEnabled;
+    [Write, Description("List of notification recipients.")] String notificationRecipients[];
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADRoleManagementPolicyEnablementRule
+{
+    [Write, Description("List of enabled rules.")] String enabledRules[];
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADRoleManagementPolicySubjectSet 
+{
+    [Write, Description("The type of the subject set.")] String odataType;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADRoleManagementPolicyApprovalStage
+{
+    [Write, Description("The number of days that a request can be pending a response before it is automatically denied.")] UInt32 approvalStageTimeOutInDays;
+    [Write, Description("The time a request can be pending a response from a primary approver before it can be escalated to the escalation approvers.")] UInt32 escalationTimeInMinutes;
+    [Write, Description("Indicates whether the approver must provide justification for their reponse.")] Boolean isApproverJustificationRequired;
+    [Write, Description("Indicates whether escalation if enabled.")] Boolean isEscalationEnabled;
+    [Write, Description("The escalation approvers for this stage when the primary approvers don't respond."), EmbeddedInstance("MSFT_AADRoleManagementPolicySubjectSet")] String escalationApprovers[];
+    [Write, Description("The primary approvers of this stage."), EmbeddedInstance("MSFT_AADRoleManagementPolicySubjectSet")] String primaryApprovers[];
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADRoleManagementPolicyApprovalSettings
+{
+    [Write, Description("One of SingleStage, Serial, Parallel, NoApproval (default). NoApproval is used when isApprovalRequired is false.")] String approvalMode;
+    [Write, Description("If approval is required, the one or two elements of this collection define each of the stages of approval. An empty array if no approval is required."), EmbeddedInstance("MSFT_AADRoleManagementPolicyApprovalStage")] String approvalStages[];
+    [Write, Description("Indicates whether approval is required for requests in this policy.")] Boolean isApprovalRequired;
+    [Write, Description("Indicates whether approval is required for a user to extend their assignment.")] Boolean isApprovalRequiredForExtension;
+    [Write, Description("Indicates whether the requestor is required to supply a justification in their request.")] Boolean isRequestorJustificationRequired;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADRoleManagementPolicyApprovalRule
+{
+    [Write, Description("Settings for approval requirements."), EmbeddedInstance("MSFT_AADRoleManagementPolicyApprovalSettings")] String setting;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AADRoleManagementPolicyAuthenticationContextRule
+{
+    [Write, Description("Indicates if the authentication context rule is enabled.")] Boolean isEnabled;
+    [Write, Description("Claim value associated with the rule.")] String claimValue;
+};
+
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADRoleManagementPolicyRule")]
+class MSFT_AADRoleManagementPolicyRule : OMI_BaseResource
+{
+    [Key, Description("The unique identifier for an entity. Read-only.")] String id;
+    [Key, Description("Role display name.")] String roleDisplayName;
+    [Write, Description("Rule Type.")] String ruleType;
+    [Write, Description("Policy Id.")] String policyId;
+    [Write, Description("Expiration Rule."), EmbeddedInstance("MSFT_AADRoleManagementPolicyExpirationRule")] String expirationRule;
+    [Write, Description("Notification Rule."), EmbeddedInstance("MSFT_AADRoleManagementPolicyNotificationRule")] String notificationRule;
+    [Write, Description("Enablement Rule."), EmbeddedInstance("MSFT_AADRoleManagementPolicyEnablementRule")] String enablementRule;
+    [Write, Description("Approval Rule."), EmbeddedInstance("MSFT_AADRoleManagementPolicyApprovalRule")] String approvalRule;
+    [Write, Description("Authentication Context Rule."), EmbeddedInstance("MSFT_AADRoleManagementPolicyAuthenticationContextRule")] String authenticationContextRule;
+    [Write, Description("Credentials of the Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Secret of the Azure Active Directory tenant used for authentication."), EmbeddedInstance("MSFT_Credential")] String ApplicationSecret;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

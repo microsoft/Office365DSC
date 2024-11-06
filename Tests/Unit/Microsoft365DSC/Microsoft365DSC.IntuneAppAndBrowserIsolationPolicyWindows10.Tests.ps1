@@ -68,6 +68,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_windowsdefenderapplicationguard_installwindowsdefenderapplicationguard'
                                 Name = 'InstallWindowsDefenderApplicationGuard'
+                                OffsetUri = '/InstallWindowsDefenderApplicationGuard'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
@@ -75,6 +76,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_windowsdefenderapplicationguard_settings_allowwindowsdefenderapplicationguard'
                                 Name = 'AllowWindowsDefenderApplicationGuard'
+                                OffsetUri = '/Settings/AllowWindowsDefenderApplicationGuard'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
@@ -82,6 +84,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_windowsdefenderapplicationguard_settings_allowpersistence'
                                 Name = 'AllowPersistence'
+                                OffsetUri = '/Settings/AllowPersistence'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
@@ -89,6 +92,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_windowsdefenderapplicationguard_settings_allowvirtualgpu'
                                 Name = 'AllowVirtualGPU'
+                                OffsetUri = '/Settings/AllowVirtualGPU'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
@@ -96,6 +100,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_windowsdefenderapplicationguard_settings_allowcameramicrophoneredirection'
                                 Name = 'AllowCameraMicrophoneRedirection'
+                                OffsetUri = '/Settings/AllowCameraMicrophoneRedirection'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }

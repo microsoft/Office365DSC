@@ -6,15 +6,19 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Name,
+        $DisplayName,
 
         [Parameter()]
         [System.String]
         $Id,
 
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InvoiceSectionId,
+
         [Parameter()]
-        [System.Boolean]
-        $Enabled,
+        [System.String]
+        $Status,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -69,22 +73,28 @@ function Get-TargetResource
         {
             if (-not [System.String]::IsNullOrEmpty($Id))
             {
-                $instance = $Script:exportedInstances | Where-Object -FilterScript {$_.Id -eq $Id}
+                $instance = $Script:exportedInstances | Where-Object -FilterScript {$_.Name -eq $Id}
             }
             elseif ($null -eq $instance -and -not [System.String]::IsNullOrEmpty($Name))
             {
-                $instance = $Script:exportedInstances | Where-Object -FilterScript {$_.Name -eq $Name}
+                $instance = $Script:exportedInstances | Where-Object -FilterScript {$_.properties.displayName -eq $DisplayName -and `
+                                                                                    $_.properties.invoiceSectionId -eq $InvoiceSectionId}
             }
         }
         else
         {
             if (-not [System.String]::IsNullOrEmpty($Id))
             {
-                $instance = Get-AzSubscription -SubscriptionId $Id
+                $uri = "https://management.azure.com$($InvoiceSectionId)/billingSubscriptions/$($Id)?api-version=2024-04-01"
+                $response = Invoke-AzRest -Uri $uri -Method Get
+                $instance = (ConvertFrom-Json $response.Content).value
             }
-            elseif ($null -eq $instance -and -not [System.String]::IsNullOrEmpty($Name))
+            elseif ($null -eq $instance -and -not [System.String]::IsNullOrEmpty($DisplayName))
             {
-                $instance = Get-AzSubscription -SubscriptionName $Name
+                $uri = "https://management.azure.com$($InvoiceSectionId)/billingSubscriptions?api-version=2024-04-01"
+                $response = Invoke-AzRest -Uri $uri -Method Get
+                $instances = (ConvertFrom-Json $response.Content).value
+                $instance = $instances | Where-Object -FilterScript {$_.properties.displayName -eq $DisplayName}
             }
         }
         if ($null -eq $instance)
@@ -93,9 +103,10 @@ function Get-TargetResource
         }
 
         $results = @{
-            Name                  = $instance.Name
-            Id                    = $instance.Id
-            Enabled               = $instance.Enabled
+            DisplayName           = $instance.properties.displayName
+            Id                    = $instance.name
+            InvoiceSectionId      = $instance.properties.invoiceSectionId
+            Status                = $instance.properties.status
             Ensure                = 'Present'
             Credential            = $Credential
             ApplicationId         = $ApplicationId
@@ -126,15 +137,19 @@ function Set-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Name,
+        $DisplayName,
 
         [Parameter()]
         [System.String]
         $Id,
 
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InvoiceSectionId,
+
         [Parameter()]
-        [System.Boolean]
-        $Enabled,
+        [System.String]
+        $Status,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -183,17 +198,30 @@ function Set-TargetResource
     # CREATE
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
-        throw "This resource cannot create new Azure subscriptions."
+        $uri = "https://management.azure.com/providers/Microsoft.Subscription/aliases/$((New-GUID).ToString())?api-version=2021-10-01"
+        $params = @{
+            properties = @{
+                billingScope = $InvoiceSectionId
+                DisplayName  = $DisplayName
+                Workload     = "Production"
+            }
+        }
+        $payload = ConvertTo-Json $params -Depth 10 -Compress
+        Write-Verbose -Message "Creating new subscription {$DisplayName} with payload:`r`n$payload"
+        $response = Invoke-AzRest -Uri $uri -Method PUT -Payload $payload
+        Write-Verbose -Message "Result: $($response.Content)"
     }
     # UPDATE
     elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
     {
-        if ($Enabled)
+        if ($Status -eq 'Active')
         {
+            Write-Verbose -Message "Enabling subscription {$Name}"
             Enable-AzSubscription -Id $currentInstance.Id | Out-Null
         }
         elseif (-not $Enabled)
         {
+            Write-Verbose -Message "Disabling subscription {$Name}"
             Disable-AzSubscription -Id $currentInstance.Id | Out-Null
         }
     }
@@ -212,15 +240,19 @@ function Test-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Name,
+        $DisplayName,
 
         [Parameter()]
         [System.String]
         $Id,
 
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InvoiceSectionId,
+
         [Parameter()]
-        [System.Boolean]
-        $Enabled,
+        [System.String]
+        $Status,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -315,8 +347,7 @@ function Export-TargetResource
         $AccessTokens
     )
 
-    ##TODO - Replace workload
-    $ConnectionMode = New-M365DSCConnection -Workload 'Workload' `
+    $ConnectionMode = New-M365DSCConnection -Workload 'Azure' `
         -InboundParameters $PSBoundParameters
 
     #Ensure the proper dependencies are installed in the current environment.
@@ -334,47 +365,70 @@ function Export-TargetResource
     try
     {
         $Script:ExportMode = $true
-        [array] $Script:exportedInstances = Get-AzSubscription -ErrorAction Stop
 
-        $i = 1
-        $dscContent = ''
-        if ($Script:exportedInstances.Length -eq 0)
+        $uri = 'https://management.azure.com/providers/Microsoft.Billing/billingaccounts/?api-version=2020-05-01'
+        $response = Invoke-AzRest -Uri $uri -Method Get
+        $billingAccounts = (ConvertFrom-Json $response.Content).value
+
+        foreach ($billingAccount in $billingAccounts)
         {
-            Write-Host $Global:M365DSCEmojiGreenCheckMark
-        }
-        else
-        {
-            Write-Host "`r`n" -NoNewline
-        }
-        foreach ($config in $Script:exportedInstances)
-        {
-            $displayedKey = $config.Name
-            Write-Host "    |---[$i/$($Script:exportedInstances.Count)] $displayedKey" -NoNewline
-            $params = @{
-                Name                  = $config.Name
-                Id                    = $config.Id
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
+            $uri = "https://management.azure.com/providers/Microsoft.Billing/billingaccounts/$($billingAccount.Name)/billingprofiles/?api-version=2020-05-01"
+            $response = Invoke-AzRest -Uri $uri -Method Get
+            $billingProfiles = (ConvertFrom-Json $response.Content).value
+
+            foreach ($profile in $billingProfiles)
+            {
+                $uri = "https://management.azure.com/providers/Microsoft.Billing/billingAccounts/$($billingAccount.name)/billingProfiles/$($profile.name)/billingSubscriptions?api-version=2024-04-01"
+                $response = Invoke-AzRest -Uri $uri -Method Get
+                $subscriptions = (ConvertFrom-Json $response.Content).value
+                [array] $Script:exportedInstances += $subscriptions
+
+                $i = 1
+                $dscContent = ''
+                if ($Script:exportedInstances.Length -eq 0)
+                {
+                    Write-Host $Global:M365DSCEmojiGreenCheckMark
+                }
+                else
+                {
+                    Write-Host "`r`n" -NoNewline
+                }
+                foreach ($config in $subscriptions)
+                {
+                    if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                    {
+                        $Global:M365DSCExportResourceInstancesCount++
+                    }
+                    $displayedKey = $config.properties.displayName
+                    Write-Host "    |---[$i/$($subscriptions.Count)] $displayedKey" -NoNewline
+                    $params = @{
+                        DisplayName           = $config.properties.displayName
+                        Id                    = $config.Name
+                        InvoiceSectionId      = $config.properties.invoiceSectionId
+                        Credential            = $Credential
+                        ApplicationId         = $ApplicationId
+                        TenantId              = $TenantId
+                        CertificateThumbprint = $CertificateThumbprint
+                        ManagedIdentity       = $ManagedIdentity.IsPresent
+                        AccessTokens          = $AccessTokens
+                    }
+
+                    $Results = Get-TargetResource @Params
+                    $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
+                        -Results $Results
+
+                    $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
+                        -ConnectionMode $ConnectionMode `
+                        -ModulePath $PSScriptRoot `
+                        -Results $Results `
+                        -Credential $Credential
+                    $dscContent += $currentDSCBlock
+                    Save-M365DSCPartialExport -Content $currentDSCBlock `
+                        -FileName $Global:PartialExportFileName
+                    $i++
+                    Write-Host $Global:M365DSCEmojiGreenCheckMark
+                }
             }
-
-            $Results = Get-TargetResource @Params
-            $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
-                -Results $Results
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential
-            $dscContent += $currentDSCBlock
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-Host $Global:M365DSCEmojiGreenCheckMark
         }
         return $dscContent
     }

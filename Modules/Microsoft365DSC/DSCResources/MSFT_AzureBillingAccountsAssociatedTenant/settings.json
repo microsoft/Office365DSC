@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "AzureBillingAccountsAssociatedTenant",
+    "description": "Configures associated tenants to billing accounts in the Microsoft Admin Center.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

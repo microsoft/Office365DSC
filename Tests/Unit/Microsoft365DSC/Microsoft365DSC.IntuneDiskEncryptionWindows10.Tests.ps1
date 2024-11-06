@@ -43,6 +43,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
+                return @{
+                    Description = "FakeStringValue"
+                    Id = "FakeStringValue"
+                    Name = "FakeStringValue"
+                    RoleScopeTagIds = @("FakeStringValue")
+                    TemplateReference = @{
+                        TemplateId = '46ddfc50-d10f-4867-b852-9434254b3bff_1'
+                    }
+                }
             }
 
             Mock -CommandName Update-IntuneDeviceConfigurationPolicy -MockWith {
@@ -52,7 +61,70 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                return ,@()
+                return @{
+                    Id                   = '0'
+                    SettingDefinitions   = @(
+                        @{
+                            Id = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
+                            Name = 'IdentificationField'
+                            OffsetUri = '/IdentificationField'
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
+                            }
+                        },
+                        @{
+                            Id = 'device_vendor_msft_bitlocker_identificationfield'
+                            Name = 'IdentificationField_Name'
+                            OffsetUri = '/IdentificationField'
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
+                            }
+                        },
+                        @{
+                            Id = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
+                            Name = 'SecIdentificationField'
+                            OffsetUri = '/IdentificationField'
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
+                            }
+                        }
+                    )
+                    SettingInstance      = @{
+                        SettingDefinitionId              = 'device_vendor_msft_bitlocker_identificationfield'
+                        SettingInstanceTemplateReference = @{
+                            SettingInstanceTemplateId = '3aeb9145-2c02-4086-8886-44dbe09c2f62'
+                        }
+                        AdditionalProperties             = @(
+                            @{
+                                '@odata.type'               = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                choiceSettingValue = @(
+                                    @{
+                                        children = @(
+                                            @{
+                                                '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
+                                                settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
+                                                simpleSettingValue  = @{
+                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
+                                                    value = 'Field'
+                                                }
+                                            },
+                                            @{
+                                                '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
+                                                settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
+                                                simpleSettingValue  = @{
+                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
+                                                    value = 'SecField'
+                                                }
+                                            }
+                                        )
+                                        value = 'device_vendor_msft_bitlocker_identificationfield_1'
+                                    }
+                                )
+                            }
+                        )
+                    }
+                    AdditionalProperties = @{}
+                }
             }
 
             Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicyAssignment -MockWith {
@@ -142,82 +214,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure = 'Absent'
                     Credential = $Credential;
                 }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Description = "FakeStringValue"
-                        Id = "FakeStringValue"
-                        Name = "FakeStringValue"
-                        RoleScopeTagIds = @("FakeStringValue")
-                        TemplateReference = @{
-                            TemplateId = '46ddfc50-d10f-4867-b852-9434254b3bff_1'
-                        }
-                    }
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                    return @{
-                        Id                   = '0'
-                        SettingDefinitions   = @(
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
-                                Name = 'IdentificationField'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                }
-                            },
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield'
-                                Name = 'IdentificationField_Name'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
-                                }
-                            },
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
-                                Name = 'SecIdentificationField'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                }
-                            }
-                        )
-                        SettingInstance      = @{
-                            SettingDefinitionId              = 'device_vendor_msft_bitlocker_identificationfield'
-                            SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = '3aeb9145-2c02-4086-8886-44dbe09c2f62'
-                            }
-                            AdditionalProperties             = @(
-                                @{
-                                    '@odata.type'               = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                    choiceSettingValue = @(
-                                        @{
-                                            children = @(
-                                                @{
-                                                    '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                    settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
-                                                    simpleSettingValue  = @{
-                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                        value = 'Field'
-                                                    }
-                                                },
-                                                @{
-                                                    '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                    settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
-                                                    simpleSettingValue  = @{
-                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                        value = 'SecField'
-                                                    }
-                                                }
-                                            )
-                                            value = 'device_vendor_msft_bitlocker_identificationfield_1'
-                                        }
-                                    )
-                                }
-                            )
-                        }
-                        AdditionalProperties = @{}
-                    }
-                }
             }
 
             It 'Should return Values from the Get method' {
@@ -252,82 +248,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure = 'Present'
                     Credential = $Credential;
                 }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Description = "FakeStringValue"
-                        Id = "FakeStringValue"
-                        Name = "FakeStringValue"
-                        RoleScopeTagIds = @("FakeStringValue")
-                        TemplateReference = @{
-                            TemplateId = '46ddfc50-d10f-4867-b852-9434254b3bff_1'
-                        }
-                    }
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                    return @{
-                        Id                   = '0'
-                        SettingDefinitions   = @(
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
-                                Name = 'IdentificationField'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                }
-                            },
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield'
-                                Name = 'IdentificationField_Name'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
-                                }
-                            },
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
-                                Name = 'SecIdentificationField'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                }
-                            }
-                        )
-                        SettingInstance      = @{
-                            SettingDefinitionId              = 'device_vendor_msft_bitlocker_identificationfield'
-                            SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = '3aeb9145-2c02-4086-8886-44dbe09c2f62'
-                            }
-                            AdditionalProperties             = @(
-                                @{
-                                    '@odata.type'               = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                    choiceSettingValue = @(
-                                        @{
-                                            children = @(
-                                                @{
-                                                    '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                    settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
-                                                    simpleSettingValue  = @{
-                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                        value = 'Field'
-                                                    }
-                                                },
-                                                @{
-                                                    '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                    settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
-                                                    simpleSettingValue  = @{
-                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                        value = 'SecField'
-                                                    }
-                                                }
-                                            )
-                                            value = 'device_vendor_msft_bitlocker_identificationfield_1'
-                                        }
-                                    )
-                                }
-                            )
-                        }
-                        AdditionalProperties = @{}
-                    }
-                }
             }
 
             It 'Should return true from the Test method' {
@@ -348,87 +268,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Id = "FakeStringValue"
                     IdentificationField_Name = "1"
                     IdentificationField = "Field"
-                    SecIdentificationField = "SecField"
+                    SecIdentificationField = "No - SecField" # Updated property
                     DisplayName = "FakeStringValue"
                     RoleScopeTagIds = @("FakeStringValue")
                     Ensure = 'Present'
                     Credential = $Credential;
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Description = "FakeStringValue"
-                        Id = "FakeStringValue"
-                        Name = "FakeStringValue"
-                        RoleScopeTagIds = @("FakeStringValue")
-                        TemplateReference = @{
-                            TemplateId = '46ddfc50-d10f-4867-b852-9434254b3bff_1'
-                        }
-                    }
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                    return @{
-                        Id                   = '0'
-                        SettingDefinitions   = @(
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
-                                Name = 'IdentificationField'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                }
-                            },
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield'
-                                Name = 'IdentificationField_Name'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
-                                }
-                            },
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
-                                Name = 'SecIdentificationField'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                }
-                            }
-                        )
-                        SettingInstance      = @{
-                            SettingDefinitionId              = 'device_vendor_msft_bitlocker_identificationfield'
-                            SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = '3aeb9145-2c02-4086-8886-44dbe09c2f62'
-                            }
-                            AdditionalProperties             = @(
-                                @{
-                                    '@odata.type'               = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                    choiceSettingValue = @(
-                                        @{
-                                            children = @(
-                                                @{
-                                                    '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                    settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
-                                                    simpleSettingValue  = @{
-                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                        value = 'ChangedValue' #drift
-                                                    }
-                                                },
-                                                @{
-                                                    '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                    settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
-                                                    simpleSettingValue  = @{
-                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                        value = 'SecField'
-                                                    }
-                                                }
-                                            )
-                                            value = 'device_vendor_msft_bitlocker_identificationfield_1'
-                                        }
-                                    )
-                                }
-                            )
-                        }
-                        AdditionalProperties = @{}
-                    }
                 }
             }
 
@@ -453,83 +297,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     Credential = $Credential
                 }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Description = "FakeStringValue"
-                        Id = "FakeStringValue"
-                        Name = "FakeStringValue"
-                        RoleScopeTagIds = @("FakeStringValue")
-                        TemplateReference = @{
-                            TemplateId = '46ddfc50-d10f-4867-b852-9434254b3bff_1'
-                        }
-                    }
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                    return @{
-                        Id                   = '0'
-                        SettingDefinitions   = @(
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
-                                Name = 'IdentificationField'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                }
-                            },
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield'
-                                Name = 'IdentificationField_Name'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
-                                }
-                            },
-                            @{
-                                Id = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
-                                Name = 'SecIdentificationField'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
-                                }
-                            }
-                        )
-                        SettingInstance      = @{
-                            SettingDefinitionId              = 'device_vendor_msft_bitlocker_identificationfield'
-                            SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = '3aeb9145-2c02-4086-8886-44dbe09c2f62'
-                            }
-                            AdditionalProperties             = @(
-                                @{
-                                    '@odata.type'               = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                    choiceSettingValue = @(
-                                        @{
-                                            children = @(
-                                                @{
-                                                    '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                    settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_identificationfield'
-                                                    simpleSettingValue  = @{
-                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                        value = 'Field'
-                                                    }
-                                                },
-                                                @{
-                                                    '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-                                                    settingDefinitionId = 'device_vendor_msft_bitlocker_identificationfield_secidentificationfield'
-                                                    simpleSettingValue  = @{
-                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                        value = 'SecField'
-                                                    }
-                                                }
-                                            )
-                                            value = 'device_vendor_msft_bitlocker_identificationfield_1'
-                                        }
-                                    )
-                                }
-                            )
-                        }
-                        AdditionalProperties = @{}
-                    }
-                }
             }
+
             It 'Should Reverse Engineer resource from the Export method' {
                 $result = Export-TargetResource @testParams
                 $result | Should -Not -BeNullOrEmpty

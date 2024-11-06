@@ -1829,9 +1829,9 @@ function New-M365DSCConnection
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Azure', 'AzureDevOPS', 'Defender', 'ExchangeOnline', 'Fabric', 'Intune', `
+        [ValidateSet('AdminAPI', 'Azure', 'AzureDevOPS', 'DefenderForEndPoint', 'ExchangeOnline', 'Fabric', 'Intune', `
                 'SecurityComplianceCenter', 'PnP', 'PowerPlatforms', `
-                'MicrosoftTeams', 'MicrosoftGraph', 'SharePointOnlineREST', 'Tasks')]
+                'MicrosoftTeams', 'MicrosoftGraph', 'SharePointOnlineREST', 'Tasks', 'AdminAPI')]
         [System.String]
         $Workload,
 
@@ -3835,7 +3835,7 @@ function Get-M365DSCExportContentForResource
     {
         $instanceName += "-$primaryKey"
     }
-    else
+    elseif (-not $Keys.Contains('IsSingleInstance'))
     {
         $instanceName += "-" + (New-Guid).ToString()
     }
@@ -4671,7 +4671,7 @@ function Test-M365DSCModuleValidity
     [CmdletBinding()]
     param()
 
-    if ('AzureAutomation/' -eq $env:AZUREPS_HOST_ENVIRONMENT)
+    if ($env:AZUREPS_HOST_ENVIRONMENT -like 'AzureAutomation*')
     {
         $message = 'Skipping check for newer version of Microsoft365DSC due to Azure Automation Environment restrictions.'
         Write-Verbose -Message $message

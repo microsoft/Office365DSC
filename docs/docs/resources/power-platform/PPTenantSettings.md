@@ -5,6 +5,40 @@
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **IsSingleInstance** | Key | String | Should be set to yes | `Yes` |
+| **DisableCopilotFeedback** | Write | Boolean | TBD | |
+| **DisableMakerMatch** | Write | Boolean | TBD | |
+| **DisableUnusedLicenseAssignment** | Write | Boolean | TBD | |
+| **DisableCreateFromImage** | Write | Boolean | TBD | |
+| **DisableConnectionSharingWithEveryone** | Write | Boolean | TBD | |
+| **AllowNewOrgChannelDefault** | Write | Boolean | TBD | |
+| **DisableCopilot** | Write | Boolean | TBD | |
+| **DisableCopilotWithBing** | Write | Boolean | TBD | |
+| **DisableAdminDigest** | Write | Boolean | TBD | |
+| **DisablePreferredDataLocationForTeamsEnvironment** | Write | Boolean | TBD | |
+| **DisableDeveloperEnvironmentCreationByNonAdminUsers** | Write | Boolean | TBD | |
+| **EnvironmentRoutingAllMakers** | Write | Boolean | TBD | |
+| **EnableDefaultEnvironmentRouting** | Write | Boolean | TBD | |
+| **EnableDesktopFlowDataPolicyManagement** | Write | String | TBD | |
+| **EnableCanvasAppInsights** | Write | Boolean | TBD | |
+| **DisableCreateFromFigma** | Write | Boolean | TBD | |
+| **DisableBillingPolicyCreationByNonAdminUsers** | Write | Boolean | TBD | |
+| **StorageCapacityConsumptionWarningThreshold** | Write | UInt32 | TBD | |
+| **EnableTenantCapacityReportForEnvironmentAdmins** | Write | Boolean | TBD | |
+| **EnableTenantLicensingReportForEnvironmentAdmins** | Write | Boolean | TBD | |
+| **DisableUseOfUnassignedAIBuilderCredits** | Write | Boolean | TBD | |
+| **EnableGenerativeAIFeaturesForSiteUsers** | Write | String | TBD | |
+| **EnableExternalAuthenticationProvidersInPowerPages** | Write | String | TBD | |
+| **DisableChampionsInvitationReachout** | Write | Boolean | TBD | |
+| **DisableSkillsMatchInvitationReachout** | Write | Boolean | TBD | |
+| **EnableOpenAiBotPublishing** | Write | Boolean | TBD | |
+| **DisableAiPrompts** | Write | Boolean | TBD | |
+| **DisableCopilotFeedbackMetadata** | Write | Boolean | TBD | |
+| **EnableModelDataSharing** | Write | Boolean | TBD | |
+| **DisableDataLogging** | Write | Boolean | TBD | |
+| **PowerCatalogAudienceSetting** | Write | String | TBD | |
+| **EnableDeleteDisabledUserinAllEnvironments** | Write | Boolean | TBD | |
+| **DisableHelpSupportCopilot** | Write | Boolean | TBD | |
+| **DisableSurveyScreenshots** | Write | Boolean | TBD | |
 | **WalkMeOptOut** | Write | Boolean | When set to true this will disable the Walk Me guidance. | |
 | **DisableNPSCommentsReachout** | Write | Boolean | When set to true this will disable the NPS Comments Reachout. | |
 | **DisableNewsletterSendout** | Write | Boolean | When set to true this will disable the monthly newsletters. | |

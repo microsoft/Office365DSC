@@ -111,6 +111,7 @@ function Get-TargetResource
             {
                 $getValue = Get-MgBetaDeviceManagementConfigurationPolicy `
                     -Filter "Name eq '$Name' and Platforms eq 'windows10' and Technologies eq 'mdm' and TemplateReference/TemplateFamily eq 'none'" `
+                    -All `
                     -ErrorAction SilentlyContinue
 
                 if ($getValue.Count -gt 1)
@@ -929,7 +930,7 @@ function Update-IntuneDeviceConfigurationPolicy
     )
     try
     {
-        $Uri = "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies/$DeviceManagementConfigurationPolicyId"
+        $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/deviceManagement/configurationPolicies/$DeviceManagementConfigurationPolicyId"
 
         $policy = @{
             'name'              = $Name

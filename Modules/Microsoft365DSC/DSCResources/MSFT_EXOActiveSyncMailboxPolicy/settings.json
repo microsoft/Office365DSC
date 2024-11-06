@@ -1,0 +1,31 @@
+﻿{
+    "resourceName": "EXOActiveSyncMailboxPolicy",
+    "description": "",
+    "roles": {
+        "read": [
+            "Global Reader"
+        ],
+        "update": [
+            "Exchange Administrator"
+        ]
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        },
+        "exchange": {
+            "requiredroles": [
+                "Organization Client Access",
+                "View-Only Configuration"
+            ],
+            "requiredrolegroups": "Organization Management"
+        }
+    }
+}

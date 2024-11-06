@@ -8,7 +8,7 @@
 | **OneDriveStorageQuota** | Write | UInt32 | The resource quota to apply to the OneDrive sites | |
 | **OrphanedPersonalSitesRetentionPeriod** | Write | UInt32 | Number of days after a user's account is deleted that their OneDrive for Business content will be deleted. | |
 | **OneDriveForGuestsEnabled** | Write | Boolean | Enable guest acess for OneDrive | |
-| **NotifyOwnersWhenInvitationsAccepted** | Write | Boolean | When true and when an external user accepts an invitation to a resource in a userâs OneDrive for Business owner is notified by e-mail | |
+| **NotifyOwnersWhenInvitationsAccepted** | Write | Boolean | DEPRECATED | |
 | **NotificationsInOneDriveForBusinessEnabled** | Write | Boolean | Turn notifications on/off OneDrive | |
 | **ODBMembersCanShare** | Write | String | Lets administrators set policy on re-sharing behavior in OneDrive for Business | `On`, `Off`, `Unspecified` |
 | **ODBAccessRequests** | Write | String | Lets administrators set policy on access requests and requests to share in OneDrive for Business | `On`, `Off`, `Unspecified` |

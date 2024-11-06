@@ -1,0 +1,25 @@
+[ClassVersion("1.0.0")]
+class MSFT_AzureDiagnosticSettingsCustomSecurityAttributeCategory
+{
+    [Write, Description("Name of the category.")] String Category;
+    [Write, Description("Is the log category enabled or not.")] Boolean enabled;
+};
+[ClassVersion("1.0.0.0"), FriendlyName("AzureDiagnosticSettingsCustomSecurityAttribute")]
+class MSFT_AzureDiagnosticSettingsCustomSecurityAttribute : OMI_BaseResource
+{
+    [Key, Description("Diagnostic setting name.")] String Name;
+    [Write, Description("List of log categories."), EmbeddedInstance("MSFT_AzureDiagnosticSettingsCustomSecurityAttributeCategory")] String Categories[];
+    [Write, Description("Storage account id.")] String StorageAccountId;
+    [Write, Description("Service bus id.")] String ServiceBusRuleId;
+    [Write, Description("Event hub id.")] String EventHubAuthorizationRuleId;
+    [Write, Description("Event hub name.")] String EventHubName;
+    [Write, Description("Workspace id.")] String WorkspaceId;
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

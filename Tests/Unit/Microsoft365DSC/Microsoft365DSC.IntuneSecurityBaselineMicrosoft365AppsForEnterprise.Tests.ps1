@@ -212,6 +212,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'user_vendor_msft_policy_config_word16v2~policy~l_microsoftofficeword~l_wordoptions~l_security~l_trustcenter~l_fileblocksettings_l_word2003binarydocumentsandtemplates'
                                 Name = 'L_Word2003BinaryDocumentsAndTemplates'
+                                OffsetUri = '/Config/word16v2~Policy~L_MicrosoftOfficeWord~L_WordOptions~L_Security~L_TrustCenter~L_FileBlockSettings/L_Word2003BinaryDocumentsAndTemplates'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                     options = @(
@@ -225,6 +226,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'user_vendor_msft_policy_config_word16v2~policy~l_microsoftofficeword~l_wordoptions~l_security~l_trustcenter~l_fileblocksettings_l_word2003binarydocumentsandtemplates_l_word2003binarydocumentsandtemplatesdropid'
                                 Name = 'L_Word2003BinaryDocumentsAndTemplatesDropID'
+                                OffsetUri = '/Config/word16v2~Policy~L_MicrosoftOfficeWord~L_WordOptions~L_Security~L_TrustCenter~L_FileBlockSettings/L_Word2003BinaryDocumentsAndTemplates'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                     options = @(

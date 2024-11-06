@@ -46,7 +46,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name 'The Rules are successfully evaluated.' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    ResourceName        = 'AADConditionalAccessPolicy'
+                    ResourceTypeName    = 'AADConditionalAccessPolicy'
                     RuleDefinition      = "`$_.State -eq 'Enabled'"
                     AfterRuleCountQuery = '-eq 1'
                     Credential          = $Credential
@@ -61,7 +61,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name 'The Rules are NOT successfully evaluated.' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    ResourceName        = 'AADConditionalAccessPolicy'
+                    ResourceTypeName    = 'AADConditionalAccessPolicy'
                     RuleDefinition      = "`$_.State -eq 'Enabled'"
                     Credential          = $Credential
                 }

@@ -52,6 +52,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         @{
                             Id = 'device_vendor_msft_policy_config_defender_allowarchivescanning'
                             Name = 'AllowArchiveScanning'
+                            OffsetUri = '/Config/Defender/AllowArchiveScanning'
                             AdditionalProperties = @{
                                 '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                             }
@@ -162,7 +163,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name 'When the instance already exists and is NOT in the Desired State' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    allowarchivescanning = '1'
+                    allowarchivescanning = '0' # Drift
                     Assignments          = [CimInstance[]]@(
                         (New-CimInstance -ClassName MSFT_DeviceManagementConfigurationPolicyAssignments -Property @{
                             DataType                                   = '#microsoft.graph.exclusionGroupAssignmentTarget'
@@ -176,39 +177,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure               = 'Present'
                     templateId           = 'd948ff9b-99cb-4ee0-8012-1fbc09685377_1'
                     Identity             = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                    return @{
-                        Id                   = 0
-                        SettingDefinitions   = @(
-                            @{
-                                Id = 'device_vendor_msft_policy_config_defender_allowarchivescanning'
-                                Name = 'AllowArchiveScanning'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
-                                }
-                            }
-                        )
-                        SettingInstance      = @{
-                            SettingDefinitionId              = 'device_vendor_msft_policy_config_defender_allowarchivescanning'
-                            SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = '7c5c9cde-f74d-4d11-904f-de4c27f72d89'
-                                AdditionalProperties      = $null
-                            }
-                            AdditionalProperties             = @{
-                                '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                choiceSettingValue = @{
-                                    value                         = 'device_vendor_msft_policy_config_defender_allowarchivescanning_0' #drift
-                                    settingValueTemplateReference = @{
-                                        settingValueTemplateId = '9ead75d4-6f30-4bc5-8cc5-ab0f999d79f0'
-                                        useTemplateDefault     = $false
-                                    }
-                                    children                      = $null
-                                }
-                            }
-                        }
-                    }
                 }
             }
 

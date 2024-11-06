@@ -221,7 +221,9 @@ function Get-TargetResource
             FolderAnonymousLinkType                    = $SPOSharingSettings.FolderAnonymousLinkType
             NotifyOwnersWhenItemsReshared              = $SPOSharingSettings.NotifyOwnersWhenItemsReshared
             DefaultLinkPermission                      = $DefaultLinkPermission
-            RequireAcceptingAccountMatchInvitedAccount = $SPOSharingSettings.RequireAcceptingAccountMatchInvitedAccount
+
+            #DEPRECATED
+            #RequireAcceptingAccountMatchInvitedAccount = $SPOSharingSettings.RequireAcceptingAccountMatchInvitedAccount
             Credential                                 = $Credential
             ApplicationId                              = $ApplicationId
             TenantId                                   = $TenantId
@@ -439,19 +441,15 @@ function Set-TargetResource
     $CurrentParameters.Remove('ApplicationSecret') | Out-Null
     $CurrentParameters.Remove('AccessTokens') | Out-Null
 
+    # DEPRECATED
+    $CurrentParameters.Remove('RequireAcceptingAccountMatchInvitedAccount') | Out-Null
+
     [bool]$SetMySharingCapability = $false
     if ($null -ne $CurrentParameters['MySiteSharingCapability'])
     {
         $SetMySharingCapability = $true
     }
     $CurrentParameters.Remove('MySiteSharingCapability') | Out-Null
-
-    if ($null -eq $SharingAllowedDomainList -and $null -eq $SharingBlockedDomainList -and
-        ($null -ne $RequireAcceptingAccountMatchInvitedAccount -and $RequireAcceptingAccountMatchInvitedAccount -eq $false))
-    {
-        Write-Warning -Message 'If SharingAllowedDomainList / SharingBlockedDomainList are set to null RequireAcceptingAccountMatchInvitedAccount must be set to True '
-        $CurrentParameters.Remove('RequireAcceptingAccountMatchInvitedAccount') | Out-Null
-    }
 
     if ($null -eq $SignInAccelerationDomain)
     {
@@ -497,10 +495,6 @@ function Set-TargetResource
     {
         Write-Warning -Message 'SharingDomainRestrictionMode is set to BlockList. For that SharingAllowedDomainList cannot be configured'
         $CurrentParameters.Remove('SharingAllowedDomainList') | Out-Null
-    }
-    foreach ($value in $CurrentParameters.GetEnumerator())
-    {
-        Write-Verbose -Message "Configuring Tenant with: $value"
     }
 
     if ($null -ne $CurrentParameters['SharingAllowedDomainList'])
@@ -717,6 +711,7 @@ function Test-TargetResource
     $ValuesToCheck.Remove('CertificateThumbprint') | Out-Null
     $ValuesToCheck.Remove('ManagedIdentity') | Out-Null
     $ValuesToCheck.Remove('AccessTokens') | Out-Null
+    $ValuesToCheck.Remove('RequireAcceptingAccountMatchInvitedAccount') | Out-Null
 
     if ($DefaultLinkPermission -eq 'None')
     {

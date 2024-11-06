@@ -16,9 +16,9 @@ Configuration Example
     {
         M365DSCRuleEvaluation 'AllowAnonymousUsersToJoinMeetingAllPolicies'
         {
-            ResourceName   = 'TeamsMeetingPolicy'
-            RuleDefinition = "`$_.AllowAnonymousUsersToJoinMeeting -eq `$true"
-            Credential     = $CredsCredential
+            ResourceTypeName = 'TeamsMeetingPolicy'
+            RuleDefinition   = "`$_.AllowAnonymousUsersToJoinMeeting -eq `$true"
+            Credential       = $CredsCredential
         }
     }
 }

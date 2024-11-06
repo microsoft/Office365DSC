@@ -169,6 +169,9 @@ class MSFT_SCInsiderRiskPolicy : OMI_BaseResource
     [Write, Description("Official documentation to come.")] Boolean RetainSeverityAfterTriage;
     [Write, Description("Official documentation to come.")] UInt32 LookbackTimeSpan;
     [Write, Description("Official documentation to come.")] UInt32 ProfileInScopeTimeSpan;
+    [Write, Description("Official documentation to come.")] UInt32 GPUUtilizationLimit;
+    [Write, Description("Official documentation to come.")] UInt32 CPUUtilizationLimit;
+    [Write, Description("Official documentation to come.")] String MDATPTriageStatus;
     [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
     [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;

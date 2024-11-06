@@ -181,11 +181,16 @@
                     return $nullResult
                 }
                 Write-Verbose -Message "Found Principal {$PrincipalId}"
-                $RoleDefinitionId = (Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter "DisplayName eq '$RoleDefinition'").Id
-                Write-Verbose -Message "Found Role {$RoleDefinitionId}"
-
-                $schedule = Get-MgBetaRoleManagementDirectoryRoleEligibilitySchedule -Filter "PrincipalId eq '$PrincipalId' and RoleDefinitionId eq '$RoleDefinitionId'"
-                [Array]$request = Get-MgBetaRoleManagementDirectoryRoleEligibilityScheduleRequest -Filter "PrincipalId eq '$PrincipalId' and RoleDefinitionId eq '$RoleDefinitionId'" | Sort-Object -Property CompletedDateTime -Descending
+                $schedulesForPrincipal = Get-MgBetaRoleManagementDirectoryRoleEligibilitySchedule -Filter "PrincipalId eq '$PrincipalId'"
+                foreach ($instance in $schedulesForPrincipal)
+                {
+                    $roleInfo = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $instance.RoleDefinitionId
+                    if ($roleInfo.DisplayName -eq $RoleDefinition)
+                    {
+                        $schedule = $instance
+                    }
+                }
+                [Array]$request = Get-MgBetaRoleManagementDirectoryRoleEligibilityScheduleRequest -Filter "PrincipalId eq '$PrincipalId' and RoleDefinitionId eq '$($schedule.RoleDefinitionId)'" | Sort-Object -Property CompletedDateTime -Descending
 `
                 if ($request.Length -gt 1)
                 {
@@ -195,6 +200,7 @@
         }
         else
         {
+            Write-Verbose -Message "Request is not null: $request"
             $ObjectGuid = [System.Guid]::empty
             if ($PrincipalType -eq 'User')
             {
@@ -581,7 +587,7 @@ function Set-TargetResource
     {
         Write-Verbose -Message "Creating a Role Eligibility Schedule Request for user {$Principal} and role {$RoleDefinition}"
         $ParametersOps.Remove("Id") | Out-Null
-        Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $ParametersOps)"
+        Write-Verbose -Message "Values: $(Convert-M365DscHashtableToString -Hashtable $ParametersOps)"
         New-MgBetaRoleManagementDirectoryRoleEligibilityScheduleRequest @ParametersOps
     }
     elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')

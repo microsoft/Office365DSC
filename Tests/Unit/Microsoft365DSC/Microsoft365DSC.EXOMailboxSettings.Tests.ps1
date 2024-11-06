@@ -31,6 +31,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return 'Credentials'
             }
 
+            Mock -CommandName Set-Mailbox -MockWith {}
+
             # Mock Write-Host to hide output during the tests
             Mock -CommandName Write-Host -MockWith {
             }

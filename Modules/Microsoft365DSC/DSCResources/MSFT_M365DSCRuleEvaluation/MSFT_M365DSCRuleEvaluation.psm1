@@ -6,7 +6,7 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ResourceName,
+        $ResourceTypeName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -54,7 +54,7 @@ function Set-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ResourceName,
+        $ResourceTypeName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -103,7 +103,7 @@ function Test-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ResourceName,
+        $ResourceTypeName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -153,7 +153,7 @@ function Test-TargetResource
     Write-Verbose -Message 'Testing configuration of AzureAD Tenant Details'
 
     $Global:PartialExportFileName = "$((New-Guid).ToString()).partial"
-    $module = Join-Path -Path $PSScriptRoot -ChildPath "..\MSFT_$ResourceName\MSFT_$ResourceName.psm1" -Resolve
+    $module = Join-Path -Path $PSScriptRoot -ChildPath "..\MSFT_$ResourceTypeName\MSFT_$ResourceTypeName.psm1" -Resolve
     if ($null -ne $module)
     {
         $params = @{
@@ -172,7 +172,7 @@ function Test-TargetResource
 
         Write-Verbose -Message "Importing module from Path {$($module)}"
         Import-Module $module -Force -Function 'Export-TargetResource' | Out-Null
-        $cmdName = "MSFT_$ResourceName\Export-TargetResource"
+        $cmdName = "MSFT_$ResourceTypeName\Export-TargetResource"
 
         [Array]$instances = &$cmdName @params
 
@@ -220,7 +220,7 @@ function Test-TargetResource
 
         $message = [System.Text.StringBuilder]::New()
         [void]$message.AppendLine("<M365DSCRuleEvaluation>")
-        [void]$message.AppendLine("  <ResourceName>$ResourceName</ResourceName>")
+        [void]$message.AppendLine("  <ResourceName>$ResourceTypeName</ResourceName>")
         [void]$message.AppendLine("  <RuleDefinition>$RuleDefinition</RuleDefinition>")
 
         if ($instances.Length -eq 0)
@@ -252,7 +252,7 @@ function Test-TargetResource
                         [void]$message.AppendLine("  <Match>")
                         foreach ($validInstance in $validInstances)
                         {
-                            [void]$message.AppendLine("    <ResourceInstanceName>[$ResourceName]$validInstance</ResourceInstanceName>")
+                            [void]$message.AppendLine("    <ResourceInstanceName>[$ResourceTypeName]$validInstance</ResourceInstanceName>")
                         }
                         [void]$message.AppendLine("  </Match>")
                     }
@@ -268,7 +268,7 @@ function Test-TargetResource
                     [void]$message.AppendLine("  <Match>")
                     foreach ($validInstance in $validInstances)
                     {
-                        [void]$message.AppendLine("    <ResourceInstanceName>[$ResourceName]$validInstance</ResourceInstanceName>")
+                        [void]$message.AppendLine("    <ResourceInstanceName>[$ResourceTypeName]$validInstance</ResourceInstanceName>")
                     }
                     [void]$message.AppendLine("  </Match>")
                 }
@@ -295,7 +295,7 @@ function Test-TargetResource
                     [void]$message.AppendLine("  <Match>")
                     foreach ($validInstance in $validInstances)
                     {
-                        [void]$message.AppendLine("    <ResourceInstanceName>[$ResourceName]$validInstance</ResourceInstanceName>")
+                        [void]$message.AppendLine("    <ResourceInstanceName>[$ResourceTypeName]$validInstance</ResourceInstanceName>")
                     }
                     [void]$message.AppendLine("  </Match>")
                 }
@@ -312,7 +312,7 @@ function Test-TargetResource
             [void]$message.AppendLine("  <NotMatch>")
             foreach ($invalidInstance in $invalidInstances)
             {
-                [void]$message.AppendLine("    <ResourceInstanceName>[$ResourceName]$invalidInstance</ResourceInstanceName>")
+                [void]$message.AppendLine("    <ResourceInstanceName>[$ResourceTypeName]$invalidInstance</ResourceInstanceName>")
             }
             [void]$message.AppendLine("  </NotMatch>")
         }

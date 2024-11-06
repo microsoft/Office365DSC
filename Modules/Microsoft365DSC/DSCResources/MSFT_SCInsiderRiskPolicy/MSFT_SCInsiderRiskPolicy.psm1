@@ -677,6 +677,18 @@ function Get-TargetResource
         $RetainSeverityAfterTriage,
 
         [Parameter()]
+        [System.String[]]
+        $MDATPTriageStatus,
+
+        [Parameter()]
+        [System.UInt32]
+        $CPUUtilizationLimit,
+
+        [Parameter()]
+        [System.UInt32]
+        $GPUUtilizationLimit,
+
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
@@ -761,6 +773,8 @@ function Get-TargetResource
                 RecordingTimeframePostEventInSec = $SessionRecordingSettings.RecordingTimeframePostEventInSec
                 BandwidthCapInMb                 = $SessionRecordingSettings.BandwidthCapInMb
                 OfflineRecordingStorageLimitInMb = $SessionRecordingSettings.OfflineRecordingStorageLimitInMb
+                GPUUtilizationLimit              = $SessionRecordingSettings.GPUUtilizationLimit
+                CPUUtilizationLimit              = $SessionRecordingSettings.CPUUtilizationLimit
             }
             $results += $forensicSettingsHash
         }
@@ -800,6 +814,7 @@ function Get-TargetResource
                 RaiseAuditAlert                               = $RaiseAuditAlertValue
                 FileVolCutoffLimits                           = $tenantSettings.IntelligentDetections.FileVolCutoffLimits
                 AlertVolume                                   = $tenantSettings.IntelligentDetections.AlertVolume
+                MDATPTriageStatus                             = $tenantSettings.IntelligentDetections.MDATPTriageStatus
                 AnomalyDetections                             = ($tenantSettings.Indicators | Where-Object -FilterScript {$_.Name -eq 'AnomalyDetections'}).Enabled
                 CopyToPersonalCloud                           = ($tenantSettings.Indicators | Where-Object -FilterScript {$_.Name -eq 'CopyToPersonalCloud'}).Enabled
                 CopyToUSB                                     = ($tenantSettings.Indicators | Where-Object -FilterScript {$_.Name -eq 'CopyToUSB'}).Enabled
@@ -1714,6 +1729,18 @@ function Set-TargetResource
         $RetainSeverityAfterTriage,
 
         [Parameter()]
+        [System.String[]]
+        $MDATPTriageStatus,
+
+        [Parameter()]
+        [System.UInt32]
+        $CPUUtilizationLimit,
+
+        [Parameter()]
+        [System.UInt32]
+        $GPUUtilizationLimit,
+
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
@@ -1817,7 +1844,7 @@ function Set-TargetResource
 
     # Tenant Settings
     $featureSettingsValue = "{`"Anonymization`":$($Anonymization.ToString().ToLower()), `"DLPUserRiskSync`":$($DLPUserRiskSync.ToString().ToLower()), `"OptInIRMDataExport`":$($OptInIRMDataExport.ToString().ToLower()), `"RaiseAuditAlert`":$($RaiseAuditAlert.ToString().ToLower()), `"EnableTeam`":$($EnableTeam.ToString().ToLower())}"
-    $intelligentDetectionValue = "{`"FileVolCutoffLimits`":`"$($FileVolCutoffLimits)`", `"AlertVolume`":`"$($AlertVolume)`"}"
+    $intelligentDetectionValue = "{`"FileVolCutoffLimits`":`"$($FileVolCutoffLimits)`", `"AlertVolume`":`"$($AlertVolume)`", `"MDATPTriageStatus`": `"$($MDATPTriageStatus)`"}"
 
 
     $tenantSettingsValue = "{`"Region`":`"WW`", `"FeatureSettings`":$($featureSettingsValue), " + `
@@ -1859,7 +1886,7 @@ function Set-TargetResource
 
         if ($InsiderRiskScenario -eq 'SessionRecordingSetting')
         {
-            $sessionRecordingValues = "{`"RecordingMode`":`"EventDriven`", `"RecordingTimeframePreEventInSec`":$($RecordingTimeframePreEventInSec),`"RecordingTimeframePostEventInSec`":$($RecordingTimeframePostEventInSec),`"BandwidthCapInMb`":$($BandwidthCapInMb),`"OfflineRecordingStorageLimitInMb`":$($OfflineRecordingStorageLimitInMb),`"ClipDeletionEnabled`":$($ClipDeletionEnabled.ToString().ToLower()),`"Enabled`":$($SessionRecordingEnabled.ToString().ToLower()),`"FpsNumerator`":0,`"FpsDenominator`":0}"
+            $sessionRecordingValues = "{`"RecordingMode`":`"EventDriven`", `"RecordingTimeframePreEventInSec`":$($RecordingTimeframePreEventInSec),`"RecordingTimeframePostEventInSec`":$($RecordingTimeframePostEventInSec),`"BandwidthCapInMb`":$($BandwidthCapInMb),`"OfflineRecordingStorageLimitInMb`":$($OfflineRecordingStorageLimitInMb),`"ClipDeletionEnabled`":$($ClipDeletionEnabled.ToString().ToLower()),`"Enabled`":$($SessionRecordingEnabled.ToString().ToLower()),`"FpsNumerator`":0,`"FpsDenominator`":0, `"GPUUtilizationLimit`": $($GPUUtilizationLimit), `"CPUUtilizationLimit`": $($CPUUtilizationLimit)}"
             Write-Verbose -Message 'Updating Session Recording Settings'
             Set-InsiderRiskPolicy -Identity $Name -SessionRecordingSettings $sessionRecordingValues | Out-Null
         }
@@ -2557,6 +2584,18 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $RetainSeverityAfterTriage,
+
+        [Parameter()]
+        [System.String[]]
+        $MDATPTriageStatus,
+
+        [Parameter()]
+        [System.UInt32]
+        $CPUUtilizationLimit,
+
+        [Parameter()]
+        [System.UInt32]
+        $GPUUtilizationLimit,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]

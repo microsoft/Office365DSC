@@ -55,6 +55,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         @{
                             Id = 'linux_mdatp_managed_edr_tags'
                             Name = 'tags'
+                            OffsetUri = 'tags'
                             AdditionalProperties = @{
                                 '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                 childIds = @(
@@ -68,6 +69,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         @{
                             Id = 'linux_mdatp_managed_edr_tags_item_value'
                             Name = 'tags_item_value'
+                            OffsetUri = 'tags/[{0}]/value'
                             AdditionalProperties = @{
                                 '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
                             }
@@ -75,6 +77,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         @{
                             Id = 'linux_mdatp_managed_edr_tags_item_key'
                             Name = 'tags_item_key'
+                            OffsetUri = 'tags/[{0}]/key'
                             AdditionalProperties = @{
                                 '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
                             }

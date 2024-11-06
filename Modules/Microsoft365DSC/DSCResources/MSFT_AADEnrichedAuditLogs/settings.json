@@ -1,0 +1,28 @@
+﻿{
+    "resourceName": "AADEnrichedAuditLogs",
+    "description": "Configures advanced audit logs for Global Secure Access in Entra Id.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "NetworkAccess.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "NetworkAccess.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}

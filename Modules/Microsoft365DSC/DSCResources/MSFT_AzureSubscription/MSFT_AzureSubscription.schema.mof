@@ -1,9 +1,10 @@
 [ClassVersion("1.0.0.0"), FriendlyName("AzureSubscription")]
 class MSFT_AzureSubscription : OMI_BaseResource
 {
-    [Key, Description("The display name of the subscription.")] String Name;
+    [Key, Description("The display name of the subscription.")] String DisplayName;
     [Write, Description("The unique identifier of the subscription.")] String Id;
-    [Write, Description("Enables or disables the subscription")] Boolean Enabled;
+    [Write, Description("The unique identifier of the invoice section associated with the subscription.")] String InvoiceSectionId;
+    [Write, Description("Status of the subscription.")] String Status;
     [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Present"}, Values{"Present"}] string Ensure;
     [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;

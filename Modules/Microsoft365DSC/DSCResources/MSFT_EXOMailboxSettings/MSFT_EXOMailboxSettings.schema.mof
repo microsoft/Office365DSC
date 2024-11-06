@@ -2,6 +2,10 @@
 class MSFT_EXOMailboxSettings : OMI_BaseResource
 {
     [Key, Description("The display name of the Shared Mailbox")] string DisplayName;
+    [Write, Description("Associated retention policy.")] string RetentionPolicy;
+    [Write, Description("Associated address book policy.")] string AddressBookPolicy;
+    [Write, Description("Associated role assignment policy.")] string RoleAssignmentPolicy;
+    [Write, Description("Associated sharing policy.")] string SharingPolicy;
     [Write, Description("The name of the Time Zone to assign to the mailbox")] string TimeZone;
     [Write, Description("The code of the Locale to assign to the mailbox")] string Locale;
     [Write, Description("Present ensures the Mailbox Settings are applied"), ValueMap{"Present"}, Values{"Present"}] string Ensure;

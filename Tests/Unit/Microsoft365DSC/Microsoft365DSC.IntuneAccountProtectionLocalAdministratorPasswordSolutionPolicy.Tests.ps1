@@ -45,6 +45,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
+                return @{
+                    Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
+                    Description = 'My Test Description'
+                    Name        = 'My Test'
+                    TemplateReference = @{
+                        TemplateId = 'adc46e5a-f4aa-4ff6-aeff-4f27bc525796_1'
+                    }
+                }
             }
 
             Mock -CommandName Update-IntuneDeviceConfigurationPolicy -MockWith {
@@ -54,7 +62,33 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                return ,@()
+                return @{
+                    Id                   = 0
+                    SettingDefinitions   = @(
+                        @{
+                            Id = 'device_vendor_msft_laps_policies_backupdirectory'
+                            Name = 'BackupDirectory'
+                            OffsetUri = '/Policies/BackupDirectory'
+                            AdditionalProperties = @{
+                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
+                            }
+                        }
+                    )
+                    SettingInstance      = @{
+                        SettingDefinitionId              = 'device_vendor_msft_laps_policies_backupdirectory'
+                        SettingInstanceTemplateReference = @{
+                            SettingInstanceTemplateId = 'a3270f64-e493-499d-8900-90290f61ed8a'
+                        }
+                        AdditionalProperties             = @{
+                            '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                            choiceSettingValue = @{
+                                children = @()
+                                value = "device_vendor_msft_laps_policies_backupdirectory_1"
+                            }
+                        }
+                    }
+                    AdditionalProperties = $null
+                }
             }
 
             Mock -CommandName Update-DeviceConfigurationPolicyAssignment -MockWith {
@@ -135,43 +169,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     DisplayName     = 'My Test'
                     Ensure          = 'Present'
                     Identity        = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                    BackupDirectory = '0'
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                        Description = 'My Test Description'
-                        Name        = 'My Test'
-                    }
-                }
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                    return @{
-                        Id                   = 0
-                        SettingDefinitions   = @(
-                            @{
-                                Id = 'device_vendor_msft_laps_policies_backupdirectory'
-                                Name = 'BackupDirectory'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
-                                }
-                            }
-                        )
-                        SettingInstance      = @{
-                            SettingDefinitionId              = 'device_vendor_msft_laps_policies_backupdirectory'
-                            SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = 'a3270f64-e493-499d-8900-90290f61ed8a'
-                            }
-                            AdditionalProperties             = @{
-                                '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                choiceSettingValue = @{
-                                    children = @()
-                                    value = "device_vendor_msft_laps_policies_backupdirectory_1"
-                                }
-                            }
-                        }
-                        AdditionalProperties = $null
-                    }
+                    BackupDirectory = '0' # Drift
                 }
             }
 
@@ -206,42 +204,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     )
                     BackupDirectory = '1'
                 }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                        Description = 'My Test Description'
-                        Name        = 'My Test'
-                    }
-                }
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                    return @{
-                        Id                   = 0
-                        SettingDefinitions   = @(
-                            @{
-                                Id = 'device_vendor_msft_laps_policies_backupdirectory'
-                                Name = 'BackupDirectory'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
-                                }
-                            }
-                        )
-                        SettingInstance      = @{
-                            SettingDefinitionId              = 'device_vendor_msft_laps_policies_backupdirectory'
-                            SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = 'a3270f64-e493-499d-8900-90290f61ed8a'
-                            }
-                            AdditionalProperties             = @{
-                                '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                choiceSettingValue = @{
-                                    children = @()
-                                    value = "device_vendor_msft_laps_policies_backupdirectory_1"
-                                }
-                            }
-                        }
-                        AdditionalProperties = $null
-                    }
-                }
             }
 
             It 'Should return true from the Test method' {
@@ -263,42 +225,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     DisplayName = 'My Test'
                     Ensure      = 'Absent'
                     Identity    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                        Description = 'My Test Description'
-                        Name        = 'My Test'
-                    }
-                }
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                    return @{
-                        Id                   = 0
-                        SettingDefinitions   = @(
-                            @{
-                                Id = 'device_vendor_msft_laps_policies_backupdirectory'
-                                Name = 'BackupDirectory'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
-                                }
-                            }
-                        )
-                        SettingInstance      = @{
-                            SettingDefinitionId              = 'device_vendor_msft_laps_policies_backupdirectory'
-                            SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = 'a3270f64-e493-499d-8900-90290f61ed8a'
-                            }
-                            AdditionalProperties             = @{
-                                '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                choiceSettingValue = @{
-                                    children = @()
-                                    value = "device_vendor_msft_laps_policies_backupdirectory_1"
-                                }
-                            }
-                        }
-                        AdditionalProperties = $null
-                    }
                 }
             }
 
@@ -322,45 +248,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $Global:PartialExportFileName = "$(New-Guid).partial.ps1"
                 $testParams = @{
                     Credential = $Credential
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                        Description = 'My Test Description'
-                        Name        = 'My Test'
-                        TemplateReference = @{
-                            TemplateId = 'adc46e5a-f4aa-4ff6-aeff-4f27bc525796_1'
-                        }
-                    }
-                }
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicySetting -MockWith {
-                    return @{
-                        Id                   = 0
-                        SettingDefinitions   = @(
-                            @{
-                                Id = 'device_vendor_msft_laps_policies_backupdirectory'
-                                Name = 'BackupDirectory'
-                                AdditionalProperties = @{
-                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
-                                }
-                            }
-                        )
-                        SettingInstance      = @{
-                            SettingDefinitionId              = 'device_vendor_msft_laps_policies_backupdirectory'
-                            SettingInstanceTemplateReference = @{
-                                SettingInstanceTemplateId = 'a3270f64-e493-499d-8900-90290f61ed8a'
-                            }
-                            AdditionalProperties             = @{
-                                '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                choiceSettingValue = @{
-                                    children = @()
-                                    value = "device_vendor_msft_laps_policies_backupdirectory_1"
-                                }
-                            }
-                        }
-                        AdditionalProperties = $null
-                    }
                 }
             }
 

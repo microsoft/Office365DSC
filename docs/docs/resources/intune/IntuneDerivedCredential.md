@@ -9,7 +9,7 @@
 | **HelpUrl** | Write | String | The URL that will be accessible to end users as they retrieve a derived credential using the Company Portal. | |
 | **RenewalThresholdPercentage** | Write | UInt32 | The nominal percentage of time before certificate renewal is initiated by the client. | |
 | **Issuer** | Write | String | Supported values for the derived credential issuer. | `intercede`, `entrustDatacard`, `purebred` |
-| **NotificationType** | Write | String | Supported values for the notification type to use. | `none`, `email`, `companyPortal` |
+| **NotificationType** | Write | String | Supported values for the notification type to use. | `none`, `email`, `companyPortal`, `companyPortal,email` |
 | **Ensure** | Write | String | Supported values for the notification type to use. | `Present`, `Absent` |
 | **Credential** | Write | PSCredential | Credentials of the Intune Admin | |
 | **ApplicationId** | Write | String | Id of the Azure Active Directory application to authenticate with. | |

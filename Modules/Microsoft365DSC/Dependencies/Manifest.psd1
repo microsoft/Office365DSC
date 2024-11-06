@@ -26,7 +26,7 @@
         },
         @{
             ModuleName      = 'ExchangeOnlineManagement'
-            RequiredVersion = '3.6.0'
+            RequiredVersion = '3.4.0'
         },
         @{
             ModuleName      = 'Microsoft.Graph.Applications'
@@ -54,6 +54,10 @@
         },
         @{
             ModuleName      = 'Microsoft.Graph.Beta.DeviceManagement.Enrollment'
+            RequiredVersion = '2.24.0'
+        },
+        @{
+            ModuleName      = 'Microsoft.Graph.Beta.NetworkAccess'
             RequiredVersion = '2.24.0'
         },
         @{

@@ -1,0 +1,19 @@
+[ClassVersion("1.0.0.0"), FriendlyName("AADFederationConfiguration")]
+class MSFT_AADFederationConfiguration : OMI_BaseResource
+{
+    [Key, Description("The display name of the SAML/WS-Fed based identity provider. Inherited from identityProviderBase.")] String DisplayName;
+    [Write, Description("Issuer URI of the federation server. Inherited from samlOrWsFedProvider.")] String IssuerUri;
+    [Write, Description("URI of the metadata exchange endpoint used for authentication from rich client applications. Inherited from samlOrWsFedProvider.")] String MetadataExchangeUri;
+    [Write, Description("URI that web-based clients are directed to when signing in to Microsoft Entra services. Inherited from samlOrWsFedProvider.")] String PassiveSignInUri;
+    [Write, Description("Preferred authentication protocol. The possible values are: wsFed, saml. Inherited from samlOrWsFedProvider.")] String PreferredAuthenticationProtocol;
+    [Write, Description("Current certificate used to sign tokens passed to the Microsoft identity platform. The certificate is formatted as a Base64 encoded string of the public portion of the federated IdP's token signing certificate and must be compatible with the X509Certificate2 class.")] String SigningCertificate;
+    [Write, Description("List of associated domains.")] String Domains[];
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

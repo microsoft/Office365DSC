@@ -992,7 +992,7 @@ function Update-DeviceConfigurationGroupPolicyDefinitionValue
     )
     try
     {
-        $Uri = "https://graph.microsoft.com/beta/deviceManagement/groupPolicyConfigurations/$DeviceConfigurationPolicyId/updateDefinitionValues"
+        $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/deviceManagement/groupPolicyConfigurations/$DeviceConfigurationPolicyId/updateDefinitionValues"
 
         $body = @{}
         $DefinitionValueToRemoveIds = @()

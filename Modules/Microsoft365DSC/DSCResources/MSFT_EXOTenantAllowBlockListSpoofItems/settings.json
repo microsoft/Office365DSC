@@ -1,0 +1,24 @@
+﻿{
+    "resourceName": "EXOTenantAllowBlockListSpoofItems",
+    "description": "Configures blocked spoofed items in Exchange Online.",
+    "roles": {
+        "read": [
+            "Exchange Admin"
+        ],
+        "update": [
+            "Exchange Admin"
+        ]
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

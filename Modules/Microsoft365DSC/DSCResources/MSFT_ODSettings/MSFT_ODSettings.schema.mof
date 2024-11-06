@@ -5,7 +5,7 @@ class MSFT_ODSettings : OMI_BaseResource
     [Write, Description("The resource quota to apply to the OneDrive sites")] uint32 OneDriveStorageQuota;
     [Write, Description("Number of days after a user's account is deleted that their OneDrive for Business content will be deleted.")] uint32 OrphanedPersonalSitesRetentionPeriod;
     [Write, Description("Enable guest acess for OneDrive")] Boolean OneDriveForGuestsEnabled;
-    [Write, Description("When true and when an external user accepts an invitation to a resource in a user’s OneDrive for Business owner is notified by e-mail")] Boolean NotifyOwnersWhenInvitationsAccepted;
+    [Write, Description("DEPRECATED")] Boolean NotifyOwnersWhenInvitationsAccepted;
     [Write, Description("Turn notifications on/off OneDrive")] Boolean NotificationsInOneDriveForBusinessEnabled;
     [Write, Description("Lets administrators set policy on re-sharing behavior in OneDrive for Business"),ValueMap{"On","Off","Unspecified"},Values{"On","Off","Unspecified"}] String ODBMembersCanShare;
     [Write, Description("Lets administrators set policy on access requests and requests to share in OneDrive for Business"),ValueMap{"On","Off","Unspecified"},Values{"On","Off","Unspecified"}] String ODBAccessRequests;

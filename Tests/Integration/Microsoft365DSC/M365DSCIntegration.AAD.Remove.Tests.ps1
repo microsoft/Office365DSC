@@ -160,6 +160,15 @@
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
                 }
+                AADClaimsMappingPolicy 'AADClaimsMappingPolicy-Test1234'
+                {
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                    DisplayName           = "Test1234";
+                    Ensure                = "Absent";
+                    Id                    = "fd0dc3f3-cfdf-4d56-bb03-e18161a5ac93";
+                }
                 AADConditionalAccessPolicy 'ConditionalAccessPolicy'
                 {
                     DisplayName                          = 'Example CAP'
@@ -274,6 +283,85 @@
                     DisplayName             = "CertificateBasedAuthentication rollout policy";
                     Ensure                  = "Absent";
                 }
+                AADFederationConfiguration 'MyFederation'
+                {
+                    IssuerUri                       = 'https://contoso.com/issuerUri'
+                    DisplayName                     = 'contoso display name'
+                    MetadataExchangeUri             ='https://contoso.com/metadataExchangeUri'
+                    PassiveSignInUri                = 'https://contoso.com/signin'
+                    PreferredAuthenticationProtocol = 'wsFed'
+                    Domains                         = @('contoso.com')
+                    SigningCertificate              = 'MIIDADCCAeigAwIBAgIQEX41y8r6'
+                    Ensure                          = 'Absent'
+                    ApplicationId                   = $ApplicationId
+                    TenantId                        = $TenantId
+                    CertificateThumbprint           = $CertificateThumbprint
+                }
+                AADFilteringPolicy 'AADFilteringPolicy-MyPolicy'
+                {
+                    Action                = "block";
+                    ApplicationId         = $ApplicationId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                    Description           = "This is a demo policy";
+                    Ensure                = "Absent";
+                    Name                  = "MyPolicy";
+                    TenantId              = $TenantId;
+                }
+                AADFilteringPolicyRule 'AADFilteringPolicyRule-FQDN'
+                {
+                    ApplicationId         = $ApplicationId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                    Destinations          = @(
+                        MSFT_AADFilteringPolicyRuleDestination{
+                            value = 'Microsoft365DSC.com'
+                        }
+                    );
+                    Ensure                = "Absent";
+                    Name                  = "MyFQDN";
+                    Policy                = "AMyPolicy";
+                    RuleType              = "fqdn";
+                    TenantId              = $TenantId;
+                }
+                AADFilteringPolicyRule 'AADFilteringPolicyRule-Web'
+                {
+                    ApplicationId         = $ApplicationId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                    Destinations          = @(
+                        MSFT_AADFilteringPolicyRuleDestination{
+                            name = 'ChildAbuseImages'
+                        }
+                    );
+                    Ensure                = "Absent";
+                    Name                  = "MyWebContentRule";
+                    Policy                = "MyPolicy";
+                    RuleType              = "webCategory";
+                    TenantId              = $TenantId;
+                }
+                AADFilteringProfile 'AADFilteringProfile-My Profile'
+                {
+                    ApplicationId         = $ApplicationId;
+                    CertificateThumbprint = $CertificateThumbprint;
+                    Description           = "Description of profile";
+                    Ensure                = "Absent";
+                    Name                  = "My PRofile";
+                    Policies              = @(
+                        MSFT_AADFilteringProfilePolicyLink{
+                            Priority = 100
+                            LoggingState = 'enabled'
+                            PolicyName = 'MyPolicyChoseBine'
+                            State = 'enabled'
+                        }
+                        MSFT_AADFilteringProfilePolicyLink{
+                            Priority = 200
+                            LoggingState = 'enabled'
+                            PolicyName = 'MyTopPolicy'
+                            State = 'enabled'
+                        }
+                    );
+                    Priority              = 120;
+                    State                 = "enabled";
+                    TenantId              = $TenantId;
+                }
                 AADGroup 'MyGroups'
                 {
                     MailNickname    = "M365DSC"
@@ -308,6 +396,24 @@
                 {
                     IsSingleInstance              = "Yes"
                     Ensure                        = "Absent"
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
+                AADHomeRealmDiscoveryPolicy 'AADHomeRealmDiscoveryPolicy-displayName-value'
+                {
+                    Definition            = @(
+                        MSFT_AADHomeRealDiscoveryPolicyDefinition {
+                            PreferredDomain       = 'federated.example.edu'
+                            AccelerateToFederatedDomain         = $False
+                            AlternateIdLogin = MSFT_AADHomeRealDiscoveryPolicyDefinitionAlternateIdLogin {
+                                Enabled = $True
+                            }
+                        }
+                    );
+                    DisplayName           = "displayName-value";
+                    Ensure                = "Absent";
+                    IsOrganizationDefault = $False;
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
@@ -372,6 +478,29 @@
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint
                 }
+                AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension 'AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension-My Custom'
+                {
+                    ApplicationId         = $ApplicationId;
+                    CallbackConfiguration = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionCallbackConfiguration{
+                        TimeoutDuration = 'PT34M'
+                        AuthorizedApps = @('M365DSC')
+                    };
+                    CertificateThumbprint = $CertificateThumbprint;
+                    ClientConfiguration   = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionClientConfiguration{
+                        MaximumRetries = 1
+                        TimeoutInMilliseconds = 1000
+                    };
+                    Description           = "My Description";
+                    DisplayName           = "My Custom Extension";
+                    EndpointConfiguration = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionEndpointConfiguration{
+                        SubscriptionId =       '63e62ab2-fd92-46ce-a393-2cb338039cc7'
+                        logicAppWorkflowName = 'MyTestApp'
+                        resourceGroupName =    'TestRG'
+                        url = 'https://prod-35.eastus.logic.azure.com:443/workflows/xxxxxxxxxxx/triggers/manual/paths/invoke?api-version=2016-10-01'
+                    };
+                    Ensure                = "Absent";
+                    TenantId              = $TenantId;
+                }
                 AADIdentityGovernanceProgram 'AADIdentityGovernanceProgram-Example'
                 {
                     ApplicationId           = $ApplicationId
@@ -395,6 +524,46 @@
                     CertificateThumbprint     = $CertificateThumbprint
                     Ensure                 = "Absent";
                     OrganizationId         = "e91d4e0e-d5a5-4e3a-be14-2192592a59af";
+                }
+                AADRemoteNetwork 'AADRemoteNetwork-Test Remote Network'
+                {
+                    Ensure                = "Absent";
+                    ForwardingProfiles    = @("Microsoft 365 traffic forwarding profile");
+                    Id                    = "c60c41bb-e512-48e3-8134-c312439a5343";
+                    Name                  = "Test Remote Network";
+                    Region                = "australiaSouthEast";
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                    DeviceLinks           = @(
+                        MSFT_AADRemoteNetworkDeviceLink {
+                            Name                    = 'Test Link'
+                            IPAddress               = '1.1.1.1'
+                            BandwidthCapacityInMbps = 'mbps500'
+                            DeviceVendor            = 'ciscoCatalyst'
+                            BgpConfiguration        = MSFT_AADRemoteNetworkDeviceLinkbgpConfiguration {
+                                Asn                 = 82
+                                LocalIPAddress      = '1.1.1.87'
+                                PeerIPAddress       = '1.1.1.2'
+                            }
+                            RedundancyConfiguration = MSFT_AADRemoteNetworkDeviceLinkRedundancyConfiguration {
+                                RedundancyTier      = 'zoneRedundancy'
+                                ZoneLocalIPAddress  = '1.1.1.8'
+                            }
+                            TunnelConfiguration     = MSFT_AADRemoteNetworkDeviceLinkTunnelConfiguration {
+                                PreSharedKey               = 'blah'
+                                ZoneRedundancyPreSharedKey = 'blah'
+                                SaLifeTimeSeconds          = 300
+                                IPSecEncryption            = 'gcmAes192'
+                                IPSecIntegrity             = 'gcmAes192'
+                                IKEEncryption              = 'aes192'
+                                IKEIntegrity               = 'gcmAes128'
+                                DHGroup                    = 'ecp256'
+                                PFSGroup                   = 'pfsmm'
+                                ODataType                  = '#microsoft.graph.networkaccess.tunnelConfigurationIKEv2Custom'
+                            }
+                        }
+                    );
                 }
                 AADRoleDefinition 'AADRoleDefinition1'
                 {
@@ -459,6 +628,102 @@
                     UserPrincipalName  = "John.Smith@$TenantId"
                     DisplayName        = "John J. Smith"
                     Ensure             = "Absent"
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
+                AADUserFlowAttribute 'SaiTest'
+                {
+                    Id                 = "testIdSai"
+                    DisplayName        = "saitest"
+                    Ensure             = "Absent"
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
+                AADVerifiedIdAuthority 'AADVerifiedIdAuthority-Contoso'
+                {
+                    DidMethod            = "web";
+                    Ensure               = "Absent";
+                    KeyVaultMetadata     = MSFT_AADVerifiedIdAuthorityKeyVaultMetadata{
+                        SubscriptionId = '2ff65b89-ab22-4489-b84d-e60d1dc30a62'
+                        ResourceName = 'xtakeyvault'
+                        ResourceUrl = 'https://xtakeyvault.vault.azure.net/'
+                        ResourceGroup = 'TBD'
+                    };
+                    LinkedDomainUrl      = "https://nik-charlebois.com/";
+                    Name                 = "Contoso";
+                    ApplicationId         = $ApplicationId
+                    TenantId              = $TenantId
+                    CertificateThumbprint = $CertificateThumbprint
+                }
+                AADVerifiedIdAuthorityContract 'AADVerifiedIdAuthorityContract-Sample Custom Verified Credentials'
+                {
+                    displays             = @(
+                        MSFT_AADVerifiedIdAuthorityContractDisplayModel{
+                            consent = MSFT_AADVerifiedIdAuthorityContractDisplayConsent{
+                                instructions = 'Sign in with your account to get your card.'
+                                title = 'Do you want to get your Verified Credential?'
+                            }
+                            card = MSFT_AADVerifiedIdAuthorityContractDisplayCard{
+                                description = 'Use your verified credential to prove to anyone that you know all about verifiable credentials.'
+                                issuedBy = 'Microsoft'
+                                backgroundColor = '#000000'
+                                textColor = '#ffffff'
+                                logo = MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo{
+                                    uri = 'https://didcustomerplayground.z13.web.core.windows.net/VerifiedCredentialExpert_icon.png'
+                                    description = 'Verified Credential Expert Logo'
+                                }
+                                title = 'Verified Credential Expert'
+                            }
+                            locale = 'en-US'
+                            claims = @(
+                                MSFT_AADVerifiedIdAuthorityContractDisplayClaims{
+                                    label = 'First name'
+                                    claim = 'vc.credentialSubject.firstName'
+                                    type = 'String'
+                                }
+                                MSFT_AADVerifiedIdAuthorityContractDisplayClaims{
+                                    label = 'Last name'
+                                    claim = 'vc.credentialSubject.lastName'
+                                    type = 'String'
+                                }
+                            )
+        
+                        }
+                    );
+                    Ensure               = "Absent";
+                    linkedDomainUrl      = "https://$OrganizationName/";
+                    name                 = "Sample Custom Verified Credentials";
+                    rules                = MSFT_AADVerifiedIdAuthorityContractRulesModel{
+                        validityInterval = 2592000
+                        vc = MSFT_AADVerifiedIdAuthorityContractVcType{
+                            type = @('VerifiedCredentialExpert')
+                        }
+                                    attestations = MSFT_AADVerifiedIdAuthorityContractAttestations{
+                            idTokenHints = @(
+                                MSFT_AADVerifiedIdAuthorityContractAttestationValues{
+                                    mapping = @(
+                                        MSFT_AADVerifiedIdAuthorityContractClaimMapping{
+                                            inputClaim = '$.given_name'
+                                            indexed = $False
+                                            outputClaim = 'firstName'
+                                            required = $True
+                                        }
+                                        MSFT_AADVerifiedIdAuthorityContractClaimMapping{
+                                            inputClaim = '$.family_name'
+                                            indexed = $True
+                                            outputClaim = 'lastName'
+                                            required = $True
+                                        }
+                                    )
+                                    required = $False
+                                }
+                            )
+        
+                        }
+                    
+                    };
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
                     CertificateThumbprint = $CertificateThumbprint

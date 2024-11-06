@@ -1,5 +1,5 @@
 ﻿{
-    "resourceName": "EXOMailboxCalendarConfiguration",
+    "resourceName": "EXORetentionPolicy",
     "description": "",
     "roles": {
         "read": [

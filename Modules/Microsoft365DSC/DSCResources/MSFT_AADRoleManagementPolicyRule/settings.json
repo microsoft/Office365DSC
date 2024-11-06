@@ -1,0 +1,51 @@
+{
+    "resourceName": "AADRoleManagementPolicyRule",
+    "description": "This resource configures an Azure AD Role Management Policy Rule.",
+    "permissions":    {
+    "graph":  {
+                  "delegated":  {
+                                    "read":  [
+                                                 {
+                                                     "name":  "RoleManagementPolicy.Read.Directory"
+                                                 },
+                                                 {
+                                                     "name":  "RoleManagement.Read.Directory"
+                                                 },
+                                                 {
+                                                     "name":  "RoleManagement.Read.All"
+                                                 }
+                                             ],
+                                    "update":  [
+                                                   {
+                                                       "name":  "RoleManagementPolicy.ReadWrite.Directory"
+                                                   },
+                                                   {
+                                                       "name":  "RoleManagement.ReadWrite.Directory"
+                                                   }
+                                               ]
+                                },
+                  "application":  {
+                                      "read":  [
+                                                   {
+                                                       "name":  "RoleManagementPolicy.Read.Directory"
+                                                   },
+                                                   {
+                                                       "name":  "RoleManagement.Read.Directory"
+                                                   },
+                                                   {
+                                                       "name":  "RoleManagement.Read.All"
+                                                   }
+                                               ],
+                                      "update":  [
+                                                     {
+                                                         "name":  "RoleManagementPolicy.ReadWrite.Directory"
+                                                     },
+                                                     {
+                                                         "name":  "RoleManagement.ReadWrite.Directory"
+                                                     }
+                                                 ]
+                                  }
+              }
+}
+
+}

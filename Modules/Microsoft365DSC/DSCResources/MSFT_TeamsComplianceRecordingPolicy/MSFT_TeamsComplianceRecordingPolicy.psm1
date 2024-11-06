@@ -83,9 +83,9 @@ function Get-TargetResource
             return $nullResult
         }
 
+        $ComplexComplianceRecordingApplications = @()
         if ($instance.ComplianceRecordingApplications.Count -gt 0)
         {
-            $ComplexComplianceRecordingApplications = @()
             foreach ($CurrentComplianceRecordingApplications in $instance.ComplianceRecordingApplications)
             {
                 $MyComplianceRecordingApplications = @{}

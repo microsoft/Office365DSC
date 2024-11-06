@@ -1,0 +1,20 @@
+﻿{
+    "resourceName": "AzureBillingaccountsRoleAssignment",
+    "description": "Manages roles on billing accounts.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        }
+    }
+}

@@ -691,7 +691,7 @@ function Start-M365DSCConfigurationExtract
 
         # Azure Automation Check
         $AzureAutomation = $false
-        if ('AzureAutomation/' -eq $env:AZUREPS_HOST_ENVIRONMENT)
+        if ($env:AZUREPS_HOST_ENVIRONMENT -like 'AzureAutomation*')
         {
             $AzureAutomation = $true
         }

@@ -241,7 +241,7 @@ function Get-TargetResource
     try
     {
         Write-Verbose -Message "Checking for the Intune Endpoint Protection Attack Surface Protection rules Policy {$DisplayName}"
-        
+
         $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
             -InboundParameters $PSBoundParameters `
             -ErrorAction Stop
@@ -1084,7 +1084,7 @@ function Export-TargetResource
                     $Results.Remove('Assignments') | Out-Null
                 }
             }
-            
+
             $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
                 -ConnectionMode $ConnectionMode `
                 -ModulePath $PSScriptRoot `

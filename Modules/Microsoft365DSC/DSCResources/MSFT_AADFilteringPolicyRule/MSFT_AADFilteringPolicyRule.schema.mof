@@ -1,0 +1,24 @@
+[ClassVersion("1.0.0.0")]
+class MSFT_AADFilteringPolicyRuleDestination
+{
+    [Write, Description("Name of the destination.")] String name;
+    [Write, Description("FQDN value for the destination.")] String value;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADFilteringPolicyRule")]
+class MSFT_AADFilteringPolicyRule : OMI_BaseResource
+{
+    [Key, Description("Name of the rule.")] String Name;
+    [Key, Description("Name of the associated policy.")] String Policy;
+    [Write, Description("Unique Id for the rule.")] String Id;
+    [Write, Description("Type of rule.")] String RuleType;
+    [Write, Description("List of associated destinations with the rule."), EmbeddedInstance("MSFT_AADFilteringPolicyRuleDestination")] String Destinations[];
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

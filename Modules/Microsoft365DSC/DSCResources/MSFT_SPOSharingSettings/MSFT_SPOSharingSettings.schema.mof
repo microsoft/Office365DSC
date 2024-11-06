@@ -22,7 +22,7 @@ class MSFT_SPOSharingSettings : OMI_BaseResource
     [Write, Description("Configures anonymous link types for folders"),ValueMap{"View","Edit"},Values{"View","Edit"}] string FolderAnonymousLinkType;
     [Write, Description("When this parameter is set to $true and another user re-shares a document from a user’s OneDrive for Business, the OneDrive for Business owner is notified by e-mail.")] boolean NotifyOwnersWhenItemsReshared;
     [Write, Description("Specifies the link permission on the tenant level. Valid values to set are View and Edit. A value of None will be set to Edit as its the default value."),ValueMap{"None","View","Edit"},Values{"None","View","Edit"}] string DefaultLinkPermission;
-    [Write, Description("Ensures that an external user can only accept an external sharing invitation with an account matching the invited email address.Administrators who desire increased control over external collaborators should consider enabling this feature. False (default) - When a document is shared with an external user, bob@contoso.com, it can be accepted by any user with access to the invitation link in the original e-mail.True - User must accept this invitation with bob@contoso.com.")] boolean RequireAcceptingAccountMatchInvitedAccount;
+    [Write, Description("DEPRECATED")] boolean RequireAcceptingAccountMatchInvitedAccount;
     [Write, Description("Only accepted value is 'Present'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("Credentials of the account to authenticate with."), EmbeddedInstance("MSFT_Credential")] string Credential;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;

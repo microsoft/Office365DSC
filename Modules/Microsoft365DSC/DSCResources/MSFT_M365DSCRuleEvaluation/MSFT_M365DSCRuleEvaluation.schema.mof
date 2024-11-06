@@ -1,7 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("M365DSCRuleEvaluation")]
 class MSFT_M365DSCRuleEvaluation : OMI_BaseResource
 {
-    [Key, Description("Name of the resource to monitor")] String ResourceName;
+    [Key, Description("Name of the resource to monitor")] String ResourceTypeName;
     [Required, Description("Specify the rules to monitor the resource for.")] String RuleDefinition;
     [Write, Description("Query to check how many instances exist, using PowerShell format")] String AfterRuleCountQuery;
     [Write, Description("Credentials of the Azure Active Directory Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;

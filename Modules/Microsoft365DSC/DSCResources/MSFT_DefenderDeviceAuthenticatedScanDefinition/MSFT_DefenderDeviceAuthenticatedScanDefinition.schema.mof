@@ -1,0 +1,45 @@
+[ClassVersion("1.0.0.0")]
+class MSFT_DefenderDeviceAuthenticatedScanDefinitionAuthenticationParams
+{
+    [Write, Description("Odata type associated with the request.")] String DataType;
+    [Write, Description("Type of scan.")] String Type;
+    [Write, Description("An optional property that specifies from which KeyVault the scanner should retrieve credentials. If KeyVault is specified there's no need to specify username, password.")] String KeyVaultUrl;
+    [Write, Description("An optional property that specifies KeyVault secret name from which the scanner should retrieve credentials. If KeyVault is specified there's no need to specify username, password.")] String KeyVaultSecretName;
+    [Write, Description("Domain name when using WindowsAuthParams.")] String Domain;
+    [Write, Description("Username when using WindowsAuthParams or the username when choosing SnmpAuthParams with any type other than CommunityString.")] String Username;
+    [Write, Description("Must be set to true when choosing WindowsAuthParams.")] Boolean IsGMSAUser;
+    [Write, Description("Community string to use when choosing SnmpAuthParams with CommunityString.")] String CommunityString;
+    [Write, Description("Auth protocol to use with SnmpAuthParams and AuthNoPriv or AuthPriv. Possible values are MD5, SHA1.")] String AuthProtocol;
+    [Write, Description("Auth password to use with SnmpAuthParams and AuthNoPriv or AuthPriv.")] String AuthPassword;
+    [Write, Description("Priv protocol to use with SnmpAuthParams and AuthPriv. Possible values are DES, 3DES, AES.")] String PrivProtocol;
+    [Write, Description("Priv password to use with SnmpAuthParams and AuthPriv.")] String PrivPassword;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_DefenderDeviceAuthenticatedScanDefinitionScanAgent
+{
+    [Write, Description("Unique identified for the scan agent.")] String id;
+    [Write, Description("Id of the machine associated with the agent.")] String machineId;
+    [Write, Description("Name of the machine associated with the agent.")] String machineName;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("DefenderDeviceAuthenticatedScanDefinition")]
+class MSFT_DefenderDeviceAuthenticatedScanDefinition : OMI_BaseResource
+{
+    [Key, Description("Name of the scan definition.")] String Name;
+    [Write, Description("Unique identified for the scan definition.")] String Id;
+    [Write, Description("Interval in hours to run the scan.")] UInt32 IntervalInHours;
+    [Write, Description("Target of the scan definition.")] String Target;
+    [Write, Description("Determines if the scan definition is active or not.")] Boolean IsActive;
+    [Write, Description("Type of scan.")] String ScanType;
+    [Write, Description("Information about the associated scan agent."), EmbeddedInstance("MSFT_DefenderDeviceAuthenticatedScanDefinitionScanAgent")] String ScannerAgent;
+    [Write, Description("Authentication parameters."), EmbeddedInstance("MSFT_DefenderDeviceAuthenticatedScanDefinitionAuthenticationParams")] String ScanAuthenticationParams;
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

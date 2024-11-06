@@ -1,0 +1,64 @@
+[ClassVersion("1.0.0")]
+class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformationInputParameter
+{
+    [Write, Description("The value of the input parameters of the claims transformation in the claims mapping policy.")] String Value;
+    [Write, Description("The object identifier of the input parameters of the claims transformation in the claims mapping policy.")] String Id;
+    [Write, Description("The data type of the input parameters of the claims transformation in the claims mapping policy.")] String DataType;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformationOutputClaims
+{
+    [Write, Description("The claim type reference ID of the output claims of the claims transformation in the claims mapping policy.")] String ClaimTypeReferenceId;
+    [Write, Description("The transformation type of the output claims of the claims transformation in the claims mapping policy.")] String TransformationClaimType;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformation
+{
+    [Write, Description("The object identifier of the claims transformation in the claims mapping policy.")] String Id;
+    [Write, Description("The transformation method of the claims transformation in the claims mapping policy.")] String TransformationMethod;
+    [Write, Description("The list of input parameters of the claims transformation in the claims mapping policy."), EmbeddedInstance("MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformationInputParameter")] String InputParameters[];
+    [Write, Description("The list of output claims of the claims transformation in the claims mapping policy."), EmbeddedInstance("MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformationOutputClaims")] String OutputClaims[];
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsSchema
+{
+    [Write, Description("The source name of the claims schema in the claims mapping policy.")] String Source;
+    [Write, Description("The object identifier of the claims schema in the claims mapping policy.")] String Id;
+    [Write, Description("The SAML claims type of the claims schema in the claims mapping policy.")] String SamlClaimType;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicy
+{
+    [Write, Description("Set value of 1. Required.")] uint32 Version;
+    [Write, Description("If set to true, all claims in the basic claim set are emitted in tokens affected by the policy. If set to false, claims in the basic claim set are not in the tokens, unless they are individually added in the ClaimsSchema property of the same policy.")] Boolean IncludeBasicClaimSet;
+    [Write, Description("Defines which claims are present in the tokens affected by the policy, in addition to the basic claim set and the core claim set."), EmbeddedInstance("MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsSchema")] String ClaimsSchema[];
+    [Write, Description("Defines common transformations that can be applied to source data, to generate the output data for claims specified in the ClaimsSchema."), EmbeddedInstance("MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformation")] String ClaimsTransformation[];
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADClaimsMappingPolicyDefinition
+{
+    [Write, Description("Rules and settings of the policy."), EmbeddedInstance("MSFT_AADClaimsMappingPolicyDefinitionMappingPolicy")] String ClaimsMappingPolicy;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADClaimsMappingPolicy")]
+class MSFT_AADClaimsMappingPolicy : OMI_BaseResource
+{
+    [Write, Description("A string collection containing a JSON string that defines the rules and settings for a policy. The syntax for the definition differs for each derived policy type. Required."), EmbeddedInstance("MSFT_AADClaimsMappingPolicyDefinition")] String Definition[];
+    [Write, Description("If set to true, activates this policy. There can be many policies for the same policy type, but only one can be activated as the organization default. Optional, default value is false.")] Boolean IsOrganizationDefault;
+    [Write, Description("Description for this policy. Required.")] String Description;
+    [Key, Description("Display name for this policy. Required.")] String DisplayName;
+    [Write, Description("The unique identifier for an entity. Read-only.")] String Id;
+    [Write, Description("Present ensures the policy exists, absent ensures it is removed."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
+    [Write, Description("Credentials of the Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Secret of the Azure Active Directory tenant used for authentication."), EmbeddedInstance("MSFT_Credential")] String ApplicationSecret;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

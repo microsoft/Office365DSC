@@ -73,6 +73,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'vendor_msft_firewall_mdmstore_global_disablestatefulftp'
                                 Name = 'DisableStatefulFtp'
+                                OffsetUri = '/MdmStore/Global/DisableStatefulFtp'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
@@ -231,6 +232,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'vendor_msft_firewall_mdmstore_hypervvmsettings_{vmcreatorid}'
                                 Name = '{VMCreatorId}'
+                                OffsetUri = '/MdmStore/HyperVVMSettings/{0}'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                     childIds = @(

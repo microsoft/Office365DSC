@@ -1,0 +1,24 @@
+[ClassVersion("1.0.0")]
+class MSFT_MicrosoftGraphNetworkAccessForwardingPolicyRule
+{
+    [Write, Description("Policy Rule Name. Required")] String Name;
+    [Write, Description("Action value.")] String ActionValue;
+    [Write, Description("Type of Rule")] String RuleType;
+    [Write, Description("List of Ports.")] UInt32 Ports[];
+    [Write, Description("Protocol Value")] String Protocol;
+    [Write, Description("List of destinations.")] String Destinations[];
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADNetworkAccessForwardingPolicy")]
+class MSFT_AADNetworkAccessForwardingPolicy : OMI_BaseResource
+{
+    [Key, Description("Name of the forwarding policy")] String Name;
+    [Write, Description("List of rules associated to this forwarding policy."), EmbeddedInstance("MSFT_MicrosoftGraphNetworkAccessForwardingPolicyRule")] String PolicyRules[];
+
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

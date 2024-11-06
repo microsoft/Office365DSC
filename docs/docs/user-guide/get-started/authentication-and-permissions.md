@@ -103,10 +103,10 @@ In order to be able to interact with these components, you need to grant your ap
 
 Doing so will return an object with two properties. The **ReadPermissions** property contains a list of the minimal permissions that need to be granted for the app to be able to read information about the selected components. These are the permissions you want to grant if you are taking a snapshot of the configuration of an existing tenant. The second property, **UpdatePermissions**, contains the minimal permissions required to interact with and configure the selected components. You will need to grant your application these permissions if you are trying to apply a configuration onto a tenant.
 
-By default, this cmdlet outputs the permissions required for Delegated permissions. To output the Application permissions, use the PermissionsType parameter
+By default, this cmdlet outputs the permissions required for Delegated permissions. To output the Application permissions, use the PermissionType and AccessType parameters
 
 ```PowerShell
-Get-M365DSCCompiledPermissionList -ResourceNameList @('AADUser', 'AADApplication') -PermissionsType 'Application'
+Get-M365DSCCompiledPermissionList -ResourceNameList @('AADUser', 'AADApplication') -PermissionType 'Application' -AccessType 'Read'
 ```
 
 If you are trying to interact with all available components in Microsoft365DSC, you can get a complete picture of all permissions required across all resources by running the following line of PowerShell.

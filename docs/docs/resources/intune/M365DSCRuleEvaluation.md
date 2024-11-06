@@ -4,7 +4,7 @@
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
-| **ResourceName** | Key | String | Name of the resource to monitor | |
+| **ResourceTypeName** | Key | String | Name of the resource to monitor | |
 | **RuleDefinition** | Required | String | Specify the rules to monitor the resource for. | |
 | **AfterRuleCountQuery** | Write | String | Query to check how many instances exist, using PowerShell format | |
 | **Credential** | Write | PSCredential | Credentials of the Azure Active Directory Admin | |
@@ -68,9 +68,9 @@ Configuration Example
     {
         M365DSCRuleEvaluation 'AllowAnonymousUsersToJoinMeetingAllPolicies'
         {
-            ResourceName   = 'TeamsMeetingPolicy'
-            RuleDefinition = "`$_.AllowAnonymousUsersToJoinMeeting -eq `$true"
-            Credential     = $CredsCredential
+            ResourceTypeName = 'TeamsMeetingPolicy'
+            RuleDefinition   = "`$_.AllowAnonymousUsersToJoinMeeting -eq `$true"
+            Credential       = $CredsCredential
         }
     }
 }

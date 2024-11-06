@@ -121,6 +121,8 @@ function Get-TargetResource
                     -Source $($MyInvocation.MyCommand.Source) `
                     -TenantId $TenantId `
                     -Credential $Credential
+
+                return $nullReturn
             }
         }
         if ($null -eq $NamedLocation)
@@ -252,6 +254,26 @@ function Set-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
+    try
+    {
+        if ($Id)
+        {
+            $NamedLocation = Get-MgBetaIdentityConditionalAccessNamedLocation -NamedLocationId $Id -ErrorAction Stop
+        }
+    }
+    catch
+    {
+        Write-Verbose -Message "Could not retrieve AAD Named Location by ID {$Id}"
+    }
+    if ($null -eq $NamedLocation)
+    {
+        $NamedLocation = Get-MgBetaIdentityConditionalAccessNamedLocation -ErrorAction SilentlyContinue | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName }
+        if ($NamedLocation.Length -gt 1)
+        {
+            throw "More than one instance of a Named Location Policy with name {$DisplayName} was found. Please provide the ID parameter."
+        }
+    }
+
     $currentAADNamedLocation = Get-TargetResource @PSBoundParameters
 
     $desiredValues = @{
@@ -293,7 +315,7 @@ function Set-TargetResource
         Write-Verbose -Message "Creating New AAD Named Location {$Displayname)} with attributes: $VerboseAttributes"
         $JSONValue = ConvertTo-Json $desiredValues | Out-String
         Write-Verbose -Message "JSON: $JSONValue"
-        $APIUrl = 'https://graph.microsoft.com/v1.0/identity/conditionalAccess/namedLocations'
+        $APIUrl = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "v1.0/identity/conditionalAccess/namedLocations"
         Invoke-MgGraphRequest -Method POST `
             -Uri $APIUrl `
             -Body $JSONValue | Out-Null
@@ -308,7 +330,7 @@ function Set-TargetResource
         Write-Verbose -Message "Updating AAD Named Location {$Displayname)} with attributes: $VerboseAttributes"
         $JSONValue = ConvertTo-Json $desiredValues | Out-String
         Write-Verbose -Message "JSON: $JSONValue"
-        $APIUrl = "https://graph.microsoft.com/v1.0/identity/conditionalAccess/namedLocations/$($currentAADNamedLocation.Id)"
+        $APIUrl = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "v1.0/identity/conditionalAccess/namedLocations/$($currentAADNamedLocation.Id)"
         Invoke-MgGraphRequest -Method PATCH `
             -Uri $APIUrl `
             -Body $JSONValue | Out-Null

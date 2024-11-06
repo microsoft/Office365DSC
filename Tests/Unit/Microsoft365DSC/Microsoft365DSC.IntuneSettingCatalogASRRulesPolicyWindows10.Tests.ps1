@@ -47,6 +47,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
+                return @{
+                    Id          = '12345-12345-12345-12345-12345'
+                    Description = 'My Test'
+                    Name        = 'asdfads'
+                    TemplateReference = @{
+                        TemplateId = 'e8c053d6-9f95-42b1-a7f1-ebfd71c67a4b_1'
+                    }
+                }
             }
 
             Mock -CommandName Update-IntuneDeviceConfigurationPolicy -MockWith {
@@ -66,6 +74,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_policy_config_defender_attacksurfacereductionrules'
                                 Name = 'AttackSurfaceReductionRules'
+                                OffsetUri = '/Config/Defender/AttackSurfaceReductionRules'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                     childIds = @(
@@ -81,6 +90,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_policy_config_defender_attacksurfacereductionrules_blockadobereaderfromcreatingchildprocesses'
                                 Name = 'BlockAdobeReaderFromCreatingChildProcesses'
+                                OffsetUri = '/Config/Defender/AttackSurfaceReductionRules'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
@@ -88,6 +98,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_policy_config_defender_attacksurfacereductionrules_blockadobereaderfromcreatingchildprocesses_perruleexclusions'
                                 Name = 'ASROnlyPerRuleExclusions'
+                                OffsetUri = '/Configuration/ASROnlyPerRuleExclusions'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionDefinition'
                                     maximumCount = 600
@@ -99,11 +110,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                         }
                                     )
                                 }
-                                OffsetUri = '/Configuration/ASROnlyPerRuleExclusions'
                             },
                             @{
                                 Id = 'device_vendor_msft_policy_config_defender_attacksurfacereductionrules_blockwin32apicallsfromofficemacros'
                                 Name = 'BlockWin32APICallsFromOfficeMacros'
+                                OffsetUri = '/Config/Defender/AttackSurfaceReductionRules'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
@@ -111,6 +122,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_policy_config_defender_attacksurfacereductionrules_blockwin32apicallsfromofficemacros_perruleexclusions'
                                 Name = 'ASROnlyPerRuleExclusions'
+                                OffsetUri = '/Configuration/ASROnlyPerRuleExclusions'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionDefinition'
                                     maximumCount = 600
@@ -122,11 +134,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                         }
                                     )
                                 }
-                                OffsetUri = '/Configuration/ASROnlyPerRuleExclusions'
                             }
                             @{
                                 Id = 'device_vendor_msft_policy_config_defender_attacksurfacereductionrules_blockcredentialstealingfromwindowslocalsecurityauthoritysubsystem'
                                 Name = 'BlockCredentialStealingFromWindowsLocalSecurityAuthoritySubsystem'
+                                OffsetUri = '/Config/Defender/AttackSurfaceReductionRules'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
@@ -134,6 +146,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_policy_config_defender_attacksurfacereductionrules_blockallofficeapplicationsfromcreatingchildprocesses'
                                 Name = 'BlockAllOfficeApplicationsFromCreatingChildProcesses'
+                                OffsetUri = '/Config/Defender/AttackSurfaceReductionRules'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                                 }
@@ -213,14 +226,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         AdditionalProperties = @{}
                     }
                 )
-            }
-
-            Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                return @{
-                    Id          = '12345-12345-12345-12345-12345'
-                    Description = 'My Test'
-                    Name        = 'asdfads'
-                }
             }
 
             Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicyAssignment -MockWith {
@@ -401,17 +406,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $Global:PartialExportFileName = "$(New-Guid).partial.ps1"
                 $testParams = @{
                     Credential = $Credential
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Id                = '12345-12345-12345-12345-12345'
-                        Description       = 'My Test'
-                        Name              = 'asdfads'
-                        TemplateReference = @{
-                            TemplateId = 'e8c053d6-9f95-42b1-a7f1-ebfd71c67a4b_1'
-                        }
-                    }
                 }
             }
 

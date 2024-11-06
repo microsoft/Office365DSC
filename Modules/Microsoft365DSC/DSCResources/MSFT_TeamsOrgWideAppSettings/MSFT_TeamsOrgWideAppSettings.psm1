@@ -19,7 +19,11 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $AccessTokens
+        $AccessTokens,
+
+        [Parameter()]
+        [Switch]
+        $ManagedIdentity
     )
     Write-Verbose -Message 'Checking the Teams Upgrade Configuration'
 
@@ -50,6 +54,7 @@ function Get-TargetResource
             IsSideloadedAppsInteractionEnabled = $settings.IsSideloadedAppsInteractionEnabled
             Credential                         = $Credential
             AccessTokens                       = $AccessTokens
+            ManagedIdentity                    = $ManagedIdentity.IsPresent
         }
     }
     catch
@@ -93,7 +98,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $AccessTokens
+        $AccessTokens,
+
+        [Parameter()]
+        [Switch]
+        $ManagedIdentity
     )
 
     Write-Verbose -Message 'Setting Teams Upgrade Configuration'
@@ -142,7 +151,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $AccessTokens
+        $AccessTokens,
+
+        [Parameter()]
+        [Switch]
+        $ManagedIdentity
     )
     #Ensure the proper dependencies are installed in the current environment.
     Confirm-M365DSCDependencies

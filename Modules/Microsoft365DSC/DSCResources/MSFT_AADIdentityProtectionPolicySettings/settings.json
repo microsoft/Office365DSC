@@ -1,0 +1,36 @@
+﻿{
+    "resourceName": "AADIdentityProtectionPolicySettings",
+    "description": "Use this resource to monitor the identity protection policy settings in AAD",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [
+                    {
+                        "name": "Policy.Read.IdentityProtection"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "Policy.ReadWrite.IdentityProtection"
+                    }
+                ]
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "Policy.Read.IdentityProtection"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "Policy.ReadWrite.IdentityProtection"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -70,6 +70,142 @@ function Get-TargetResource
         $ShareWithColleaguesUserLimit,
 
         [Parameter()]
+        [System.Boolean]
+        $DisableCopilotFeedback,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableMakerMatch,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableUnusedLicenseAssignment,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCreateFromImage,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableConnectionSharingWithEveryone,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowNewOrgChannelDefault,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilot,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilotWithBing,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableAdminDigest,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisablePreferredDataLocationForTeamsEnvironment,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableDeveloperEnvironmentCreationByNonAdminUsers,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnvironmentRoutingAllMakers,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableDefaultEnvironmentRouting,
+
+        [Parameter()]
+        [System.String]
+        $EnableDesktopFlowDataPolicyManagement,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableCanvasAppInsights,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCreateFromFigma,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableBillingPolicyCreationByNonAdminUsers,
+
+        [Parameter()]
+        [System.UInt32]
+        $StorageCapacityConsumptionWarningThreshold,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTenantCapacityReportForEnvironmentAdmins,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTenantLicensingReportForEnvironmentAdmins,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableUseOfUnassignedAIBuilderCredits,
+
+        [Parameter()]
+        [System.String]
+        $EnableGenerativeAIFeaturesForSiteUsers,
+
+        [Parameter()]
+        [System.String]
+        $EnableExternalAuthenticationProvidersInPowerPages,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableChampionsInvitationReachout,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableSkillsMatchInvitationReachout,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableOpenAiBotPublishing,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableAiPrompts,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilotFeedbackMetadata,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableModelDataSharing,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableDataLogging,
+
+        [Parameter()]
+        [System.String]
+        $PowerCatalogAudienceSetting,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableDeleteDisabledUserinAllEnvironments,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableHelpSupportCopilot,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableSurveyScreenshots,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
 
@@ -115,21 +251,87 @@ function Get-TargetResource
         $PPTenantSettings = Get-TenantSettings -ErrorAction Stop
         return @{
             IsSingleInstance                               = 'Yes'
+
+            # search
+            DisableDocsSearch                              = $PPTenantSettings.powerPlatform.search.disableDocsSearch
+            DisableCommunitySearch                         = $PPTenantSettings.powerPlatform.search.disableCommunitySearch
+            DisableBingVideoSearch                         = $PPTenantSettings.powerPlatform.search.disableBingVideoSearch
+
+            #teamsIntegration
+            ShareWithColleaguesUserLimit                   = $PPTenantSettings.powerPlatform.teamsIntegration.shareWithColleaguesUserLimit
+
+            #powerApps
+            DisableShareWithEveryone                       = $PPTenantSettings.powerPlatform.powerApps.disableShareWithEveryone
+            EnableGuestsToMake                             = $PPTenantSettings.powerPlatform.powerApps.enableGuestsToMake
+            DisableMakerMatch                              = $PPTenantSettings.powerPlatform.powerApps.disableMakerMatch
+            DisableUnusedLicenseAssignment                 = $PPTenantSettings.powerPlatform.powerApps.disableUnusedLicenseAssignment
+            DisableCreateFromImage                         = $PPTenantSettings.powerPlatform.powerApps.disableCreateFromImage
+            DisableCreateFromFigma                         = $PPTenantSettings.powerPlatform.powerApps.disableCreateFromFigma
+            EnableCanvasAppInsights                        = $PPTenantSettings.powerPlatform.powerApps.enableCanvasAppInsights
+            DisableConnectionSharingWithEveryone           = $PPTenantSettings.powerPlatform.powerApps.disableConnectionSharingWithEveryone
+            AllowNewOrgChannelDefault                      = $PPTenantSettings.powerPlatform.powerApps.allowNewOrgChannelDefault
+            DisableCopilot                                 = $PPTenantSettings.powerPlatform.powerApps.disableCopilot
+
+            #powerAutomate
+            DisableCopilotWithBing                         = $PPTenantSettings.powerPlatform.powerAutomate.disableCopilotWithBing
+
+            #environments
+            DisablePreferredDataLocationForTeamsEnvironment = $PPTenantSettings.powerPlatform.environments.disablePreferredDataLocationForTeamsEnvironment
+
+            #governance
+            DisableAdminDigest                                 = $PPTenantSettings.powerPlatform.governance.disableAdminDigest
+            DisableDeveloperEnvironmentCreationByNonAdminUsers = $PPTenantSettings.powerPlatform.governance.disableDeveloperEnvironmentCreationByNonAdminUsers
+            EnableDefaultEnvironmentRouting                    = $PPTenantSettings.powerPlatform.governance.enableDefaultEnvironmentRouting
+            EnableDesktopFlowDataPolicyManagement              = $PPTenantSettings.powerPlatform.governance.policy.enableDesktopFlowDataPolicyManagement
+            EnvironmentRoutingAllMakers                        = $PPTenantSettings.powerPlatform.governance.environmentRoutingAllMakers
+
+            #licensing
+            DisableBillingPolicyCreationByNonAdminUsers     = $PPTenantSettings.powerPlatform.licensing.disableBillingPolicyCreationByNonAdminUsers
+            EnableTenantCapacityReportForEnvironmentAdmins  = $PPTenantSettings.powerPlatform.licensing.enableTenantCapacityReportForEnvironmentAdmins
+            StorageCapacityConsumptionWarningThreshold      = $PPTenantSettings.powerPlatform.licensing.storageCapacityConsumptionWarningThreshold
+            EnableTenantLicensingReportForEnvironmentAdmins = $PPTenantSettings.powerPlatform.licensing.enableTenantLicensingReportForEnvironmentAdmins
+            DisableUseOfUnassignedAIBuilderCredits          = $PPTenantSettings.powerPlatform.licensing.disableUseOfUnassignedAIBuilderCredits
+
+            #powerPages
+            EnableGenerativeAIFeaturesForSiteUsers            = $PPTenantSettings.powerPlatform.powerPages.enableGenerativeAIFeaturesForSiteUsers
+            EnableExternalAuthenticationProvidersInPowerPages = $PPTenantSettings.powerPlatform.powerPages.enableExternalAuthenticationProvidersInPowerPages
+
+            #champions
+            DisableChampionsInvitationReachout   = $PPTenantSettings.powerPlatform.champions.disableChampionsInvitationReachout
+            DisableSkillsMatchInvitationReachout = $PPTenantSettings.powerPlatform.champions.disableSkillsMatchInvitationReachout
+
+            #intelligence
+            DisableCopilotFeedback                         = $PPTenantSettings.powerPlatforms.intelligence.disableCopilotFeedback
+            EnableOpenAiBotPublishing                      = $PPTenantSettings.powerPlatforms.intelligence.enableOpenAiBotPublishing
+            DisableCopilotFeedbackMetadata                 = $PPTenantSettings.powerPlatforms.intelligence.disableCopilotFeedbackMetadata
+            DisableAiPrompts                               = $PPTenantSettings.powerPlatforms.intelligence.disableAiPrompts
+
+            #modelExperimentation
+            EnableModelDataSharing                         = $PPTenantSettings.powerPlatforms.modelExperimentation.enableModelDataSharing
+            DisableDataLogging                             = $PPTenantSettings.powerPlatforms.modelExperimentation.disableDataLogging
+
+            #catalogSettings
+            PowerCatalogAudienceSetting                    = $PPTenantSettings.powerPlatforms.catalogSettings.powerCatalogAudienceSetting
+
+            #userManagementSettings
+            EnableDeleteDisabledUserinAllEnvironments      = $PPTenantSettings.powerPlatforms.userManagementSettings.enableDeleteDisabledUserinAllEnvironments
+
+            #helpSupportSettings
+            DisableHelpSupportCopilot                      = $PPTenantSettings.powerPlatforms.helpSupportSettings.disableHelpSupportCopilot
+            UseSupportBingSearchByAllUsers                 = $PPTenantSettings.powerPlatforms.helpSupportSettings.useSupportBingSearchByAllUsers
+
+            #Main
             WalkMeOptOut                                   = $PPTenantSettings.walkMeOptOut
             DisableNPSCommentsReachout                     = $PPTenantSettings.disableNPSCommentsReachout
             DisableNewsletterSendout                       = $PPTenantSettings.disableNewsletterSendout
             DisableEnvironmentCreationByNonAdminUsers      = $PPTenantSettings.disableEnvironmentCreationByNonAdminUsers
             DisablePortalsCreationByNonAdminUsers          = $PPTenantSettings.disablePortalsCreationByNonAdminUsers
             DisableSurveyFeedback                          = $PPTenantSettings.disableSurveyFeedback
+            DisableSurveyScreenshots                       = $PPTenantSettings.disableSurveyScreenshots
             DisableTrialEnvironmentCreationByNonAdminUsers = $PPTenantSettings.disableTrialEnvironmentCreationByNonAdminUsers
             DisableCapacityAllocationByEnvironmentAdmins   = $PPTenantSettings.disableCapacityAllocationByEnvironmentAdmins
             DisableSupportTicketsVisibleByAllUsers         = $PPTenantSettings.disableSupportTicketsVisibleByAllUsers
-            DisableDocsSearch                              = $PPTenantSettings.powerPlatform.search.disableDocsSearch
-            DisableCommunitySearch                         = $PPTenantSettings.powerPlatform.search.disableCommunitySearch
-            DisableBingVideoSearch                         = $PPTenantSettings.powerPlatform.search.disableBingVideoSearch
-            DisableShareWithEveryone                       = $PPTenantSettings.powerPlatform.powerApps.disableShareWithEveryone
-            EnableGuestsToMake                             = $PPTenantSettings.powerPlatform.powerApps.enableGuestsToMake
-            ShareWithColleaguesUserLimit                   = $PPTenantSettings.powerPlatform.teamsIntegration.shareWithColleaguesUserLimit
+
             Credential                                     = $Credential
             ApplicationId                                  = $ApplicationId
             TenantId                                       = $TenantId
@@ -218,6 +420,142 @@ function Set-TargetResource
         [ValidateRange(1, 10000)]
         [System.UInt32]
         $ShareWithColleaguesUserLimit,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilotFeedback,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableMakerMatch,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableUnusedLicenseAssignment,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCreateFromImage,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableConnectionSharingWithEveryone,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowNewOrgChannelDefault,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilot,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilotWithBing,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableAdminDigest,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisablePreferredDataLocationForTeamsEnvironment,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableDeveloperEnvironmentCreationByNonAdminUsers,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnvironmentRoutingAllMakers,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableDefaultEnvironmentRouting,
+
+        [Parameter()]
+        [System.String]
+        $EnableDesktopFlowDataPolicyManagement,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableCanvasAppInsights,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCreateFromFigma,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableBillingPolicyCreationByNonAdminUsers,
+
+        [Parameter()]
+        [System.UInt32]
+        $StorageCapacityConsumptionWarningThreshold,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTenantCapacityReportForEnvironmentAdmins,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTenantLicensingReportForEnvironmentAdmins,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableUseOfUnassignedAIBuilderCredits,
+
+        [Parameter()]
+        [System.String]
+        $EnableGenerativeAIFeaturesForSiteUsers,
+
+        [Parameter()]
+        [System.String]
+        $EnableExternalAuthenticationProvidersInPowerPages,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableChampionsInvitationReachout,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableSkillsMatchInvitationReachout,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableOpenAiBotPublishing,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableAiPrompts,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilotFeedbackMetadata,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableModelDataSharing,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableDataLogging,
+
+        [Parameter()]
+        [System.String]
+        $PowerCatalogAudienceSetting,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableDeleteDisabledUserinAllEnvironments,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableHelpSupportCopilot,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableSurveyScreenshots,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -332,6 +670,142 @@ function Test-TargetResource
         [ValidateRange(1, 10000)]
         [System.UInt32]
         $ShareWithColleaguesUserLimit,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilotFeedback,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableMakerMatch,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableUnusedLicenseAssignment,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCreateFromImage,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableConnectionSharingWithEveryone,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowNewOrgChannelDefault,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilot,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilotWithBing,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableAdminDigest,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisablePreferredDataLocationForTeamsEnvironment,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableDeveloperEnvironmentCreationByNonAdminUsers,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnvironmentRoutingAllMakers,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableDefaultEnvironmentRouting,
+
+        [Parameter()]
+        [System.String]
+        $EnableDesktopFlowDataPolicyManagement,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableCanvasAppInsights,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCreateFromFigma,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableBillingPolicyCreationByNonAdminUsers,
+
+        [Parameter()]
+        [System.UInt32]
+        $StorageCapacityConsumptionWarningThreshold,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTenantCapacityReportForEnvironmentAdmins,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTenantLicensingReportForEnvironmentAdmins,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableUseOfUnassignedAIBuilderCredits,
+
+        [Parameter()]
+        [System.String]
+        $EnableGenerativeAIFeaturesForSiteUsers,
+
+        [Parameter()]
+        [System.String]
+        $EnableExternalAuthenticationProvidersInPowerPages,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableChampionsInvitationReachout,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableSkillsMatchInvitationReachout,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableOpenAiBotPublishing,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableAiPrompts,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableCopilotFeedbackMetadata,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableModelDataSharing,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableDataLogging,
+
+        [Parameter()]
+        [System.String]
+        $PowerCatalogAudienceSetting,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableDeleteDisabledUserinAllEnvironments,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableHelpSupportCopilot,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableSurveyScreenshots,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -489,7 +963,7 @@ function Export-TargetResource
 function Get-M365DSCPowerPlatformTenantSettings
 {
     [CmdletBinding()]
-    [OutputType([System.String])]
+    [OutputType([System.Collections.Hashtable])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -504,6 +978,7 @@ function Get-M365DSCPowerPlatformTenantSettings
         disableEnvironmentCreationByNonAdminUsers      = $Parameters.DisableEnvironmentCreationByNonAdminUsers
         disablePortalsCreationByNonAdminUsers          = $Parameters.DisablePortalsCreationByNonAdminUsers
         disableSurveyFeedback                          = $Parameters.DisableSurveyFeedback
+        disableSurveyScreenshots                       = $Parameters.DisableSurveyScreenshots
         disableTrialEnvironmentCreationByNonAdminUsers = $Parameters.DisableTrialEnvironmentCreationByNonAdminUsers
         disableCapacityAllocationByEnvironmentAdmins   = $Parameters.DisableCapacityAllocationByEnvironmentAdmins
         disableSupportTicketsVisibleByAllUsers         = $Parameters.DisableSupportTicketsVisibleByAllUsers
@@ -513,12 +988,75 @@ function Get-M365DSCPowerPlatformTenantSettings
                 disableCommunitySearch = $Parameters.DisableCommunitySearch
                 disableBingVideoSearch = $Parameters.DisableBingVideoSearch
             }
+            teams = @{
+                shareWithColleaguesUserLimit = $Parameters.ShareWithColleaguesUserLimit
+            }
             powerApps        = @{
-                disableShareWithEveryone = $Parameters.DisableShareWithEveryone
-                enableGuestsToMake       = $Parameters.EnableGuestsToMake
+                disableShareWithEveryone             = $Parameters.DisableShareWithEveryone
+                enableGuestsToMake                   = $Parameters.EnableGuestsToMake
+                disableMakerMatch                    = $Parameters.DisableMakerMatch
+                disableUnusedLicenseAssignment       = $Parameters.DisableUnusedLicenseAssignment
+                disableCreateFromImage               = $Parameters.DisableCreateFromImage
+                disableCreateFromFigma               = $Parameters.DisableCreateFromFigma
+                enableCanvasAppInsights              = $Parameters.EnableCanvasAppInsights
+                disableConnectionSharingWithEveryone = $Parameters.DisableConnectionSharingWithEveryone
+                allowNewOrgChannelDefault            = $Parameters.AllowNewOrgChannelDefault
+                disableCopilot                       = $Parameters.DisableCopilot
+            }
+            environments = @{
+                disablePreferredDataLocationForTeamsEnvironment = $Parameters.DisablePreferredDataLocationForTeamsEnvironment
+            }
+            powerAutomate = @{
+                disableCopilotWithBing = $Parameters.DisableCopilotWithBing
+            }
+            governance = @{
+                disableAdminDigest                                 = $Parameters.DisableAdminDigest
+                disableDeveloperEnvironmentCreationByNonAdminUsers = $Parameters.DisableDeveloperEnvironmentCreationByNonAdminUsers
+                enableDefaultEnvironmentRouting                    = $Parameters.EnableDefaultEnvironmentRouting
+                policy                                             = @(
+                    @{
+                        enableDesktopFlowDataPolicyManagement = $Parameters.EnableDesktopFlowDataPolicyManagement
+                    }
+                )
+                environmentRoutingAllMakers                        = $Parameters.EnvironmentRoutingAllMakers
             }
             teamsIntegration = @{
                 shareWithColleaguesUserLimit = $Parameters.ShareWithColleaguesUserLimit
+            }
+            licensing = @{
+                disableBillingPolicyCreationByNonAdminUsers     = $Parameters.DisableBillingPolicyCreationByNonAdminUsers
+                enableTenantCapacityReportForEnvironmentAdmins  = $Parameters.EnableTenantCapacityReportForEnvironmentAdmins
+                storageCapacityConsumptionWarningThreshold      = $Parameters.StorageCapacityConsumptionWarningThreshold
+                enableTenantLicensingReportForEnvironmentAdmins = $Parameters.EnableTenantLicensingReportForEnvironmentAdmins
+                disableUseOfUnassignedAIBuilderCredits          = $Parameters.DisableUseOfUnassignedAIBuilderCredits
+            }
+            powerPages = @{
+                enableGenerativeAIFeaturesForSiteUsers            = $Parameters.EnableGenerativeAIFeaturesForSiteUsers
+                enableExternalAuthenticationProvidersInPowerPages = $Parameters.EnableExternalAuthenticationProvidersInPowerPages
+            }
+            champions = @{
+                disableChampionsInvitationReachout   = $Parameters.DisableChampionsInvitationReachout
+                disableSkillsMatchInvitationReachout = $Parameters.DisableSkillsMatchInvitationReachout
+            }
+            intelligence = @{
+                disableCopilotFeedback                         = $Parameters.disableCopilotFeedback
+                enableOpenAiBotPublishing                      = $Parameters.enableOpenAiBotPublishing
+                disableCopilotFeedbackMetadata                 = $Parameters.disableCopilotFeedbackMetadata
+                disableAiPrompts                               = $Parameters.disableAiPrompts
+            }
+            modelExperimentation = @{
+                enableModelDataSharing                         = $Parameters.enableModelDataSharing
+                disableDataLogging                             = $Parameters.disableDataLogging
+            }
+            catalogSettings = @{
+                powerCatalogAudienceSetting                    = $Parameters.powerCatalogAudienceSetting
+            }
+            userManagementSettings = @{
+                enableDeleteDisabledUserinAllEnvironments      = $Parameters.enableDeleteDisabledUserinAllEnvironments
+            }
+            helpSupportSettings = @{
+                disableHelpSupportCopilot                      = $Parameters.disableHelpSupportCopilot
+                useSupportBingSearchByAllUsers                 = $Parameters.useSupportBingSearchByAllUsers
             }
         }
     }

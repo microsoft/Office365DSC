@@ -1,0 +1,32 @@
+﻿{
+    "resourceName": "AADNetworkAccessForwardingPolicy",
+    "description": "Use this resource to monitor the forwarding policy rules associated with the forwarding policies.",
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [
+                    {
+                        "name": "NetworkAccessPolicy.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "NetworkAccessPolicy.ReadWrite.All"
+                    }
+                ]
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "NetworkAccessPolicy.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "NetworkAccessPolicy.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}

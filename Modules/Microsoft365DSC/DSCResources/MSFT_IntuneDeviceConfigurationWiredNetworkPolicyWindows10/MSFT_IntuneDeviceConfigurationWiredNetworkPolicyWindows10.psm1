@@ -1188,8 +1188,7 @@ function Get-DeviceConfigurationPolicyCertificate
         [System.String]
         $CertificateName
     )
-
-    $Uri = "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName"
+    $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName"
     try
     {
         $result = Invoke-MgGraphRequest -Method Get -Uri $Uri 4>$null
@@ -1228,9 +1227,8 @@ function Update-DeviceConfigurationPolicyCertificateId
         [System.String]
         $CertificateName
     )
-
-    $Uri = "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/`$ref"
-
+    $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/`$ref"
+    
     if ($CertificateName -eq 'rootCertificatesForServerValidation')
     {
         $method = 'POST'
@@ -1271,7 +1269,7 @@ function Remove-DeviceConfigurationPolicyCertificateId
 
     foreach ($certificateId in $CertificateIds)
     {
-        $Uri = " https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/$certificateId/`$ref"
+        $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/$certificateId/`$ref"
         Invoke-MgGraphRequest -Method DELETE -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop 4>$null
     }
 }

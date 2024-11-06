@@ -1,0 +1,41 @@
+[ClassVersion("1.0.0")]
+class MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionClientConfiguration
+{
+    [Write, Description("The max duration in milliseconds that Microsoft Entra ID waits for a response from the external app before it shuts down the connection. The valid range is between 200 and 2000 milliseconds. Default duration is 1000.")] UInt32 timeoutInMilliseconds;
+    [Write, Description("The max number of retries that Microsoft Entra ID makes to the external API. Values of 0 or 1 are supported. If null, the default for the service applies.")] UInt32 maximumRetries;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionEndpointConfiguration
+{
+    [Write, Description("The name of the logic app.")] String logicAppWorkflowName;
+    [Write, Description("The Azure resource group name for the logic app.")] String resourceGroupName;
+    [Write, Description("Identifier of the Azure subscription for the logic app.")] String subscriptionId;
+    [Write, Description("Url of the logic app.")] String url;
+};
+
+[ClassVersion("1.0.0")]
+class MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionCallbackConfiguration
+{
+    [Write, Description("Callback time out in ISO 8601 time duration. Accepted time durations are between five minutes to three hours. For example, PT5M for five minutes and PT3H for three hours. Inherited from customExtensionCallbackConfiguration.")] String timeoutDuration;
+    [Write, Description("List of apps names that are allowed to resume a task processing result.")] String authorizedApps[];
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension")]
+class MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension : OMI_BaseResource
+{
+    [Key, Description("Display name of the custom extension.")] String DisplayName;
+    [Write, Description("Unique Id of the extension.")] String Id;
+    [Write, Description("Description of the extension.")] String Description;
+    [Write, Description("Client configuration for the extension"), EmbeddedInstance("MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionClientConfiguration")] String ClientConfiguration;
+    [Write, Description("Endpoint configuration for the extension"), EmbeddedInstance("MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionEndpointConfiguration")] String EndpointConfiguration;
+    [Write, Description("Callback configuration for the extension"), EmbeddedInstance("MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionCallbackConfiguration")] String CallbackConfiguration;
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

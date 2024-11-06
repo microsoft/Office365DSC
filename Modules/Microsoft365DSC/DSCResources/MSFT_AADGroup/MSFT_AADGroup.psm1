@@ -256,20 +256,19 @@ function Get-TargetResource
             if ($Group.IsAssignableToRole -eq $true)
             {
                 $AssignedToRoleValues = @()
-                # Note: only process directory roles and not group membership (if any)
-                foreach ($role in $($memberOf | Where-Object -FilterScript { $_.AdditionalProperties.'@odata.type' -eq '#microsoft.graph.directoryRole' }))
+                $roleAssignments = Get-MgBetaRoleManagementDirectoryRoleAssignment -Filter "PrincipalId eq '$($Group.Id)'"
+                foreach ($assignment in $roleAssignments)
                 {
-                    if ($null -ne $role.AdditionalProperties.displayName)
-                    {
-                        $AssignedToRoleValues += $role.AdditionalProperties.displayName
-                    }
+                    $roleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $assignment.RoleDefinitionId
+                    $AssignedToRoleValues += $roleDefinition.DisplayName
                 }
             }
 
             # Licenses
             $assignedLicensesValues = $null
+            $uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "v1.0/groups/$($Group.Id)/assignedLicenses"
             $assignedLicensesRequest = Invoke-MgGraphRequest -Method 'GET' `
-                -Uri "https://graph.microsoft.com/v1.0/groups/$($Group.Id)/assignedLicenses"
+                -Uri $uri
 
             if ($assignedLicensesRequest.value.Length -gt 0)
             {
@@ -912,13 +911,7 @@ function Set-TargetResource
             {
                 try
                 {
-                    $role = Get-MgBetaDirectoryRole -Filter "DisplayName eq '$($diff.InputObject)'"
-                    # If the role hasn't been activated, we need to get the role template ID to first activate the role
-                    if ($null -eq $role)
-                    {
-                        $adminRoleTemplate = Get-MgBetaDirectoryRoleTemplate -All | Where-Object { $_.DisplayName -eq $diff.InputObject }
-                        $role = New-MgBetaDirectoryRole -RoleTemplateId $adminRoleTemplate.Id
-                    }
+                    $role = Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter "DisplayName eq '$($diff.InputObject)'"
                 }
                 catch
                 {
@@ -933,15 +926,15 @@ function Set-TargetResource
                     if ($diff.SideIndicator -eq '=>')
                     {
                         Write-Verbose -Message "Assigning AAD group {$($currentGroup.DisplayName)} to Directory Role {$($diff.InputObject)}"
-                        $DirObject = @{
-                            '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/$($currentGroup.Id)"
-                        }
-                        New-MgBetaDirectoryRoleMemberByRef -DirectoryRoleId ($role.Id) -BodyParameter $DirObject | Out-Null
+                        New-MgBetaRoleManagementDirectoryRoleAssignment -RoleDefinitionId $role.Id -PrincipalId $currentGroup.Id -DirectoryScopeId '/'
                     }
                     elseif ($diff.SideIndicator -eq '<=')
                     {
                         Write-Verbose -Message "Removing AAD group {$($currentGroup.DisplayName)} from Directory Role {$($role.DisplayName)}"
-                        Remove-MgBetaDirectoryRoleMemberDirectoryObjectByRef -DirectoryRoleId ($role.Id) -DirectoryObjectId ($currentGroup.Id) | Out-Null
+                        Write-Verbose "GroupId = $($currentGroup.Id)"
+                        Write-Verbose "RoleDefinitionId = $($role.Id)"
+                        $roleAssignment = Get-MgBetaRoleManagementDirectoryRoleAssignment -Filter "PrincipalId eq '$($currentGroup.Id)' and RoleDefinitionId eq '$($role.Id)'"
+                        Remove-MgBetaRoleManagementDirectoryRoleAssignment -UnifiedRoleAssignmentId $roleAssignment.Id
                     }
                 }
             }

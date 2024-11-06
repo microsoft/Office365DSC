@@ -53,8 +53,16 @@ function Get-TargetResource
         $LogoutUrl,
 
         [Parameter()]
+        [System.String]
+        $Notes,
+
+        [Parameter()]
         [System.String[]]
         $Owners,
+
+        [Parameter()]
+        [System.String]
+        $PreferredSingleSignOnMode,
 
         [Parameter()]
         [System.String]
@@ -79,6 +87,14 @@ function Get-TargetResource
         [Parameter()]
         [System.String[]]
         $Tags,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $KeyCredentials,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $PasswordCredentials,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -221,7 +237,8 @@ function Get-TargetResource
             }
 
             [Array]$complexDelegatedPermissionClassifications = @()
-            $permissionClassifications = Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$AppId')/delegatedPermissionClassifications" -Method Get
+            $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "v1.0/servicePrincipals/$($AADServicePrincipal.Id)/delegatedPermissionClassifications"
+            $permissionClassifications = Invoke-MgGraphRequest -Uri $Uri -Method Get
             foreach ($permissionClassification in $permissionClassifications.Value){
                 $hashtable = @{
                     classification = $permissionClassification.Classification
@@ -230,13 +247,67 @@ function Get-TargetResource
                 $complexDelegatedPermissionClassifications += $hashtable
             }
 
-            $complexCustomSecurityAttributes = [Array](Get-CustomSecurityAttributes -AppId $AppId)
+            $complexKeyCredentials = @()
+            foreach ($currentkeyCredentials in $AADServicePrincipal.keyCredentials)
+            {
+                $mykeyCredentials = @{}
+                if($null -ne $currentkeyCredentials.customKeyIdentifier)
+                {
+                    $mykeyCredentials.Add('CustomKeyIdentifier', [convert]::ToBase64String($currentkeyCredentials.customKeyIdentifier))
+                }
+                $mykeyCredentials.Add('DisplayName', $currentkeyCredentials.displayName)
+                if ($null -ne $currentkeyCredentials.endDateTime)
+                {
+                    $mykeyCredentials.Add('EndDateTime', ([DateTimeOffset]$currentkeyCredentials.endDateTime).ToString('o'))
+                }
+                $mykeyCredentials.Add('KeyId', $currentkeyCredentials.keyId)
+
+
+                if($null -ne $currentkeyCredentials.Key)
+                {
+                    $mykeyCredentials.Add('Key', [convert]::ToBase64String($currentkeyCredentials.key))
+                }
+
+                if ($null -ne $currentkeyCredentials.startDateTime)
+                {
+                    $mykeyCredentials.Add('StartDateTime', ([DateTimeOffset]$currentkeyCredentials.startDateTime).ToString('o'))
+                }
+                $mykeyCredentials.Add('Type', $currentkeyCredentials.type)
+                $mykeyCredentials.Add('Usage', $currentkeyCredentials.usage)
+                if ($mykeyCredentials.values.Where({$null -ne $_}).Count -gt 0)
+                {
+                    $complexKeyCredentials += $mykeyCredentials
+                }
+            }
+
+            $complexPasswordCredentials = @()
+            foreach ($currentpasswordCredentials in $AADServicePrincipal.passwordCredentials)
+            {
+                $mypasswordCredentials = @{}
+                $mypasswordCredentials.Add('DisplayName', $currentpasswordCredentials.displayName)
+                if ($null -ne $currentpasswordCredentials.endDateTime)
+                {
+                    $mypasswordCredentials.Add('EndDateTime', ([DateTimeOffset]$currentpasswordCredentials.endDateTime).ToString('o'))
+                }
+                $mypasswordCredentials.Add('Hint', $currentpasswordCredentials.hint)
+                $mypasswordCredentials.Add('KeyId', $currentpasswordCredentials.keyId)
+                if ($null -ne $currentpasswordCredentials.startDateTime)
+                {
+                    $mypasswordCredentials.Add('StartDateTime', ([DateTimeOffset]$currentpasswordCredentials.startDateTime).ToString('o'))
+                }
+                if ($mypasswordCredentials.values.Where({$null -ne $_}).Count -gt 0)
+                {
+                    $complexPasswordCredentials += $mypasswordCredentials
+                }
+            }
+
+            $complexCustomSecurityAttributes = [Array](Get-CustomSecurityAttributes -ServicePrincipalId $AADServicePrincipal.Id)
             if ($null -eq $complexCustomSecurityAttributes) {
                 $complexCustomSecurityAttributes = @()
             }
 
             $result = @{
-                AppId                              = $AADServicePrincipal.AppId
+                AppId                              = $appInstance.DisplayName
                 AppRoleAssignedTo                  = $AppRoleAssignedToValues
                 ObjectID                           = $AADServicePrincipal.Id
                 DisplayName                        = $AADServicePrincipal.DisplayName
@@ -248,13 +319,17 @@ function Get-TargetResource
                 ErrorUrl                           = $AADServicePrincipal.ErrorUrl
                 Homepage                           = $AADServicePrincipal.Homepage
                 LogoutUrl                          = $AADServicePrincipal.LogoutUrl
+                Notes                              = $AADServicePrincipal.Notes
                 Owners                             = $ownersValues
+                PreferredSingleSignOnMode          = $AADServicePrincipal.PreferredSingleSignOnMode
                 PublisherName                      = $AADServicePrincipal.PublisherName
                 ReplyURLs                          = $AADServicePrincipal.ReplyURLs
                 SamlMetadataURL                    = $AADServicePrincipal.SamlMetadataURL
                 ServicePrincipalNames              = $AADServicePrincipal.ServicePrincipalNames
                 ServicePrincipalType               = $AADServicePrincipal.ServicePrincipalType
                 Tags                               = $AADServicePrincipal.Tags
+                KeyCredentials                     = $complexKeyCredentials
+                PasswordCredentials                = $complexPasswordCredentials
                 Ensure                             = 'Present'
                 Credential                         = $Credential
                 ApplicationId                      = $ApplicationId
@@ -335,8 +410,16 @@ function Set-TargetResource
         $LogoutUrl,
 
         [Parameter()]
+        [System.String]
+        $Notes,
+
+        [Parameter()]
         [System.String[]]
         $Owners,
+
+        [Parameter()]
+        [System.String]
+        $PreferredSingleSignOnMode,
 
         [Parameter()]
         [System.String]
@@ -361,6 +444,14 @@ function Set-TargetResource
         [Parameter()]
         [System.String[]]
         $Tags,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $KeyCredentials,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $PasswordCredentials,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -423,6 +514,7 @@ function Set-TargetResource
     $currentParameters.Remove('ObjectID') | Out-Null
     $currentParameters.Remove('ApplicationSecret') | Out-Null
     $currentParameters.Remove('AccessTokens') | Out-Null
+    $currentParameters.Remove('Owners') | Out-Null
 
     # update the custom security attributes to be cmdlet comsumable
     if ($null -ne $currentParameters.CustomSecurityAttributes -and $currentParameters.CustomSecurityAttributes -gt 0) {
@@ -436,7 +528,7 @@ function Set-TargetResource
     {
         if ($null -ne $AppRoleAssignedTo)
         {
-            $currentParameters.AppRoleAssignedTo = $AppRoleAssignedToValue
+            $currentParameters.AppRoleAssignedTo = $AppRoleAssignedToValues
         }
         # removing Delegated permission classifications from this new call, as adding below separately
         $currentParameters.Remove('DelegatedPermissionClassifications') | Out-Null
@@ -456,20 +548,21 @@ function Set-TargetResource
         {
             $userInfo = Get-MgUser -UserId $owner
             $body = @{
-                '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/$($userInfo.Id)"
+                '@odata.id' = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "v1.0/directoryObjects/$($userInfo.Id)"
             }
             Write-Verbose -Message "Adding new owner {$owner}"
             $newOwner = New-MgServicePrincipalOwnerByRef -ServicePrincipalId $newSP.Id -BodyParameter $body
         }
 
-        #adding delegated permissions classifications
+        # Adding delegated permissions classifications
         if($null -ne $DelegatedPermissionClassifications){
             foreach ($permissionClassification in $DelegatedPermissionClassifications){
                 $params = @{
                     classification = $permissionClassification.Classification
                     permissionName = $permissionClassification.permissionName
                 }
-                Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications" -Method Post -Body $params
+                $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications"
+                Invoke-MgGraphRequest -Uri $Uri -Method Post -Body $params
             }
         }
     }
@@ -486,8 +579,13 @@ function Set-TargetResource
         Write-Verbose -Message "CurrentParameters: $($currentParameters | Out-String)"
         Write-Verbose -Message "ServicePrincipalID: $($currentAADServicePrincipal.ObjectID)"
         $currentParameters.Remove('AppRoleAssignedTo') | Out-Null
-        $currentParameters.Remove('Owners') | Out-Null
         $currentParameters.Remove('DelegatedPermissionClassifications') | Out-Null
+
+        if ($PreferredSingleSignOnMode -eq 'saml')
+        {
+            $IdentifierUris = $ServicePrincipalNames | Where-Object { $_ -notmatch $AppId }
+            $currentParameters.Remove('ServicePrincipalNames')
+        }
 
         #removing the current custom security attributes
         if ($currentAADServicePrincipal.CustomSecurityAttributes.Count -gt 0) {
@@ -495,11 +593,17 @@ function Set-TargetResource
             $CSAParams = @{
                 customSecurityAttributes = $currentAADServicePrincipal.CustomSecurityAttributes
             }
-            Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/beta/servicePrincipals(appId='$($currentParameters.AppId)')" -Method Patch -Body $CSAParams
+            Invoke-MgGraphRequest -Uri $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/servicePrincipals(appId='$($currentParameters.AppId)')" -Method Patch -Body $CSAParams
         }
 
         Update-MgServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID @currentParameters
 
+        if ($IdentifierUris)
+        {
+            Write-Verbose -Message "Updating the Application ID Uri on the application instance."
+            $appInstance = Get-MgApplication -Filter "AppId eq '$AppId'"
+            Update-MgApplication -ApplicationId $appInstance.Id -IdentifierUris $IdentifierUris
+        }
         if ($AppRoleAssignedTo)
         {
             [Array]$currentPrincipals = $currentAADServicePrincipal.AppRoleAssignedTo.Identity
@@ -597,7 +701,7 @@ function Set-TargetResource
             if ($diff.SideIndicator -eq '=>')
             {
                 $body = @{
-                    '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/$($userInfo.Id)"
+                    '@odata.id' = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "v1.0/directoryObjects/$($userInfo.Id)"
                 }
                 Write-Verbose -Message "Adding owner {$($userInfo.Id)}"
                 New-MgServicePrincipalOwnerByRef -ServicePrincipalId $currentAADServicePrincipal.ObjectId `
@@ -616,9 +720,10 @@ function Set-TargetResource
         if ($null -ne $DelegatedPermissionClassifications)
         {
             # removing old perm classifications
-            $permissionClassificationList = Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications" -Method Get
+            $Uri = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications"
+            $permissionClassificationList = Invoke-MgGraphRequest -Uri $Uri -Method Get
             foreach($permissionClassification in $permissionClassificationList.Value){
-                Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications/$($permissionClassification.Id)" -Method Delete
+                Invoke-MgGraphRequest -Uri "$($Uri)/$($permissionClassification.Id)" -Method Delete
             }
 
             # adding new perm classifications
@@ -627,7 +732,7 @@ function Set-TargetResource
                     classification = $permissionClassification.Classification
                     permissionName = $permissionClassification.permissionName
                 }
-                Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/v1.0/servicePrincipals(appId='$($currentParameters.AppId)')/delegatedPermissionClassifications" -Method Post -Body $params
+                Invoke-MgGraphRequest -Uri $Uri -Method Post -Body $params
             }
         }
     }
@@ -694,8 +799,16 @@ function Test-TargetResource
         $LogoutUrl,
 
         [Parameter()]
+        [System.String]
+        $Notes,
+
+        [Parameter()]
         [System.String[]]
         $Owners,
+
+        [Parameter()]
+        [System.String]
+        $PreferredSingleSignOnMode,
 
         [Parameter()]
         [System.String]
@@ -720,6 +833,14 @@ function Test-TargetResource
         [Parameter()]
         [System.String[]]
         $Tags,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $KeyCredentials,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $PasswordCredentials,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -851,6 +972,7 @@ function Export-TargetResource
         [Parameter()]
         [System.String[]]
         $AccessTokens
+
     )
     $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters
@@ -909,6 +1031,34 @@ function Export-TargetResource
                 {
                     $Results.DelegatedPermissionClassifications = Get-M365DSCAzureADServicePrincipalDelegatedPermissionClassifications -PermissionClassifications $Results.DelegatedPermissionClassifications
                 }
+                if ($null -ne $Results.KeyCredentials)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                    -ComplexObject $Results.KeyCredentials `
+                    -CIMInstanceName 'MicrosoftGraphkeyCredential'
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.KeyCredentials = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('KeyCredentials') | Out-Null
+                    }
+                }
+                if ($null -ne $Results.PasswordCredentials)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                    -ComplexObject $Results.PasswordCredentials `
+                    -CIMInstanceName 'MicrosoftGraphpasswordCredential'
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.PasswordCredentials = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('PasswordCredentials') | Out-Null
+                    }
+                }
                 if ($Results.CustomSecurityAttributes.Count -gt 0)
                 {
                     $Results.CustomSecurityAttributes = Get-M365DSCAADServicePrincipalCustomSecurityAttributesAsString -CustomSecurityAttributes $Results.CustomSecurityAttributes
@@ -928,11 +1078,24 @@ function Export-TargetResource
                     $currentDSCBlock = Convert-DSCStringParamToVariable -DSCBlock $currentDSCBlock `
                         -ParameterName 'DelegatedPermissionClassifications'
                 }
+                if ($null -ne $Results.KeyCredentials)
+                {
+                    $currentDSCBlock = Convert-DSCStringParamToVariable -DSCBlock $currentDSCBlock `
+                        -ParameterName "KeyCredentials" -IsCIMArray:$True
+                }
+
+                if ($null -ne $Results.PasswordCredentials)
+                {
+                    $currentDSCBlock = Convert-DSCStringParamToVariable -DSCBlock $currentDSCBlock `
+                        -ParameterName "PasswordCredentials" -IsCIMArray:$True
+                }
+
                 if ($null -ne $Results.CustomSecurityAttributes)
                 {
                     $currentDSCBlock = Convert-DSCStringParamToVariable -DSCBlock $currentDSCBlock `
                         -ParameterName 'CustomSecurityAttributes'
                 }
+
                 $dscContent += $currentDSCBlock
                 Save-M365DSCPartialExport -Content $currentDSCBlock `
                     -FileName $Global:PartialExportFileName
@@ -1057,10 +1220,10 @@ function Create-AttributeValue {
 function Get-CustomSecurityAttributes {
     [OutputType([System.Array])]
     param (
-        [String]$AppId
+        [String]$ServicePrincipalId
     )
 
-    $customSecurityAttributes = Invoke-MgGraphRequest -Uri "https://graph.microsoft.com/beta/servicePrincipals(appId='$AppId')`?`$select=customSecurityAttributes" -Method Get
+    $customSecurityAttributes = Invoke-MgGraphRequest -Uri $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/servicePrincipals/$($ServicePrincipalId)`?`$select=customSecurityAttributes" -Method Get
     $customSecurityAttributes = $customSecurityAttributes.customSecurityAttributes
     $newCustomSecurityAttributes = @()
 

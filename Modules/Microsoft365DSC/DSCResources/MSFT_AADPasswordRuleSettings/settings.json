@@ -1,5 +1,5 @@
 ﻿{
-    "resourceName": "AADGroupsSettings",
+    "resourceName": "AADPasswordRuleSettings",
     "description": "This resource configures the Azure Active Directory Password Rule Settings.",
     "roles": {
         "read": [],

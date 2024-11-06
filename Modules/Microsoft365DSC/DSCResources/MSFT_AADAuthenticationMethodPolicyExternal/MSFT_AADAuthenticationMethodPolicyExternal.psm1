@@ -96,7 +96,7 @@ function Get-TargetResource
             }
             else
             {
-                $response = Invoke-MgGraphRequest -Method Get -Uri "https://graph.microsoft.com/beta/policies/authenticationMethodsPolicy/"
+                $response = Invoke-MgGraphRequest -Method Get -Uri $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/policies/authenticationMethodsPolicy/"
                 $getValue = $response.authenticationMethodConfigurations | Where-Object -FilterScript {$_.DisplayName -eq $DisplayName}
             }
         }
@@ -300,7 +300,7 @@ function Set-TargetResource
     {
         Write-Verbose -Message "Updating the Azure AD Authentication Method Policy External with name {$($currentInstance.displayName)}"
 
-        $response = Invoke-MgGraphRequest -Method Get -Uri "https://graph.microsoft.com/beta/policies/authenticationMethodsPolicy/"
+        $response = Invoke-MgGraphRequest -Method Get -Uri $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/policies/authenticationMethodsPolicy/"
         $getValue = $response.authenticationMethodConfigurations | Where-Object -FilterScript {$_.displayName -eq $currentInstance.displayName}
 
         $params.Remove('displayName') | Out-Null
@@ -313,7 +313,7 @@ function Set-TargetResource
     {
         Write-Verbose -Message "Removing the Azure AD Authentication Method Policy External with Id {$($currentInstance.displayName)}"
 
-        $response = Invoke-MgGraphRequest -Method Get -Uri "https://graph.microsoft.com/beta/policies/authenticationMethodsPolicy/"
+        $response = Invoke-MgGraphRequest -Method Get -Uri $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/policies/authenticationMethodsPolicy/"
         $getValue = $response.authenticationMethodConfigurations | Where-Object -FilterScript {$_.displayName -eq $currentInstance.displayName}
 
         Remove-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -AuthenticationMethodConfigurationId $getValue.Id
@@ -505,7 +505,7 @@ function Export-TargetResource
     {
         #region resource generator code
         $desiredType = "#microsoft.graph.externalAuthenticationMethodConfiguration"
-        $getPolicy = Invoke-MgGraphRequest -Method Get -Uri "https://graph.microsoft.com/beta/policies/authenticationMethodsPolicy/"
+        $getPolicy = Invoke-MgGraphRequest -Method Get -Uri $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/policies/authenticationMethodsPolicy/"
         $getValue = $getPolicy.AuthenticationMethodConfigurations | Where-Object -FilterScript {$_.'@odata.type' -eq $desiredType}
         #endregion
 

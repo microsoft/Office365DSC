@@ -1,0 +1,17 @@
+[ClassVersion("1.0.0.0"), FriendlyName("EXOTenantAllowBlockListSpoofItems")]
+class MSFT_EXOTenantAllowBlockListSpoofItems : OMI_BaseResource
+{
+    [Key, Description("The SpoofedUser parameter specifies the email address or domain for the spoofed sender entry.")] String SpoofedUser;
+    [Write, Description("The Action parameter specifies whether is an allowed or blocked spoofed sender entry.")] String Action;
+    [Write, Description("Unique identified for the blocked item.")] String Identity;
+    [Write, Description("The SendingInfrastructure parameter specifies the source of the messages sent by the spoofed sender that's defined in the SpoofedUser parameter..")] String SendingInfrastructure;
+    [Write, Description("The SpoofType parameter specifies whether this is an internal or external spoofed sender entry.")] String SpoofType;
+
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent","Present"}, Values{"Absent","Present"}] string Ensure;
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

@@ -138,7 +138,6 @@ function Get-TargetResource
                 GuestUsageGuidelinesUrl         = $valueGuestUsageGuidelinesUrl.Value
                 AllowToAddGuests                = [Boolean]::Parse($valueAllowToAddGuests.Value)
                 UsageGuidelinesUrl              = $valueUsageGuidelinesUrl.Value
-                NewUnifiedGroupWritebackDefault = [Boolean]::Parse($valueNewUnifiedGroupWritebackDefault.Value)
                 Ensure                          = 'Present'
                 ApplicationId                   = $ApplicationId
                 TenantId                        = $TenantId
@@ -148,7 +147,11 @@ function Get-TargetResource
                 Managedidentity                 = $ManagedIdentity.IsPresent
                 AccessTokens                    = $AccessTokens
             }
-
+            if (-not [System.String]::IsNullOrEmpty($valueNewUnifiedGroupWritebackDefault.Value))
+            {
+            $result.Add('NewUnifiedGroupWritebackDefault', [Boolean]::Parse($valueNewUnifiedGroupWritebackDefault.Value))
+            }
+            
             if (-not [System.String]::IsNullOrEmpty($AllowedGroupName))
             {
                 $result.Add('GroupCreationAllowedGroupName', $AllowedGroupName)

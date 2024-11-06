@@ -71,6 +71,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_passportforwork_{tenantid}_policies_pincomplexity_history'
                                 Name = 'History'
+                                OffsetUri = '/{0}/Policies/PINComplexity/History'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
                                     dependentOn = @(
@@ -84,6 +85,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'device_vendor_msft_passportforwork_{tenantid}'
                                 Name = '{TenantId}'
+                                OffsetUri = '/{0}'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                     childIds = @(
@@ -124,6 +126,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'user_vendor_msft_passportforwork_{tenantid}_policies_pincomplexity_history'
                                 Name = 'History'
+                                OffsetUri = '/{0}/Policies/PINComplexity/History'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingDefinition'
                                     dependentOn = @(
@@ -137,6 +140,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             @{
                                 Id = 'user_vendor_msft_passportforwork_{tenantid}'
                                 Name = '{TenantId}'
+                                OffsetUri = '/{0}'
                                 AdditionalProperties = @{
                                     '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                     childIds = @(

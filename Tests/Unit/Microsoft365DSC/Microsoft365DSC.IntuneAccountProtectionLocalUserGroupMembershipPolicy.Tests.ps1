@@ -55,6 +55,88 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 })
             }
+
+            Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
+                return @{
+                    Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
+                    Description = 'My Test Description'
+                    Name        = 'My Test'
+                    Settings    = @{
+                        Id                   = 0
+                        SettingDefinitions   = $null
+                        SettingInstance      = @{
+                            SettingDefinitionId              = 'device_vendor_msft_policy_config_localusersandgroups_configure'
+                            SettingInstanceTemplateReference = @{
+                                SettingInstanceTemplateId = 'de06bec1-4852-48a0-9799-cf7b85992d45'
+                            }
+                            AdditionalProperties             = @{
+                                '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
+                                groupSettingCollectionValue = @(
+                                    @{
+                                        children = @(
+                                            @{
+                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
+                                                'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup'
+                                                'groupSettingCollectionValue' = @(
+                                                    @{
+                                                        'children' = @(
+                                                            @{
+                                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                                                'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype'
+                                                                'choiceSettingValue' = @{
+                                                                    'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype_users'
+                                                                    'children' = @(
+                                                                        @{
+                                                                            '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
+                                                                            'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_users'
+                                                                            'simpleSettingCollectionValue' = @(
+                                                                                @{
+                                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
+                                                                                    'value' = 'S-1-12-1-1167842105-1150511762-402702254-1917434032'
+                                                                                }
+                                                                            )
+                                                                        }
+                                                                    )
+                                                                }
+                                                            },
+                                                            @{
+                                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                                                'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action'
+                                                                'choiceSettingValue' = @{
+                                                                    'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action_add_update'
+                                                                    'children' = @()
+                                                                }
+                                                            },
+                                                            @{
+                                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                                                                'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc'
+                                                                'choiceSettingCollectionValue' = @(
+                                                                    @{
+                                                                        'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc_administrators'
+                                                                        'children' = @()
+                                                                    }
+                                                                )
+                                                            }
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                        AdditionalProperties = $null
+                    }
+                    TemplateReference = @{
+                        TemplateId = '22968f54-45fa-486c-848e-f8224aa69772_1'
+                    }
+                }
+            }
+
+            Mock -CommandName Update-IntuneDeviceConfigurationPolicy -MockWith {
+            }
+
             Mock -CommandName Update-DeviceConfigurationPolicyAssignment -MockWith {
             }
 
@@ -130,89 +212,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         (New-CimInstance -ClassName MSFT_IntuneAccountProtectionLocalUserGroupCollection -Property @{
                             LocalGroups = @('administrators')
                             Members = @('S-1-12-1-1167842105-1150511762-402702254-1917434032')
-                            Action = 'add_update'
+                            Action = 'add_restrict' # Drift
                             UserSelectionType = 'users'
                         } -ClientOnly)
                     )
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                        Description = 'My Test Description'
-                        Name        = 'My Test'
-                        Settings    = @{
-                            Id                   = 0
-                            SettingDefinitions   = $null
-                            SettingInstance      = @{
-                                SettingDefinitionId              = 'device_vendor_msft_policy_config_localusersandgroups_configure'
-                                SettingInstanceTemplateReference = @{
-                                    SettingInstanceTemplateId = 'de06bec1-4852-48a0-9799-cf7b85992d45'
-                                }
-                                AdditionalProperties             = @{
-                                    '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                    groupSettingCollectionValue = @(
-                                        @{
-                                            children = @(
-                                                @{
-                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup'
-                                                    'groupSettingCollectionValue' = @(
-                                                        @{
-                                                            'children' = @(
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype'
-                                                                    'choiceSettingValue' = @{
-                                                                        'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype_users'
-                                                                        'children' = @(
-                                                                            @{
-                                                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
-                                                                                'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_users'
-                                                                                'simpleSettingCollectionValue' = @(
-                                                                                    @{
-                                                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                                                        'value' = 'Non-existant value'
-                                                                                    }
-                                                                                )
-                                                                            }
-                                                                        )
-                                                                    }
-                                                                },
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action'
-                                                                    'choiceSettingValue' = @{
-                                                                        'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action_remove_update'
-                                                                        'children' = @()
-                                                                    }
-                                                                },
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc'
-                                                                    'choiceSettingCollectionValue' = @(
-                                                                        @{
-                                                                            'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc_users'
-                                                                            'children' = @()
-                                                                        }
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    )
-                                }
-                            }
-                            AdditionalProperties = $null
-                        }
-                    }
-                }
-
-
-                Mock -CommandName Update-DeviceManagementConfigurationPolicy -MockWith {
                 }
             }
 
@@ -226,7 +229,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should update the instance from the Set method' {
                 Set-TargetResource @testParams
-                Should -Invoke -CommandName Update-DeviceManagementConfigurationPolicy -Exactly 1
+                Should -Invoke -CommandName Update-IntuneDeviceConfigurationPolicy -Exactly 1
             }
         }
 
@@ -253,81 +256,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             UserSelectionType = 'users'
                         } -ClientOnly)
                     )
-                }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                        Description = 'My Test Description'
-                        Name        = 'My Test'
-                        Settings    = @{
-                            Id                   = 0
-                            SettingDefinitions   = $null
-                            SettingInstance      = @{
-                                SettingDefinitionId              = 'device_vendor_msft_policy_config_localusersandgroups_configure'
-                                SettingInstanceTemplateReference = @{
-                                    SettingInstanceTemplateId = 'de06bec1-4852-48a0-9799-cf7b85992d45'
-                                }
-                                AdditionalProperties             = @{
-                                    '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                    groupSettingCollectionValue = @(
-                                        @{
-                                            children = @(
-                                                @{
-                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup'
-                                                    'groupSettingCollectionValue' = @(
-                                                        @{
-                                                            'children' = @(
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype'
-                                                                    'choiceSettingValue' = @{
-                                                                        'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype_users'
-                                                                        'children' = @(
-                                                                            @{
-                                                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
-                                                                                'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_users'
-                                                                                'simpleSettingCollectionValue' = @(
-                                                                                    @{
-                                                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                                                        'value' = 'S-1-12-1-1167842105-1150511762-402702254-1917434032'
-                                                                                    }
-                                                                                )
-                                                                            }
-                                                                        )
-                                                                    }
-                                                                },
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action'
-                                                                    'choiceSettingValue' = @{
-                                                                        'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action_add_update'
-                                                                        'children' = @()
-                                                                    }
-                                                                },
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc'
-                                                                    'choiceSettingCollectionValue' = @(
-                                                                        @{
-                                                                            'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc_administrators'
-                                                                            'children' = @()
-                                                                        }
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    )
-                                }
-                            }
-                            AdditionalProperties = $null
-                        }
-                    }
                 }
             }
 
@@ -360,81 +288,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure      = 'Absent'
                     Identity    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
                 }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                        Description = 'My Test Description'
-                        Name        = 'My Test'
-                        Settings    = @{
-                            Id                   = 0
-                            SettingDefinitions   = $null
-                            SettingInstance      = @{
-                                SettingDefinitionId              = 'device_vendor_msft_policy_config_localusersandgroups_configure'
-                                SettingInstanceTemplateReference = @{
-                                    SettingInstanceTemplateId = 'de06bec1-4852-48a0-9799-cf7b85992d45'
-                                }
-                                AdditionalProperties             = @{
-                                    '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                    groupSettingCollectionValue = @(
-                                        @{
-                                            children = @(
-                                                @{
-                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup'
-                                                    'groupSettingCollectionValue' = @(
-                                                        @{
-                                                            'children' = @(
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype'
-                                                                    'choiceSettingValue' = @{
-                                                                        'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype_users'
-                                                                        'children' = @(
-                                                                            @{
-                                                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
-                                                                                'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_users'
-                                                                                'simpleSettingCollectionValue' = @(
-                                                                                    @{
-                                                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                                                        'value' = 'S-1-12-1-1167842105-1150511762-402702254-1917434032'
-                                                                                    }
-                                                                                )
-                                                                            }
-                                                                        )
-                                                                    }
-                                                                },
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action'
-                                                                    'choiceSettingValue' = @{
-                                                                        'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action_add_update'
-                                                                        'children' = @()
-                                                                    }
-                                                                },
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc'
-                                                                    'choiceSettingCollectionValue' = @(
-                                                                        @{
-                                                                            'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc_administrators'
-                                                                            'children' = @()
-                                                                        }
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    )
-                                }
-                            }
-                            AdditionalProperties = $null
-                        }
-                    }
-                }
             }
 
             It 'Should return Present from the Get method' {
@@ -458,92 +311,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     Credential = $Credential
                 }
-
-                Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicy -MockWith {
-                    return @{
-                        Id    = '619bd4a4-3b3b-4441-bd6f-3f4c0c444870'
-                        Description = 'My Test Description'
-                        Name        = 'My Test'
-                        TemplateReference = @{
-                            TemplateId = '5dd36540-eb22-4e7e-b19c-2a07772ba627_1'
-                        }
-                        Settings    = @{
-                            Id                   = 0
-                            SettingDefinitions   = $null
-                            SettingInstance      = @{
-                                SettingDefinitionId              = 'device_vendor_msft_policy_config_localusersandgroups_configure'
-                                SettingInstanceTemplateReference = @{
-                                    SettingInstanceTemplateId = 'de06bec1-4852-48a0-9799-cf7b85992d45'
-                                }
-                                AdditionalProperties             = @{
-                                    '@odata.type'      = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                    groupSettingCollectionValue = @(
-                                        @{
-                                            children = @(
-                                                @{
-                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance'
-                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup'
-                                                    'groupSettingCollectionValue' = @(
-                                                        @{
-                                                            'children' = @(
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype'
-                                                                    'choiceSettingValue' = @{
-                                                                        'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_userselectiontype_users'
-                                                                        'children' = @(
-                                                                            @{
-                                                                                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
-                                                                                'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_users'
-                                                                                'simpleSettingCollectionValue' = @(
-                                                                                    @{
-                                                                                        '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                                                                                        'value' = 'S-1-12-1-1167842105-1150511762-402702254-1917434032'
-                                                                                    }
-                                                                                )
-                                                                            }
-                                                                        )
-                                                                    }
-                                                                },
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action'
-                                                                    'choiceSettingValue' = @{
-                                                                        'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_action_add_update'
-                                                                        'children' = @()
-                                                                    }
-                                                                },
-                                                                @{
-                                                                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-                                                                    'settingDefinitionId' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc'
-                                                                    'choiceSettingCollectionValue' = @(
-                                                                        @{
-                                                                            'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc_administrators'
-                                                                            'children' = @()
-                                                                        },
-                                                                        @{
-                                                                            'value' = 'device_vendor_msft_policy_config_localusersandgroups_configure_groupconfiguration_accessgroup_desc_users'
-                                                                            'children' = @()
-                                                                        }
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    )
-                                }
-                            }
-                            AdditionalProperties = $null
-                        }
-                    }
-                }
             }
 
             It 'Should Reverse Engineer resource from the Export method' {
                 $result = Export-TargetResource @testParams
+                $result | Should -Not -BeNullOrEmpty
             }
         }
     }

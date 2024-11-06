@@ -888,11 +888,11 @@ function Test-TargetResource
         {
             $testResult = Compare-M365DSCComplexObject `
                 -Source ($source) `
-                -Target ($target) -Verbose
+                -Target ($target)
 
             if (-not $testResult)
             {
-                Write-Verbose "$key is different" -Verbose
+                Write-Verbose "$key is different"
                 break
             }
 

@@ -1,5 +1,5 @@
 {
-    "resourceName": "IntuneDeviceCompliancePolicyWindows10",
+    "resourceName": "IntuneDeviceManagementComplianceSettings",
     "description": "This resource configures the settings of Windows 10 compliance policies in your cloud-based organization.",
     "permissions": {
         "graph": {

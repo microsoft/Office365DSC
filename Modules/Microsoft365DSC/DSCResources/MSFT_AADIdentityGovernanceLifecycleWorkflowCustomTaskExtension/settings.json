@@ -1,0 +1,28 @@
+﻿{
+    "resourceName": "AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension",
+    "description": "Configures custom extensions for Lifecycle workflows in Entra id.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "LifecycleWorkflows.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "LifecycleWorkflows.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}

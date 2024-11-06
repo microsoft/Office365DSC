@@ -60,6 +60,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         @{
                             Id = 'device_vendor_msft_policy_config_defender_attacksurfacereductionrules_useadvancedprotectionagainstransomware'
                             Name = 'UseAdvancedProtectionAgainstRansomware'
+                            OffsetUri = '/Config/Defender/AttackSurfaceReductionRules'
                             AdditionalProperties = @{
                                 '@odata.type' = '#microsoft.graph.deviceManagementConfigurationChoiceSettingDefinition'
                             }
@@ -67,6 +68,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         @{
                             Id = 'device_vendor_msft_policy_config_defender_attacksurfacereductionrules'
                             Name = 'AttackSurfaceReductionRules'
+                            OffsetUri = '/Config/Defender/AttackSurfaceReductionRules'
                             AdditionalProperties = @{
                                 '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition'
                                 'childIds' = @(

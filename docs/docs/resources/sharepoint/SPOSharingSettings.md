@@ -25,7 +25,7 @@
 | **FolderAnonymousLinkType** | Write | String | Configures anonymous link types for folders | `View`, `Edit` |
 | **NotifyOwnersWhenItemsReshared** | Write | Boolean | When this parameter is set to $true and another user re-shares a document from a userâs OneDrive for Business, the OneDrive for Business owner is notified by e-mail. | |
 | **DefaultLinkPermission** | Write | String | Specifies the link permission on the tenant level. Valid values to set are View and Edit. A value of None will be set to Edit as its the default value. | `None`, `View`, `Edit` |
-| **RequireAcceptingAccountMatchInvitedAccount** | Write | Boolean | Ensures that an external user can only accept an external sharing invitation with an account matching the invited email address.Administrators who desire increased control over external collaborators should consider enabling this feature. False (default) - When a document is shared with an external user, bob@contoso.com, it can be accepted by any user with access to the invitation link in the original e-mail.True - User must accept this invitation with bob@contoso.com. | |
+| **RequireAcceptingAccountMatchInvitedAccount** | Write | Boolean | DEPRECATED | |
 | **Ensure** | Write | String | Only accepted value is 'Present'. | `Present`, `Absent` |
 | **Credential** | Write | PSCredential | Credentials of the account to authenticate with. | |
 | **ApplicationId** | Write | String | Id of the Azure Active Directory application to authenticate with. | |

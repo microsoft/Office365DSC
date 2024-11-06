@@ -23,7 +23,7 @@ function Get-TargetResource {
         $Issuer,
 
         [Parameter()]
-        [ValidateSet('none', 'email', 'companyPortal')]
+        [ValidateSet('none', 'email', 'companyPortal', 'companyPortal,email')]
         [System.String]
         $NotificationType = 'none',
 
@@ -96,17 +96,18 @@ function Get-TargetResource {
 
         if ($null -eq $instance)
         {
-          $instance = Get-MgBetaDeviceManagementDerivedCredential -DeviceManagementDerivedCredentialSettingsId $Id -ErrorAction Stop
+            $instance = Get-MgBetaDeviceManagementDerivedCredential -DeviceManagementDerivedCredentialSettingsId $Id -ErrorAction SilentlyContinue
 
-          if ($null -eq $instance)
-          {
-              Write-Verbose -Message "Could not find Derived Credential by Id {$Id}."
+            if ($null -eq $instance)
+            {
+                Write-Verbose -Message "Could not find Derived Credential by Id {$Id}."
 
-              if (-Not [string]::IsNullOrEmpty($DisplayName))
-              {
-                  $instance = Get-MgBetaDeviceManagementDerivedCredential `
-                    -Filter "DisplayName eq '$DisplayName'" `
-                    -ErrorAction SilentlyContinue
+                if (-Not [string]::IsNullOrEmpty($DisplayName))
+                {
+                    $instance = Get-MgBetaDeviceManagementDerivedCredential `
+                        -Filter "DisplayName eq '$DisplayName'" `
+                        -ErrorAction SilentlyContinue
+
                     if ($null -eq $instance)
                     {
                         Write-Verbose -Message "Could not find Derived Credential by DisplayName {$DisplayName}."
@@ -178,7 +179,7 @@ function Set-TargetResource {
         #endregion resource params
 
         [Parameter()]
-        [ValidateSet('none', 'email', 'companyPortal')]
+        [ValidateSet('none', 'email', 'companyPortal', 'companyPortal,email')]
         [System.String]
         $NotificationType = 'none',
 
@@ -231,18 +232,21 @@ function Set-TargetResource {
     $currentInstance = Get-TargetResource @PSBoundParameters
 
     $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-    $setParameters.remove('Id') | Out-Null
-    $setParameters.remove('Ensure') | Out-Null
+    $setParameters.Remove('Id') | Out-Null
 
     # CREATE
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
+        Write-Verbose -Message "Creating an Intune Derived Credential with DisplayName {$DisplayName}"
+
         New-MgBetaDeviceManagementDerivedCredential @SetParameters
     }
     # UPDATE is not supported API, it always creates a new Derived Credential instance
     # REMOVE
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
+        Write-Verbose -Message "Removing the Intune Derived Credential with DisplayName {$DisplayName}"
+
         Remove-MgBetaDeviceManagementDerivedCredential -DeviceManagementDerivedCredentialSettingsId $currentInstance.Id -Confirm:$false
     }
 }
@@ -272,7 +276,7 @@ function Test-TargetResource {
         $Issuer,
 
         [Parameter()]
-        [ValidateSet('none', 'email', 'companyPortal')]
+        [ValidateSet('none', 'email', 'companyPortal', 'companyPortal,email')]
         [System.String]
         $NotificationType = 'none',
 
@@ -330,13 +334,26 @@ function Test-TargetResource {
     $CurrentValues = Get-TargetResource @PSBoundParameters
     $ValuesToCheck = ([Hashtable]$PSBoundParameters).Clone()
 
+    if ($CurrentValues.Ensure -ne $Ensure)
+    {
+        Write-Verbose -Message "Test-TargetResource returned $false"
+        return $false
+    }
+    $testResult = $true
+
+    $ValuesToCheck = Remove-M365DSCAuthenticationParameter -BoundParameters $ValuesToCheck
+    $ValuesToCheck.Remove('Id') | Out-Null
+
     Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
     Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $ValuesToCheck)"
 
-    $testResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-        -Source $($MyInvocation.MyCommand.Source) `
-        -DesiredValues $PSBoundParameters `
-        -ValuesToCheck $ValuesToCheck.Keys
+    if ($testResult)
+    {
+        $testResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
+            -Source $($MyInvocation.MyCommand.Source) `
+            -DesiredValues $PSBoundParameters `
+            -ValuesToCheck $ValuesToCheck.Keys
+    }
 
     Write-Verbose -Message "Test-TargetResource returned $testResult"
 
@@ -368,7 +385,7 @@ function Export-TargetResource {
         $Issuer,
 
         [Parameter()]
-        [ValidateSet('none', 'email', 'companyPortal')]
+        [ValidateSet('none', 'email', 'companyPortal', 'companyPortal,email')]
         [System.String]
         $NotificationType = 'none',
 

@@ -344,15 +344,14 @@ function Set-TargetResource
         $UpdateParameters.Add("PolicySetId", $currentInstance.Id)
 
         Update-MgbetaDeviceAppManagementPolicySet  @UpdateParameters
-
+        
+        $Url = $Global:MSCloudLoginConnectionProfile.MicrosoftGraph.ResourceUrl + "beta/deviceAppManagement/policySets/$($currentInstance.Id)/update"
         if ($null -ne ($itemamendments = Get-ItemsAmendmentsObject -currentObjectItems $currentInstance.Items -targetObjectItems $items))
         {
-            $url = ('https://graph.microsoft.com/beta/deviceAppManagement/policySets/' + $currentInstance.Id + '/update' )
             Invoke-MgGraphRequest -Method POST -Uri $url -Body $itemamendments
         }
 
         $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
-        $url = ('https://graph.microsoft.com/beta/deviceAppManagement/policySets/' + $currentInstance.Id + '/update' )
         Invoke-MgGraphRequest -Method POST -Uri $url -Body $assignmentsHash
         #endregion
     }

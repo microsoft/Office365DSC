@@ -48,48 +48,91 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             $Script:ExportMode = $false
         }
         # Test contexts
-        Context -Name "The instance exists and values are already in the desired state" -Fixture {
+        Context -Name "The instance doesn't exists and it should" -Fixture {
             BeforeAll {
                 $testParams = @{
-                    Name                = "Test"
-                    Enabled             = $true
+                    DisplayName         = "Test"
+                    InvoiceSectionId    = "/providers/Microsoft.Billing/billingAccounts/0b32abd9-f0e6-4fc9-8b2f-404350313179:0b32abd9-f0e6-4fc9-8b2f-404350313179_2019-05-31/billingProfiles/OHZY-JSSA-BG7-M77W-XXX/invoiceSections/E6RO-KYS7-P2D-MAOR-SGB"
+                    Status              = "Active"
                     Ensure              = 'Present'
                     Credential          = $Credential;
                 }
 
-                Mock -CommandName Get-AzSubscription -MockWith {
-                    return @(
-                        @{
-                            Id = (New-Guid).ToString()
-                            Name = 'Test'
-                            Enabled = $true
-                        }
-                    )
+                Mock -CommandName Invoke-AzRest -MockWith {
+                    return @{
+                        Content = "{}"
+                    }
+                }
+            }
+
+            It 'Should return true from the Test method' {
+                Test-TargetResource @testParams | Should -Be $false
+            }
+        }
+
+        Context -Name "The instance exists and values are already in the desired state" -Fixture {
+            BeforeAll {
+                $testParams = @{
+                    DisplayName         = "Test"
+                    InvoiceSectionId    = "/providers/Microsoft.Billing/billingAccounts/0b32abd9-f0e6-4fc9-8b2f-404350313179:0b32abd9-f0e6-4fc9-8b2f-404350313179_2019-05-31/billingProfiles/OHZY-JSSA-BG7-M77W-XXX/invoiceSections/E6RO-KYS7-P2D-MAOR-SGB"
+                    Status              = "Active"
+                    Ensure              = 'Present'
+                    Credential          = $Credential;
+                }
+
+                Mock -CommandName Invoke-AzRest -MockWith {
+                    return @{
+                        Content = ConvertTo-Json (@{
+                            value = @(
+                                @{
+                                    name = (New-Guid).ToString()
+                                    properties = @{
+                                        displayName = 'Test'
+                                        status      = 'Active'
+                                        invoiceSectionId = "/providers/Microsoft.Billing/billingAccounts/0b32abd9-f0e6-4fc9-8b2f-404350313179:0b32abd9-f0e6-4fc9-8b2f-404350313179_2019-05-31/billingProfiles/OHZY-JSSA-BG7-M77W-XXX/invoiceSections/E6RO-KYS7-P2D-MAOR-SGB"
+                                    }
+                                }
+                            )
+                        }) -Depth 10 
+                    }
                 }
             }
 
             It 'Should return true from the Test method' {
                 Test-TargetResource @testParams | Should -Be $true
             }
+
+            It 'Should call the Set method' {
+                Set-TargetResource @testParams
+                Should -Invoke -CommandName Invoke-AzRest -Exactly 1
+            }
         }
 
         Context -Name "The instance exists and values are NOT in the desired state" -Fixture {
             BeforeAll {
                 $testParams = @{
-                    Name                = "Test"
-                    Enabled             = $true
+                    DisplayName         = "Test"
+                    Status              = "Active"
+                    InvoiceSectionId    = "/providers/Microsoft.Billing/billingAccounts/0b32abd9-f0e6-4fc9-8b2f-404350313179:0b32abd9-f0e6-4fc9-8b2f-404350313179_2019-05-31/billingProfiles/OHZY-JSSA-BG7-M77W-XXX/invoiceSections/E6RO-KYS7-P2D-MAOR-SGB"
                     Ensure              = 'Present'
                     Credential          = $Credential;
                 }
 
-                Mock -CommandName Get-AzSubscription -MockWith {
-                    return @(
-                        @{
-                            Id = (New-Guid).ToString()
-                            Name = 'Test'
-                            Enabled = $false #drift
-                        }
-                    )
+                Mock -CommandName Invoke-AzRest -MockWith {
+                    return @{
+                        Content = ConvertTo-Json (@{
+                            value = @(
+                                @{
+                                    name = (New-Guid).ToString()
+                                    properties = @{
+                                        displayName = 'Test'
+                                        status      = 'Disabled' # Drift
+                                        invoiceSectionId = "/providers/Microsoft.Billing/billingAccounts/0b32abd9-f0e6-4fc9-8b2f-404350313179:0b32abd9-f0e6-4fc9-8b2f-404350313179_2019-05-31/billingProfiles/OHZY-JSSA-BG7-M77W-XXX/invoiceSections/E6RO-KYS7-P2D-MAOR-SGB"
+                                    }
+                                }
+                            )
+                        }) -Depth 10 
+                    }
                 }
             }
 
@@ -115,14 +158,21 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential  = $Credential;
                 }
 
-                Mock -CommandName Get-AzSubscription -MockWith {
-                    return @(
-                        @{
-                            Id = (New-Guid).ToString()
-                            Name = 'Test'
-                            Enabled = $false #drift
-                        }
-                    )
+                Mock -CommandName Invoke-AzRest -MockWith {
+                    return @{
+                        Content = ConvertTo-Json (@{
+                            value = @(
+                                @{
+                                    name = (New-Guid).ToString()
+                                    properties = @{
+                                        displayName = 'Test'
+                                        status      = 'Active'
+                                        invoiceSectionId = "/providers/Microsoft.Billing/billingAccounts/0b32abd9-f0e6-4fc9-8b2f-404350313179:0b32abd9-f0e6-4fc9-8b2f-404350313179_2019-05-31/billingProfiles/OHZY-JSSA-BG7-M77W-XXX/invoiceSections/E6RO-KYS7-P2D-MAOR-SGB"
+                                    }
+                                }
+                            )
+                        }) -Depth 10 
+                    }
                 }
             }
             It 'Should Reverse Engineer resource from the Export method' {
