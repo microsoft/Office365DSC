@@ -24,7 +24,7 @@ function Get-TargetResource
         [Parameter()]
         [System.Int32]
         [ValidateRange(7, 365)]
-        $passwordagedays_aad,
+        $PasswordAgeDays_AAD,
 
         [Parameter()]
         [System.Int32]
@@ -118,7 +118,7 @@ function Get-TargetResource
             -ErrorAction Stop
 
         #Ensure the proper dependencies are installed in the current environment.
-        #Confirm-M365DSCDependencies
+        Confirm-M365DSCDependencies
 
         #region Telemetry
         $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
@@ -237,7 +237,7 @@ function Set-TargetResource
         [Parameter()]
         [System.Int32]
         [ValidateRange(7, 365)]
-        $passwordagedays_aad,
+        $PasswordAgeDays_AAD,
 
         [Parameter()]
         [System.Int32]
@@ -324,7 +324,7 @@ function Set-TargetResource
     )
 
     #Ensure the proper dependencies are installed in the current environment.
-    #Confirm-M365DSCDependencies
+    Confirm-M365DSCDependencies
 
     #region Telemetry
     $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
@@ -433,7 +433,7 @@ function Test-TargetResource
         [Parameter()]
         [System.Int32]
         [ValidateRange(7, 365)]
-        $passwordagedays_aad,
+        $PasswordAgeDays_AAD,
 
         [Parameter()]
         [System.Int32]

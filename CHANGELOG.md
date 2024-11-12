@@ -2,22 +2,14 @@
 
 # UNRELEASED
 
-* IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy
-  * Update property `PasswordAgeDays_AAD` to be lower-case.
-    FIXES [#5378](https://github.com/microsoft/Microsoft365DSC/issues/5378) (1/2)
 * IntuneAntivirusExclusionsPolicyMacOS
   * Initial release.
 * IntuneAntivirusPolicyWindows10SettingCatalog
   * Update properties to be upper-case.
     Fixes [#5373](https://github.com/microsoft/Microsoft365DSC/issues/5373)
-* IntuneSecurityBaselineMicrosoftEdge
-  * Deprecate property `authschemes` and replace with `AuthSchemes_AuthSchemes`
 * M365DSCDRGUtil
   * Restrict CIM instance access to properties that appear multiple times.
   * Switch log type for not found Intune assignments to `Warning`.
-* M365DSCIntuneSettingsCatalogUtil
-  * Add ADMX handling for `edge~httpauthentication_`.
-    FIXES [#5378](https://github.com/microsoft/Microsoft365DSC/issues/5378) (2/2)
 * DEPENDENCIES
   * Updated DSCParser to version 2.0.0.12.
 

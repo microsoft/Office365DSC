@@ -28,8 +28,7 @@ class MSFT_IntuneSecurityBaselineMicrosoftEdge : OMI_BaseResource
     [Write, Description("Force WebSQL to be enabled (0: Disabled, 1: Enabled)"), ValueMap{"0", "1"}, Values{"0", "1"}] String WebSQLAccess;
     [Write, Description("Allow Basic authentication for HTTP (0: Disabled, 1: Enabled)"), ValueMap{"0", "1"}, Values{"0", "1"}] String BasicAuthOverHttpEnabled;
     [Write, Description("Supported authentication schemes (0: Disabled, 1: Enabled)"), ValueMap{"0", "1"}, Values{"0", "1"}] String MicrosoftEdge_HTTPAuthentication_AuthSchemes;
-    [Write, Description("(Deprecated) - Supported authentication schemes (Device) - Depends on MicrosoftEdge_HTTPAuthentication_AuthSchemes")] String authschemes;
-    [Write, Description("Supported authentication schemes (Device) - Depends on MicrosoftEdge_HTTPAuthentication_AuthSchemes")] String AuthSchemes_AuthSchemes;
+    [Write, Description("Supported authentication schemes (Device) - Depends on MicrosoftEdge_HTTPAuthentication_AuthSchemes")] String authschemes;
     [Write, Description("Allow user-level native messaging hosts (installed without admin permissions) (0: Disabled, 1: Enabled)"), ValueMap{"0", "1"}, Values{"0", "1"}] String NativeMessagingUserLevelHosts;
     [Write, Description("Specifies whether to allow insecure websites to make requests to more-private network endpoints (0: Disabled, 1: Enabled)"), ValueMap{"0", "1"}, Values{"0", "1"}] String InsecurePrivateNetworkRequestsAllowed;
     [Write, Description("Show the Reload in Internet Explorer mode button in the toolbar (0: Disabled, 1: Enabled)"), ValueMap{"0", "1"}, Values{"0", "1"}] String InternetExplorerModeToolbarButtonEnabled;

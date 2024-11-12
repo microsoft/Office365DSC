@@ -67,7 +67,7 @@
         }
 
         # When there is no parent, we can't use the parent setting name to make the setting name unique
-        # Instead, we traverse up the OffsetUri.
+        # Instead, we traverse up the OffsetUri. 
         if ($null -eq $parentSetting)
         {
             $settingResult = Get-UniqueSettingDefinitionNameFromMultipleMatches -SettingDefinition $SettingDefinition -SettingName $settingName -SettingsWithSameName $settingsWithSameName
@@ -98,7 +98,6 @@
             'pub16v2~Policy~L_MicrosoftOfficePublisher~*' { $settingName = $settingName.Replace('pub16v2~Policy~L_MicrosoftOfficePublisher', 'MicrosoftPublisherV2_') }
             'pub16v3~Policy~L_MicrosoftOfficePublisher~*' { $settingName = $settingName.Replace('pub16v3~Policy~L_MicrosoftOfficePublisher', 'MicrosoftPublisherV3_') }
             'microsoft_edge~Policy~microsoft_edge~*' { $settingName = $settingName.Replace('microsoft_edge~Policy~microsoft_edge', 'MicrosoftEdge_') }
-            'edge~httpauthentication*' { $settingName = $settingName.Replace('edge~httpauthentication', 'MicrosoftEdge_HTTPAuthentication') }
             '*~L_Security~*' { $settingName = $settingName.Replace('~L_Security', 'Security') }
             '*~L_TrustCenter*' { $settingName = $settingName.Replace('~L_TrustCenter', '_TrustCenter') }
             '*~L_ProtectedView_*' { $settingName = $settingName.Replace('~L_ProtectedView', 'ProtectedView') }

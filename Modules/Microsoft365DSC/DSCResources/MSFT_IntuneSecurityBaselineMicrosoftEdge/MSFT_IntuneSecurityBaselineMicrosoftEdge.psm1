@@ -81,10 +81,6 @@ function Get-TargetResource
         $authschemes,
 
         [Parameter()]
-        [System.String]
-        $AuthSchemes_AuthSchemes,
-
-        [Parameter()]
         [ValidateSet('0', '1')]
         [System.String]
         $NativeMessagingUserLevelHosts,
@@ -343,10 +339,6 @@ function Set-TargetResource
         $authschemes,
 
         [Parameter()]
-        [System.String]
-        $AuthSchemes_AuthSchemes,
-
-        [Parameter()]
         [ValidateSet('0', '1')]
         [System.String]
         $NativeMessagingUserLevelHosts,
@@ -448,13 +440,6 @@ function Set-TargetResource
     $templateReferenceId = 'c66347b7-8325-4954-a235-3bf2233dfbfd_2'
     $platforms = 'windows10'
     $technologies = 'mdm'
-
-    if ($BoundParameters.ContainsKey('authschemes'))
-    {
-        Write-Warning -Message "The parameter 'authschemes' is deprecated. Please use 'AuthSchemes_AuthSchemes' instead."
-        $BoundParameters['AuthSchemes_AuthSchemes'] = $BoundParameters['authschemes']
-        $BoundParameters.Remove('authschemes') | Out-Null
-    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
@@ -605,10 +590,6 @@ function Test-TargetResource
         $authschemes,
 
         [Parameter()]
-        [System.String]
-        $AuthSchemes_AuthSchemes,
-
-        [Parameter()]
         [ValidateSet('0', '1')]
         [System.String]
         $NativeMessagingUserLevelHosts,
@@ -747,17 +728,6 @@ function Test-TargetResource
 
             $ValuesToCheck.Remove($key) | Out-Null
         }
-    }
-
-    if ($PSBoundParameters.ContainsKey('authschemes'))
-    {
-        Write-Warning -Message "The parameter 'authschemes' is deprecated. Please use 'AuthSchemes_AuthSchemes' instead."
-        if ($PSBoundParameters['authschemes'] -ne $CurrentValues['AuthSchemes_AuthSchemes'])
-        {
-            $testResult = $false
-        }
-        $ValuesToCheck.Remove('authschemes') | Out-Null
-        $ValuesToCheck.Remove('AuthSchemes_AuthSchemes') | Out-Null
     }
 
     $ValuesToCheck.Remove('Id') | Out-Null
