@@ -1,0 +1,28 @@
+﻿{
+    "resourceName": "AADLifecycleWorkflowSettings",
+    "description": "Update the properties of a lifecycleManagementSettings object.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "LifecycleWorkflows.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "LifecycleWorkflows.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}

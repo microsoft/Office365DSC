@@ -1,0 +1,28 @@
+﻿{
+    "resourceName": "AADOnPremisesPublishingProfilesSettings",
+    "description": "Configures the settings for the on-premises publishing profiles in Entra Id.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "Directory.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "Directory.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}

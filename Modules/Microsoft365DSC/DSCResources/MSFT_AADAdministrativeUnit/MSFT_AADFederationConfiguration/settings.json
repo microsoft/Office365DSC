@@ -1,0 +1,28 @@
+﻿{
+    "resourceName": "AADFederationConfiguration",
+    "description": "Configures federation in Entra Id.",
+    "roles": {
+        "read": [],
+        "update": []
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "Domain.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "IdentityProvider.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}

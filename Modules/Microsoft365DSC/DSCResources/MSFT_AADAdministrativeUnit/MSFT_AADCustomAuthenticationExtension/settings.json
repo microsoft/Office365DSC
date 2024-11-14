@@ -1,0 +1,32 @@
+﻿{
+    "resourceName": "AADCustomAuthenticationExtension",
+    "description": "Custom authentication extensions define interactions with external systems during a user authentication session. ",
+    "roles": {
+        "read": [
+            "Attribute Definition Reader"
+        ],
+        "update": [
+            "Attribute Definition Administrator"
+        ]
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [
+                    {
+                        "name": "CustomSecAttributeDefinition.Read.All"
+                    }
+                ],
+                "update": [
+                    {
+                        "name": "CustomSecAttributeDefinition.ReadWrite.All"
+                    }
+                ]
+            }
+        }
+    }
+}
