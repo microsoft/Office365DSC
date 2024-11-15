@@ -15,6 +15,9 @@
   * Initial release.
 * M365DSCDRGUtil
   * Improve CIM instance detection for specific Intune resources.
+ 
+IntuneMobileAppConfigurationPolicyIOS
+  * Initial release.
 
 # 1.24.1113.1
 
