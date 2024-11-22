@@ -5,4 +5,4 @@ Microsoft365DSC takes all its sense when used as part of DevOps processes within
   <figcaption>Flow of managing Microsoft 365 using Microsoft365DSC and Azure DevOps</figcaption>
 </figure>
 
-While this article doesn’t cover the process of integrating Microsoft365DSC with these systems, our team has written a great <a href="https://office365dsc.azurewebsites.net/Pages/Resources/Whitepapers/Managing Microsoft 365 with Microsoft365Dsc and Azure DevOps.pdf">whitepaper</a> to help you get started with integrating Microsoft365DSC with Azure DevOps.
+While this article doesn’t cover the process of integrating Microsoft365DSC with these systems, our team has written a great <a href="https://m365dscwhitepaper.azurewebsites.net/Managing%20Microsoft%20365%20with%20Microsoft365Dsc%20and%20Azure%20DevOps.pdf">whitepaper</a> to help you get started with integrating Microsoft365DSC with Azure DevOps.
