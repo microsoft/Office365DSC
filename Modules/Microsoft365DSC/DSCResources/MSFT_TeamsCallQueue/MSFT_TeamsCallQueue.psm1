@@ -53,8 +53,42 @@ function Get-TargetResource
         $TimeoutAction,
 
         [Parameter()]
+        [ValidateSet("Queue","Forward","Disconnect","Forward","Voicemail","SharedVoicemail")]
+        [System.String]
+        $NoAgentAction,
+
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableOverflowSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTimeoutSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailTranscription,
+
+        [Parameter()]
         [System.String]
         $TimeoutActionTarget,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentActionTarget,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailAudioFilePrompt,
 
         [Parameter()]
         [ValidateRange(0,2700)]
@@ -85,6 +119,14 @@ function Get-TargetResource
         [Parameter()]
         [System.String[]]
         $OboResourceAccountIds,
+
+        [Parameter()]
+        [System.String]
+        $WelcomeMusicFileName,
+
+        [Parameter()]
+        [System.String]
+        $WelcomeTextToSpeechPrompt,
 
         [Parameter()]
         [System.String]
@@ -273,61 +315,83 @@ function Get-TargetResource
         else
         {
             return @{
-                Name                                          = $queue.Name
-                AgentAlertTime                                = $queue.AgentAlertTime
-                AllowOptOut                                   = $queue.AllowOptOut
-                DistributionLists                             = [String[]]$queue.DistributionLists
-                UseDefaultMusicOnHold                         = $queue.UseDefaultMusicOnHold
-                WelcomeMusicAudioFileId                       = $queue.WelcomeMusicAudioFileId
-                MusicOnHoldAudioFileId                        = $queue.MusicOnHoldAudioFileId
-                OverflowAction                                = $queue.OverflowAction
-                OverflowActionTarget                          = $queue.OverflowActionTarget.Id
-                OverflowThreshold                             = $queue.OverflowThreshold
-                TimeoutAction                                 = $queue.TimeoutAction
-                TimeoutActionTarget                           = $queue.TimeoutActionTarget.Id
-                TimeoutThreshold                              = $queue.TimeoutThreshold
-                RoutingMethod                                 = $queue.RoutingMethod
-                PresenceBasedRouting                          = $queue.PresenceBasedRouting
-                ConferenceMode                                = $queue.ConferenceMode
-                Users                                         = [String[]]$queue.Users
-                LanguageId                                    = $queue.LanguageId
-                OboResourceAccountIds                         = [String[]]$queue.OboResourceAccountIds
-                OverflowDisconnectTextToSpeechPrompt          = $queue.OverflowDisconnectTextToSpeechPrompt
-                OverflowDisconnectAudioFilePrompt             = $queue.OverflowDisconnectAudioFilePrompt
-                OverflowRedirectPersonTextToSpeechPrompt      = $queue.OverflowRedirectPersonTextToSpeechPrompt
-                OverflowRedirectPersonAudioFilePrompt         = $queue.OverflowRedirectPersonAudioFilePrompt
-                OverflowRedirectVoiceAppTextToSpeechPrompt    = $queue.OverflowRedirectVoiceAppTextToSpeechPrompt
-                OverflowRedirectVoiceAppAudioFilePrompt       = $queue.OverflowRedirectVoiceAppAudioFilePrompt
-                OverflowRedirectPhoneNumberTextToSpeechPrompt = $queue.OverflowRedirectPhoneNumberTextToSpeechPrompt
-                OverflowRedirectPhoneNumberAudioFilePrompt    = $queue.OverflowRedirectPhoneNumberAudioFilePrompt
-                OverflowRedirectVoicemailTextToSpeechPrompt   = $queue.OverflowRedirectVoicemailTextToSpeechPrompt
-                OverflowRedirectVoicemailAudioFilePrompt      = $queue.OverflowRedirectVoicemailAudioFilePrompt
-                OverflowSharedVoicemailTextToSpeechPrompt     = $queue.OverflowSharedVoicemailTextToSpeechPrompt
-                OverflowSharedVoicemailAudioFilePrompt        = $queue.OverflowSharedVoicemailAudioFilePrompt
-                EnableOverflowSharedVoicemailTranscription    = $queue.EnableOverflowSharedVoicemailTranscription
-                TimeoutDisconnectTextToSpeechPrompt           = $queue.TimeoutDisconnectTextToSpeechPrompt
-                TimeoutDisconnectAudioFilePrompt              = $queue.TimeoutDisconnectAudioFilePrompt
-                TimeoutRedirectPersonTextToSpeechPrompt       = $queue.TimeoutRedirectPersonTextToSpeechPrompt
-                TimeoutRedirectPersonAudioFilePrompt          = $queue.TimeoutRedirectPersonAudioFilePrompt
-                TimeoutRedirectVoiceAppTextToSpeechPrompt     = $queue.TimeoutRedirectVoiceAppTextToSpeechPrompt
-                TimeoutRedirectVoiceAppAudioFilePrompt        = $queue.TimeoutRedirectVoiceAppAudioFilePrompt
-                TimeoutRedirectPhoneNumberTextToSpeechPrompt  = $queue.TimeoutRedirectPhoneNumberTextToSpeechPrompt
-                TimeoutRedirectPhoneNumberAudioFilePrompt     = $queue.TimeoutRedirectPhoneNumberAudioFilePrompt
-                TimeoutRedirectVoicemailTextToSpeechPrompt    = $queue.TimeoutRedirectVoicemailTextToSpeechPrompt
-                TimeoutRedirectVoicemailAudioFilePrompt       = $queue.TimeoutRedirectVoicemailAudioFilePrompt
-                TimeoutSharedVoicemailTextToSpeechPrompt      = $queue.TimeoutSharedVoicemailTextToSpeechPrompt
-                TimeoutSharedVoicemailAudioFilePrompt         = $queue.TimeoutSharedVoicemailAudioFilePrompt
-                EnableTimeoutSharedVoicemailTranscription     = $queue.EnableTimeoutSharedVoicemailTranscription
-                ChannelId                                     = $queue.ChannelId
-                ChannelUserObjectId                           = $queue.ChannelUserObjectId
-                AuthorizedUsers                               = [String[]]$queue.AuthorizedUsers
-                Ensure                                        = 'Present'
-                Credential                                    = $Credential
-                ApplicationId                                 = $ApplicationId
-                TenantId                                      = $TenantId
-                CertificateThumbprint                         = $CertificateThumbprint
-                ManagedIdentity                               = $ManagedIdentity.IsPresent
-                AccessTokens                                  = $AccessTokens
+                Name                                                 = $queue.Name
+                AgentAlertTime                                       = $queue.AgentAlertTime
+                AllowOptOut                                          = $queue.AllowOptOut
+                DistributionLists                                    = [String[]]$queue.DistributionLists
+                UseDefaultMusicOnHold                                = $queue.UseDefaultMusicOnHold
+                WelcomeMusicAudioFileId                              = $queue.WelcomeMusicAudioFileId
+                MusicOnHoldAudioFileId                               = $queue.MusicOnHoldAudioFileId
+                MusicOnHoldFileName                                  = $queue.MusicOnHoldFileName
+                NoAgentAction                                        = $queue.NoAgentAction
+                NoAgentActionTarget                                  = $queue.NoAgentActionTarget
+                NoAgentSharedVoicemailTextToSpeechPrompt             = $queue.NoAgentSharedVoicemailTextToSpeechPrompt
+                NoAgentSharedVoicemailAudioFilePrompt                = $queue.NoAgentSharedVoicemailAudioFilePrompt
+                NoAgentSharedVoicemailAudioFilePromptFileName        = $queue.NoAgentSharedVoicemailAudioFilePromptFileName
+                EnableNoAgentSharedVoicemailTranscription            = $queue.EnableNoAgentSharedVoicemailTranscription
+                EnableNoAgentSharedVoicemailSystemPromptSuppression  = $queue.EnableNoAgentSharedVoicemailSystemPromptSuppression
+                OverflowAction                                       = $queue.OverflowAction
+                OverflowActionTarget                                 = $queue.OverflowActionTarget.Id
+                OverflowThreshold                                    = $queue.OverflowThreshold
+                TimeoutAction                                        = $queue.TimeoutAction
+                TimeoutActionTarget                                  = $queue.TimeoutActionTarget.Id
+                TimeoutThreshold                                     = $queue.TimeoutThreshold
+                RoutingMethod                                        = $queue.RoutingMethod
+                PresenceBasedRouting                                 = $queue.PresenceBasedRouting
+                ConferenceMode                                       = $queue.ConferenceMode
+                Users                                                = [String[]]$queue.Users
+                LanguageId                                           = $queue.LanguageId
+                WelcomeMusicFileName                                 = $queue.WelcomeMusicFileName
+                WelcomeTextToSpeechPrompt                            = $queue.WelcomeTextToSpeechPrompt
+                OboResourceAccountIds                                = [String[]]$queue.OboResourceAccountIds
+                OverflowDisconnectTextToSpeechPrompt                 = $queue.OverflowDisconnectTextToSpeechPrompt
+                OverflowDisconnectAudioFilePrompt                    = $queue.OverflowDisconnectAudioFilePrompt
+                OverflowRedirectPersonAudioFilePromptFileName        = $queue.OverflowRedirectPersonAudioFilePromptFileName
+                OverflowRedirectPersonTextToSpeechPrompt             = $queue.OverflowRedirectPersonTextToSpeechPrompt
+                OverflowRedirectPersonAudioFilePrompt                = $queue.OverflowRedirectPersonAudioFilePrompt
+                OverflowRedirectVoicemailAudioFilePromptFileName     = $queue.OverflowRedirectVoicemailAudioFilePromptFileName
+                OverflowRedirectVoiceAppTextToSpeechPrompt           = $queue.OverflowRedirectVoiceAppTextToSpeechPrompt
+                OverflowRedirectVoiceAppAudioFilePrompt              = $queue.OverflowRedirectVoiceAppAudioFilePrompt
+                OverflowRedirectPhoneNumberTextToSpeechPrompt        = $queue.OverflowRedirectPhoneNumberTextToSpeechPrompt
+                OverflowRedirectPhoneNumberAudioFilePrompt           = $queue.OverflowRedirectPhoneNumberAudioFilePrompt
+                OverflowRedirectPhoneNumberAudioFilePromptFileName   = $queue.OverflowRedirectPhoneNumberAudioFilePromptFileName
+                OverflowRedirectVoicemailTextToSpeechPrompt          = $queue.OverflowRedirectVoicemailTextToSpeechPrompt
+                OverflowRedirectVoicemailAudioFilePrompt             = $queue.OverflowRedirectVoicemailAudioFilePrompt
+                OverflowRedirectVoiceAppAudioFilePromptFileName      = $queue.OverflowRedirectVoiceAppAudioFilePromptFileName
+                OverflowSharedVoicemailTextToSpeechPrompt            = $queue.OverflowSharedVoicemailTextToSpeechPrompt
+                OverflowSharedVoicemailAudioFilePrompt               = $queue.OverflowSharedVoicemailAudioFilePrompt
+                EnableOverflowSharedVoicemailTranscription           = $queue.EnableOverflowSharedVoicemailTranscription
+                EnableOverflowSharedVoicemailSystemPromptSuppression = $queue.EnableOverflowSharedVoicemailSystemPromptSuppression
+                TimeoutDisconnectTextToSpeechPrompt                  = $queue.TimeoutDisconnectTextToSpeechPrompt
+                TimeoutDisconnectAudioFilePrompt                     = $queue.TimeoutDisconnectAudioFilePrompt
+                TimeoutDisconnectAudioFilePromptFileName             = $queue.TimeoutDisconnectAudioFilePromptFileName
+                TimeoutRedirectPersonTextToSpeechPrompt              = $queue.TimeoutRedirectPersonTextToSpeechPrompt
+                TimeoutRedirectPersonAudioFilePrompt                 = $queue.TimeoutRedirectPersonAudioFilePrompt
+                TimeoutRedirectPersonAudioFilePromptFileName         = $queue.TimeoutRedirectPersonAudioFilePromptFileName
+                TimeoutRedirectVoiceAppTextToSpeechPrompt            = $queue.TimeoutRedirectVoiceAppTextToSpeechPrompt
+                TimeoutRedirectVoiceAppAudioFilePrompt               = $queue.TimeoutRedirectVoiceAppAudioFilePrompt
+                TimeoutRedirectVoiceAppAudioFilePromptFileName       = $queue.TimeoutRedirectVoiceAppAudioFilePromptFileName
+                TimeoutRedirectPhoneNumberTextToSpeechPrompt         = $queue.TimeoutRedirectPhoneNumberTextToSpeechPrompt
+                TimeoutRedirectPhoneNumberAudioFilePrompt            = $queue.TimeoutRedirectPhoneNumberAudioFilePrompt
+                TimeoutRedirectPhoneNumberAudioFilePromptFileName    = $queue.TimeoutRedirectPhoneNumberAudioFilePromptFileName
+                TimeoutRedirectVoicemailTextToSpeechPrompt           = $queue.TimeoutRedirectVoicemailTextToSpeechPrompt
+                TimeoutRedirectVoicemailAudioFilePrompt              = $queue.TimeoutRedirectVoicemailAudioFilePrompt
+                TimeoutRedirectVoicemailAudioFilePromptFileName      = $queue.TimeoutRedirectVoicemailAudioFilePromptFileName
+                TimeoutSharedVoicemailTextToSpeechPrompt             = $queue.TimeoutSharedVoicemailTextToSpeechPrompt
+                TimeoutSharedVoicemailAudioFilePrompt                = $queue.TimeoutSharedVoicemailAudioFilePrompt
+                TimeoutSharedVoicemailAudioFilePromptFileName        = $queue.TimeoutSharedVoicemailAudioFilePromptFileName
+                EnableTimeoutSharedVoicemailTranscription            = $queue.EnableTimeoutSharedVoicemailTranscription
+                EnableTimeoutSharedVoicemailSystemPromptSuppression  = $queue.EnableTimeoutSharedVoicemailSystemPromptSuppression
+                ChannelId                                            = $queue.ChannelId
+                ChannelUserObjectId                                  = $queue.ChannelUserObjectId
+                AuthorizedUsers                                      = [String[]]$queue.AuthorizedUsers
+                Ensure                                               = 'Present'
+                Credential                                           = $Credential
+                ApplicationId                                        = $ApplicationId
+                TenantId                                             = $TenantId
+                CertificateThumbprint                                = $CertificateThumbprint
+                ManagedIdentity                                      = $ManagedIdentity.IsPresent
+                AccessTokens                                         = $AccessTokens
             }
         }
     }
@@ -351,6 +415,40 @@ function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
+
+        [Parameter()]
+        [ValidateSet("Queue","Forward","Disconnect","Forward","Voicemail","SharedVoicemail")]
+        [System.String]
+        $NoAgentAction,
+
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableOverflowSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTimeoutSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailTranscription,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentActionTarget,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailAudioFilePrompt,
 
         [Parameter()]
         [ValidateRange(15,180)]
@@ -429,6 +527,14 @@ function Set-TargetResource
         [Parameter()]
         [System.String[]]
         $OboResourceAccountIds,
+
+        [Parameter()]
+        [System.String[]]
+        $WelcomeMusicFileName,
+
+        [Parameter()]
+        [System.String[]]
+        $WelcomeTextToSpeechPrompt,
 
         [Parameter()]
         [System.String]
@@ -648,6 +754,83 @@ function Test-TargetResource
         $DistributionLists,
 
         [Parameter()]
+        [ValidateSet("Queue","Forward","Disconnect","Forward","Voicemail","SharedVoicemail")]
+        [System.String]
+        $NoAgentAction,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableOverflowSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTimeoutSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailTranscription,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentActionTarget,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $OverflowRedirectPersonAudioFilePromptFileName,
+
+        [Parameter()]
+        [System.String]
+        $OverflowRedirectVoiceAppAudioFilePromptFileName,
+
+        [Parameter()]
+        [System.String]
+        $OverflowRedirectPhoneNumberAudioFilePromptFileName,
+
+        [Parameter()]
+        [System.String]
+        $OverflowRedirectVoicemailAudioFilePromptFileName,
+
+        [Parameter()]
+        [System.String]
+        $TimeoutSharedVoicemailAudioFilePromptFileName,
+
+        [Parameter()]
+        [System.String]
+        $TimeoutDisconnectAudioFilePromptFileName,
+
+        [Parameter()]
+        [System.String]
+        $TimeoutRedirectPersonAudioFilePromptFileName,
+
+        [Parameter()]
+        [System.String]
+        $TimeoutRedirectVoiceAppAudioFilePromptFileName,
+
+        [Parameter()]
+        [System.String]
+        $TimeoutRedirectVoicemailAudioFilePromptFileName,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoiceNoAgentSharedVoicemailAudioFilePromptFileNamemailAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $MusicOnHoldFileName,
+
+        [Parameter()]
         [System.Boolean]
         $UseDefaultMusicOnHold,
 
@@ -711,6 +894,14 @@ function Test-TargetResource
         [Parameter()]
         [System.String[]]
         $OboResourceAccountIds,
+
+        [Parameter()]
+        [System.String[]]
+        $WelcomeMusicFileName,
+
+        [Parameter()]
+        [System.String[]]
+        $WelcomeTextToSpeechPrompt,
 
         [Parameter()]
         [System.String]
