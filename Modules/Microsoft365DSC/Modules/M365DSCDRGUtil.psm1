@@ -854,15 +854,25 @@ function Convert-M365DSCDRGComplexTypeToHashtable
         #However, an array can be preserved on return by prepending it with the array construction operator (,)
         return , [hashtable[]]$results
     }
+
+    if ($SingleLevel)
+    {
+        $returnObject = @{}
+        $keys = $ComplexObject.CimInstanceProperties.Name | Where-Object -FilterScript { $_ -ne 'PSComputerName' }
+        foreach ($key in $keys)
+        {
+            $propertyName = $key[0].ToString().ToLower() + $key.Substring(1, $key.Length - 1)
+            $propertyValue = $ComplexObject.$key
+            $returnObject.Add($propertyName, $propertyValue)
+        }
+        return [hashtable]$returnObject
+    }
+
     $hashComplexObject = Get-M365DSCDRGComplexTypeToHashtable -ComplexObject $ComplexObject
 
     if ($null -ne $hashComplexObject)
     {
         $results = $hashComplexObject.Clone()
-        if ($SingleLevel)
-        {
-            return [hashtable]$results
-        }
 
         $keys = $hashComplexObject.Keys | Where-Object -FilterScript { $_ -ne 'PSComputerName' }
         foreach ($key in $keys)
@@ -1692,8 +1702,8 @@ function Get-IntuneSettingCatalogPolicySetting
         }
         $settingValueName = $settingType.Replace('#microsoft.graph.deviceManagementConfiguration', '').Replace('Instance', 'Value')
         $settingValueName = $settingValueName.Substring(0, 1).ToLower() + $settingValueName.Substring(1, $settingValueName.length - 1 )
-        $settingValueType = $settingInstanceTemplate.AdditionalProperties."$($settingValueName)Template".'@odata.type'
-        if ($null -ne $settingValueType)
+        [string]$settingValueType = $settingInstanceTemplate.AdditionalProperties."$($settingValueName)Template".'@odata.type'
+        if (-not [System.String]::IsNullOrEmpty($settingValueType))
         {
             $settingValueType = $settingValueType.Replace('ValueTemplate', 'Value')
         }
@@ -1807,7 +1817,7 @@ function Get-IntuneSettingCatalogPolicySettingInstanceValue
 
             $instanceCount = 1
             if (($Level -gt 1 -and $groupSettingCollectionDefinitionChildren.Count -gt 1) -or
-                ($Level -eq 1 -and $SettingDefinition.AdditionalProperties.maximumCount -gt 1 -and $groupSettingCollectionDefinitionChildren.Count -ge 1 -and $groupSettingCollectionDefinitionChildren.AdditionalProperties.'@odata.type' -notcontains "#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition"))
+                ($Level -eq 1 -and $SettingDefinition.AdditionalProperties.maximumCount -ge 1 -and $groupSettingCollectionDefinitionChildren.Count -ge 1 -and $groupSettingCollectionDefinitionChildren.AdditionalProperties.'@odata.type' -notcontains "#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition"))
             {
                 $SettingInstanceName += Get-SettingsCatalogSettingName -SettingDefinition $SettingDefinition -AllSettingDefinitions $AllSettingDefinitions
                 $settingInstanceNameAlternate = $SettingInstanceName + "_Intune"
@@ -1838,7 +1848,7 @@ function Get-IntuneSettingCatalogPolicySettingInstanceValue
                 $DSCParams = @{
                     $cimDSCParamsName = if ($instanceCount -eq 1) { $newDSCParams.$cimDSCParamsName[0] } else { $newDSCParams.$cimDSCParamsName }
                 }
-                $AllSettingDefinitions = $groupSettingCollectionDefinitionChildren
+                $AllSettingDefinitions = $groupSettingCollectionDefinitionChildren + $SettingDefinition
             }
 
             for ($i = 0; $i -lt $instanceCount; $i++)

@@ -9,8 +9,11 @@
   * Initial release
 * M365DSCDRGUtil
   * Add separate check for strings with ordinal comparison and standardized line breaks.
+  * Improve settings catalog handling for nested objects.
 * M365DSCUtil
   * Add separate check for strings with ordinal comparison and standardized line breaks.
+* M365DSCResourceGenerator
+  * Fixes an issue with nested object creation.
 
 # 1.24.1127.1
 

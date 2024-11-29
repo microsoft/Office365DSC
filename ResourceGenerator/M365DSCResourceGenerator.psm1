@@ -388,42 +388,7 @@ $($userDefinitionSettings.MOF -join "`r`n")
             {
                 $parameter -match '\$.*$'
                 $parameterName = $Matches[0].Replace('$', '')
-                $parameterType = 'IntuneSettingsCatalog' + $parameterName + $(if ($parameterName -in @('DeviceSettings', 'UserSettings')) { "_$ResourceName" })
-                $cimInstance = $definitionSettings.MOFInstance | Where-Object -FilterScript { $_ -like "*$parameterType`n*" -or $_ -like "*$parameterType`r`n*" }
-                $rowFilter = '\[.*;'
-                $cimRows = [regex]::Matches($cimInstance, $rowFilter) | Foreach-Object {
-                    $_.Value
-                }
-                $cimPropertyNamequery = '[a-zA-Z0-9_]+[\[\]]*;'
-                $cimProperties = @()
-                foreach ($row in $cimRows)
-                {
-                    $cimProperties += [regex]::Matches($row, $cimPropertyNamequery) | Foreach-Object {
-                        $props = @{
-                            Name = $_.Value.Replace('[', '').Replace(']', '').Replace(';', '')
-                            IsArray = $_.Value.Contains('[]')
-                            IsComplexType = $row.Contains('EmbeddedInstance')
-                        }
-                        if ($props.IsComplexType)
-                        {
-                            Write-Warning -Message "Attention: No automatic complex type conversion is available for the property $($props.Name) in $parameterName. Please implement the conversion manually."
-                            $props.Type = $row.Split(' ')[2].Replace('EmbeddedInstance("', '').Replace('")]', '')
-                        }
-                        $props
-                    }
-                }
-                $parameterInformation += @{
-                    Name = $parameterName
-                    IsComplexType = $true
-                    IsMandatory = $false
-                    IsArray = $parameter -match '\[.*\[\]\]'
-                    Type = $parameterType
-                    Properties = $cimProperties
-                }
-
-                Write-Warning -Message "* Do not forget to replace the value `$getValue.$parameterName with `$policySettings.$parameterName in Get-TargetResource, remove it using `$policySettings.Remove('$parameterName')` and update the description in the MOF template. "
-                Write-Warning -Message "* Make sure to remove the duplicate entry of '$parameterName' in the MOF template."
-                Write-Warning -Message "* Check all CimInstanceNames in the `$complexTypeMapping in Export-TargetResource because they are not generated correctly."
+                $parameterInformation += Get-ComplexParameter -Parameter $parameterName -CimInstance $definitionSettings.MOFInstance -ResourceName $ResourceName
             }
 
             Write-Warning -Message "* Update all occurences of 'Name' from parameters to 'DisplayName', since security and settings catalog policies use 'Name' internally, but the DSC resource uses 'DisplayName' for clarity."
@@ -1373,6 +1338,77 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
         Write-TokenReplacement -Token '<ResourceName>' -Value $ResourceName -FilePath $exampleFileFullPath
         #endregion
     }
+}
+
+function Get-ComplexParameter {
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Parameter,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $CimInstance,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ResourceName
+    )
+
+    $parameterType = 'IntuneSettingsCatalog' + $Parameter + $(if ($Parameter -in @('DeviceSettings', 'UserSettings')) { "_$ResourceName" })
+    $filteredCimInstance = $CimInstance | Where-Object -FilterScript { $_ -like "*$parameterType`n*" -or $_ -like "*$parameterType`r`n*" }
+    $splittedCimInstance = $filteredCimInstance.Split("`n")
+    $rowFilter = '\[.*;'
+    $startRow = for ($i = 0; $i -lt $splittedCimInstance.Count; $i++) {
+        if ($splittedCimInstance[$i] -like "*$parameterType*")
+        {
+            $i
+            break
+        }
+    }
+    $endRow = for ($i = $startRow; $i -lt $splittedCimInstance.Count; $i++) {
+        if ($splittedCimInstance[$i] -like "*};*")
+        {
+            $i
+            break
+        }
+    }
+
+    $cimInstanceOfInterest = $splittedCimInstance[$startRow..$endRow]
+    $cimRows = [regex]::Matches($cimInstanceOfInterest -join "`n", $rowFilter) | Foreach-Object {
+        $_.Value
+    }
+    $cimPropertyNamequery = '[a-zA-Z0-9_]+[\[\]]*;'
+    $cimProperties = @()
+    foreach ($row in $cimRows)
+    {
+        $cimProperties += [regex]::Matches($row, $cimPropertyNamequery) | Foreach-Object {
+            $props = @{
+                Name = $_.Value.Replace('[', '').Replace(']', '').Replace(';', '')
+                IsArray = $_.Value.Contains('[]')
+                IsComplexType = $row.Contains('EmbeddedInstance')
+            }
+            if ($props.IsComplexType)
+            {
+                Write-Warning -Message "Attention: No automatic complex type conversion is available for the property $($props.Name) in $parameterName. Please implement the conversion manually."
+                $props.Type = $row.Split(', ')[2].Replace('EmbeddedInstance("', '').Split(' ')[0].Replace('")]', '')
+                $props.Properties = (Get-ComplexParameter -Parameter $props.Name -CimInstance $CimInstance -ResourceName $ResourceName).Properties
+            }
+            $props
+        }
+    }
+    @{
+        Name = $parameterName
+        IsComplexType = $true
+        IsMandatory = $false
+        IsArray = $parameter -match '\[.*\[\]\]'
+        Type = $parameterType
+        Properties = $cimProperties
+    }
+
+    Write-Warning -Message "* Do not forget to replace the value `$getValue.$parameterName with `$policySettings.$parameterName in Get-TargetResource, remove it using `$policySettings.Remove('$parameterName')` and update the description in the MOF template. "
+    Write-Warning -Message "* Make sure to remove the duplicate entry of '$parameterName' in the MOF template."
+    Write-Warning -Message "* Check all CimInstanceNames in the `$complexTypeMapping in Export-TargetResource because they are not generated correctly."
 }
 
 function Get-MgGraphModuleCmdLetDifference
