@@ -3969,8 +3969,8 @@ function New-SettingsCatalogSettingDefinitionSettingsFromTemplate {
     }
 
     $instanceName = "MSFT_MicrosoftGraphIntuneSettingsCatalog"
-    if (($Level -gt 1 -and $type -like "GroupCollection*" -and $childSettings.Count -gt 1) -or 
-        ($Level -eq 1 -and $type -like "GroupCollection*" -and $childSettings.Count -ge 1 -and $childSettings.AdditionalProperties.'@odata.type' -notcontains "#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition"))
+    if (($Level -gt 1 -and $type -like "GroupCollection*" -and $childSettings.Count -gt 1) -or
+        ($Level -eq 1 -and $type -like "GroupCollectionCollection" -and $childSettings.Count -ge 1 -and $childSettings.AdditionalProperties.'@odata.type' -notcontains "#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionDefinition"))
     {
         $instanceName = $ParentInstanceName + $settingName
     }
