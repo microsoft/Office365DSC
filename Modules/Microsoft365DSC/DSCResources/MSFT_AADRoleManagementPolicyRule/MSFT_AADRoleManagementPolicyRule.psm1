@@ -487,7 +487,7 @@ function Export-TargetResource
     Write-Host "`r`n" -NoNewline
     try
     {
-        [array] $roles = Get-MgBetaRoleManagementDirectoryRoleDefinition -All
+        [array] $roles = Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter $Filter -All
 
         $j = 1
         foreach ($role in $roles)
@@ -501,6 +501,10 @@ function Export-TargetResource
             $i = 1
             foreach ($rule in $rules)
             {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
                 Write-Host "        |---[$i/$($rules.Count)] $($role.displayName)_$($rule.id)" -NoNewline
                 $Params = @{
                     roleDisplayName       = $role.displayName

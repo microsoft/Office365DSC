@@ -124,9 +124,9 @@ function Get-TargetResource
         foreach ($currentCertificate in $getValue.AuthenticationConfiguration.AdditionalProperties.certificateList)
         {
             $myCertificate = @{}
-            $myCertificate.Add('Pkcs12Value', 'Please insert a valid Pkcs12Value')
+            $myCertificate.Add('Pkcs12Value', "New-Object System.Management.Automation.PSCredential('Password', (ConvertTo-SecureString ('Please insert a valid Pkcs12Value') -AsPlainText -Force))")
             $myCertificate.Add('Thumbprint', $currentCertificate.thumbprint)
-            $myCertificate.Add('Password', 'Please insert a valid Password for the certificate')
+            $myCertificate.Add('Password', "New-Object System.Management.Automation.PSCredential('Password', (ConvertTo-SecureString ('Please insert a valid Password for the certificate') -AsPlainText -Force))")
             $myCertificate.Add('IsActive', $currentCertificate.isActive)
 
             if ($myCertificate.values.Where({ $null -ne $_ }).Count -gt 0)
@@ -661,6 +661,11 @@ function Export-TargetResource
         }
         foreach ($config in $getValue)
         {
+            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            {
+                $Global:M365DSCExportResourceInstancesCount++
+            }
+
             $displayedKey = $config.Id
             if (-not [String]::IsNullOrEmpty($config.displayName))
             {
@@ -685,11 +690,10 @@ function Export-TargetResource
             }
 
             $Results = Get-TargetResource @Params
-            $Results.Password = 'Please insert a valid Password'
+            $Results.Password = "New-Object System.Management.Automation.PSCredential('Password', (ConvertTo-SecureString ('Please insert a valid Password') -AsPlainText -Force));"
 
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results
-
 
             if ($null -ne $Results.Certificates)
             {
@@ -717,6 +721,13 @@ function Export-TargetResource
             {
                 $currentDSCBlock = Convert-DSCStringParamToVariable -DSCBlock $currentDSCBlock -ParameterName 'Certificates' -IsCIMArray:$True
             }
+
+            # Replace the main password variable.
+            $currentDSCBlock = $currentDSCBlock.Replace('"New-Object System.', 'New-Object System.').Replace(') -AsPlainText -Force));";', ') -AsPlainText -Force));')
+
+            # Replace the certificate variables.
+            $currentDSCBlock = $currentDSCBlock.Replace("'New-Object System.", "New-Object System.").Replace(" -Force))'", " -Force))")
+            $currentDSCBlock = $currentDSCBlock.Replace("(ConvertTo-SecureString (''", "(ConvertTo-SecureString ('").Replace("''Password''", "'Password'").Replace("'') -AsPlainText", "') -AsPlainText")
 
             $dscContent += $currentDSCBlock
             Save-M365DSCPartialExport -Content $currentDSCBlock `

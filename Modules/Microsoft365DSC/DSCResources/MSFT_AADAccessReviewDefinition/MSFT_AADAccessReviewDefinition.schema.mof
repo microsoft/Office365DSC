@@ -6,7 +6,7 @@ class MSFT_MicrosoftGraphAccessReviewScope
     [Write, Description("Indicates the type of query. Types include MicrosoftGraph and ARM.")] String QueryType;
     [Write, Description("Defines the scopes of the principals for which access to resources are reviewed in the access review."), EmbeddedInstance("MSFT_MicrosoftGraphAccessReviewScope")] String PrincipalScopes[];
     [Write, Description("Defines the scopes of the resources for which access is reviewed."), EmbeddedInstance("MSFT_MicrosoftGraphAccessReviewScope")] String ResourceScopes[];
-    [Write, Description("The type of the entity."), ValueMap{"#microsoft.graph.accessReviewQueryScope","#microsoft.graph.accessReviewReviewerScope","#microsoft.graph.principalResourceMembershipsScope"}, Values{"#microsoft.graph.accessReviewQueryScope","#microsoft.graph.accessReviewReviewerScope","#microsoft.graph.principalResourceMembershipsScope"}] String odataType;
+    [Write, Description("The type of the entity."), ValueMap{"#microsoft.graph.accessReviewQueryScope","#microsoft.graph.accessReviewReviewerScope","#microsoft.graph.principalResourceMembershipsScope","#microsoft.graph.accessReviewInactiveUsersQueryScope"}, Values{"#microsoft.graph.accessReviewQueryScope","#microsoft.graph.accessReviewReviewerScope","#microsoft.graph.principalResourceMembershipsScope","#microsoft.graph.accessReviewInactiveUsersQueryScope"}] String odataType;
 };
 [ClassVersion("1.0.0")]
 class MSFT_MicrosoftGraphAccessReviewScheduleSettings

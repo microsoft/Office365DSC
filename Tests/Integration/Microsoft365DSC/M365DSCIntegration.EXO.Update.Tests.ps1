@@ -1596,6 +1596,17 @@
                     SourceFolder          = "Test2:\Inbox";
                     TenantId              = $TenantId;
                 }
+                EXOTeamsProtectionPolicy 'EXOTeamsProtectionPolicy'
+                {
+                    IsSingleInstance                 = 'Yes'
+                    AdminDisplayName                 = 'Contoso Administrator'
+                    HighConfidencePhishQuarantineTag = 'DefaultFullAccessPolicy'
+                    MalwareQuarantineTag             = 'AdminOnlyAccessPolicy'
+                    ZapEnabled                       = $true
+                    ApplicationId                    = $ApplicationId
+                    TenantId                         = $TenantId
+                    CertificateThumbprint            = $CertificateThumbprint
+                }
                 EXOTenantAllowBlockListItems 'Example'
                 {
                     ApplicationId         = $ApplicationId;

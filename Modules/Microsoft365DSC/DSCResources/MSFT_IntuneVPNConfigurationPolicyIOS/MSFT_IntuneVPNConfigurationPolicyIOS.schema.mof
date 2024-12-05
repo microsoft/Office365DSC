@@ -1,0 +1,101 @@
+[ClassVersion("1.0.0.0")]
+class MSFT_DeviceManagementConfigurationPolicyAssignments
+{
+    [Write, Description("The type of the target assignment."), ValueMap{"#microsoft.graph.groupAssignmentTarget","#microsoft.graph.allLicensedUsersAssignmentTarget","#microsoft.graph.allDevicesAssignmentTarget","#microsoft.graph.exclusionGroupAssignmentTarget","#microsoft.graph.configurationManagerCollectionAssignmentTarget"}, Values{"#microsoft.graph.groupAssignmentTarget","#microsoft.graph.allLicensedUsersAssignmentTarget","#microsoft.graph.allDevicesAssignmentTarget","#microsoft.graph.exclusionGroupAssignmentTarget","#microsoft.graph.configurationManagerCollectionAssignmentTarget"}] String dataType;
+    [Write, Description("The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude."), ValueMap{"none","include","exclude"}, Values{"none","include","exclude"}] String deviceAndAppManagementAssignmentFilterType;
+    [Write, Description("The Id of the filter for the target assignment.")] String deviceAndAppManagementAssignmentFilterId;
+    [Write, Description("The group Id that is the target of the assignment.")] String groupId;
+    [Write, Description("The group Display Name that is the target of the assignment.")] String groupDisplayName;
+    [Write, Description("The collection Id that is the target of the assignment.(ConfigMgr)")] String collectionId;
+};
+[ClassVersion("1.0.0.0")]
+class MSFT_DeviceManagementConfigurationPolicyVpnOnDemandRule
+{
+    [Write, Description("Network Service Set Identifiers (SSIDs).")] String ssids[];
+    [Write, Description("DNS Search Domains.")] String dnsSearchDomains[];
+    [Write, Description("A URL to probe. If this URL is successfully fetched, returning a 200 HTTP status code, without redirection, this rule matches.")] String probeUrl;
+    [Write, Description("Action. Possible values are: connect, evaluateConnection, ignore, disconnect."), ValueMap{"connect", "evaluateConnection", "ignore", "disconnect"}, Values{"connect", "evaluateConnection", "ignore", "disconnect"}] String action;
+    [Write, Description("Domain Action, Only applicable when Action is evaluate connection. Possible values are: connectIfNeeded, neverConnect."), ValueMap{"connectIfNeeded", "neverConnect"}, Values{"connectIfNeeded", "neverConnect"}] String domainAction;
+    [Write, Description("Domains, Only applicable when Action is evaluate connection.")] String domains[];
+    [Write, Description("Probe Required URL. Only applicable when Action is evaluate connection and DomainAction is connectIfNeeded.")] String probeRequiredUrl;
+    [Write, Description("Network interface to trigger VPN. Possible values are: notConfigured, ethernet, wiFi, cellular."), ValueMap{"notConfigured", "ethernet", "wiFi", "cellular"}, Values{"notConfigured", "ethernet", "wiFi", "cellular"}] String interfaceTypeMatch;
+    [Write, Description("DNS Search Server Address.")] String dnsServerAddressMatch[];
+};
+[ClassVersion("1.0.0")]
+class MSFT_MicrosoftGraphVpnServer
+{
+    [Write, Description("Address (IP address, FQDN or URL)")] String address;
+    [Write, Description("Description.")] String description;
+    [Write, Description("Default server.")] Boolean isDefaultServer;
+};
+[ClassVersion("1.0.0")]
+class MSFT_MicrosoftvpnProxyServer
+{
+    [Write, Description("Proxy's automatic configuration script url.")] String automaticConfigurationScriptUrl;
+    [Write, Description("Address.")] String address;
+    [Write, Description("Port. Valid values 0 to 65535.")] uint32 port;
+};
+[ClassVersion("1.0.0")]
+class MSFT_targetedMobileApps
+{
+    [Write, Description("The application name.")] String name;
+    [Write, Description("The publisher of the application.")] String publisher;
+    [Write, Description("The Store URL of the application.")] String appStoreUrl;
+    [Write, Description("The application or bundle identifier of the application.")] String appId;
+};
+class MSFT_CustomData
+{
+    [Write, Description("Key for the custom data entry.")] String key;
+    [Write, Description("Value for the custom data entry.")] String value;
+};
+class MSFT_customKeyValueData
+{
+    [Write, Description("Name for the custom data entry.")] String name;
+    [Write, Description("Value for the custom data entry.")] String value;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("IntuneVPNConfigurationPolicyIOS")]
+class MSFT_IntuneVPNConfigurationPolicyIOS : OMI_BaseResource
+{
+    [Write, Description("Id of the Intune policy.")] String Id;
+    [Key, Description("Display name of the Intune policy.")] String DisplayName;
+    [Write, Description("Description of the Intune policy.")] String Description;
+    [Write, Description("Connection name displayed to the user.")] String connectionName;
+    [Write, Description("Connection type. Possible values are: ciscoAnyConnect, pulseSecure, f5EdgeClient, dellSonicWallMobileConnect, checkPointCapsuleVpn, customVpn, ciscoIPSec, citrix, ciscoAnyConnectV2, paloAltoGlobalProtect, zscalerPrivateAccess, f5Access2018, citrixSso, paloAltoGlobalProtectV2, ikEv2, alwaysOn, microsoftTunnel, netMotionMobility, microsoftProtect."), ValueMap{"ciscoAnyConnect", "pulseSecure", "f5EdgeClient", "dellSonicWallMobileConnect", "checkPointCapsuleVpn", "customVpn", "ciscoIPSec", "citrix", "ciscoAnyConnectV2", "paloAltoGlobalProtect", "zscalerPrivateAccess", "f5Access2018", "citrixSso", "paloAltoGlobalProtectV2", "ikEv2", "alwaysOn", "microsoftTunnel", "netMotionMobility", "microsoftProtect"}, Values{"ciscoAnyConnect", "pulseSecure", "f5EdgeClient", "dellSonicWallMobileConnect", "checkPointCapsuleVpn", "customVpn", "ciscoIPSec", "citrix", "ciscoAnyConnectV2", "paloAltoGlobalProtect", "zscalerPrivateAccess", "f5Access2018", "citrixSso", "paloAltoGlobalProtectV2", "ikEv2", "alwaysOn", "microsoftTunnel", "netMotionMobility", "microsoftProtect"}] String  connectionType;
+    [Write, Description("Send all network traffic through VPN.")] Boolean enableSplitTunneling;
+    [Write, Description("Authentication method for this VPN connection."), ValueMap{"certificate", "usernameAndPassword", "sharedSecret", "derivedCredential", "azureAD"}, Values{"certificate", "usernameAndPassword", "sharedSecret", "derivedCredential", "azureAD"}] String authenticationMethod;
+    [Write, Description("Safari domains when this VPN per App setting is enabled. In addition to the apps associated with this VPN, Safari domains specified here will also be able to trigger this VPN connection.")] String safariDomains[];
+    [Write, Description("Associated Domains. These domains will be linked with the VPN configuration.")] String associatedDomains[];
+    [Write, Description("Domains that are accessed through the public internet instead of through VPN, even when per-app VPN is activated.")] String excludedDomains[];
+    [Write, Description("Represents the assignment to the Intune policy."), EmbeddedInstance("MSFT_MicrosoftvpnProxyServer")] String proxyServer[];
+    [Write, Description("Opt-In to sharing the device's Id to third-party vpn clients for use during network access control validation.")] Boolean optInToDeviceIdSharing;
+    [Write, Description("Not documented on https://learn.microsoft.com/en-us/graph/api/resources/intune-deviceconfig-applevpnconfiguration?view=graph-rest-beta.")] String excludeList[];
+    [Write, Description("VPN Server on the network. Make sure end users can access this network location."), EmbeddedInstance("MSFT_MicrosoftGraphvpnServer")] String server[];
+    [Write, Description("Use this field to enable functionality not supported by Intune, but available in your VPN solution. Contact your VPN vendor to learn how to add these key/value pairs. This collection can contain a maximum of 25 elements"), EmbeddedInstance("MSFT_customData")] String customData[];
+    [Write, Description("Use this field to enable functionality not supported by Intune, but available in your VPN solution. Contact your VPN vendor to learn how to add these key/value pairs. This collection can contain a maximum of 25 elements"), EmbeddedInstance("MSFT_customKeyValueData")] String customKeyValueData[];
+    [Write, Description("On-Demand Rules. This collection can contain a maximum of 500 elements."), EmbeddedInstance("MSFT_DeviceManagementConfigurationPolicyVpnOnDemandRule")] String onDemandRules[];
+    [Write, Description("Not documented on https://learn.microsoft.com/en-us/graph/api/resources/intune-deviceconfig-applevpnconfiguration?view=graph-rest-beta.")] String targetedMobileApps[];
+    [Write, Description("Represents the assignment to the Intune policy."), EmbeddedInstance("MSFT_DeviceManagementConfigurationPolicyAssignments")] String Assignments[];
+    [Write, Description("Present ensures the policy exists, absent ensures it is removed."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
+    [Write, Description("Credentials of the Intune Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Secret of the Azure Active Directory tenant used for authentication."), EmbeddedInstance("MSFT_Credential")] String ApplicationSecret;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+    [Write, Description("Version of the device configuration. Inherited from deviceConfiguration.")] uint32 version;
+    [Write, Description("Login group or domain when connection type is set to Dell SonicWALL Mobile Connection. Inherited from appleVpnConfiguration.")] String loginGroupOrDomain;
+    [Write, Description("Role when connection type is set to Pulse Secure. Inherited from appleVpnConfiguration.")] String role;
+    [Write, Description("Realm when connection type is set to Pulse Secure. Inherited from appleVpnConfiguration.")] String realm;
+    [Write, Description("Identifier provided by VPN vendor when connection type is set to Custom VPN. For example: Cisco AnyConnect uses an identifier of the form com.cisco.anyconnect.applevpn.plugin Inherited from appleVpnConfiguration.")] String identifier;
+    [Write, Description("Setting this to true creates Per-App VPN payload which can later be associated with Apps that can trigger this VPN conneciton on the end user's iOS device. Inherited from appleVpnConfiguration.")] Boolean enablePerApp;
+    [Write, Description("Provider type for per-app VPN. Inherited from appleVpnConfiguration. Possible values are: notConfigured, appProxy, packetTunnel."), ValueMap{"notConfigured", "appProxy", "packetTunnel"}, Values{"notConfigured", "appProxy", "packetTunnel"}] String providerType;
+    [Write, Description("Toggle to prevent user from disabling automatic VPN in the Settings app Inherited from appleVpnConfiguration.")] Boolean disableOnDemandUserOverride;
+    [Write, Description("Whether to disconnect after on-demand connection idles Inherited from appleVpnConfiguration")] Boolean disconnectOnIdle;
+    [Write, Description("The length of time in seconds to wait before disconnecting an on-demand connection. Valid values 0 to 65535 Inherited from appleVpnConfiguration.")] uint32 disconnectOnIdleTimerInSeconds;
+    [Write, Description("Microsoft Tunnel site ID.")] String microsoftTunnelSiteId;
+    [Write, Description("Zscaler only. Zscaler cloud which the user is assigned to.")] String cloudName;
+    [Write, Description("Zscaler only. Blocks network traffic until the user signs into Zscaler app. True means traffic is blocked.")] Boolean strictEnforcement;
+    [Write, Description("Zscaler only. Enter a static domain to pre-populate the login field with in the Zscaler app. If this is left empty, the user's Azure Active Directory domain will be used instead.")] String userDomain;
+};

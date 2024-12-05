@@ -104707,6 +104707,156 @@ function Get-MgBetaRoleManagementDirectoryRoleAssignmentScheduleRequest
     )
 }
 #endregion
+
+#region TeamsProtectionPolicy
+function Get-TeamsProtectionPolicy
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.Object]
+        $Identity
+    )
+}
+
+function New-TeamsProtectionPolicy
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $HighConfidencePhishQuarantineTag,
+
+        [Parameter()]
+        [System.String]
+        $MalwareQuarantineTag,
+
+        [Parameter()]
+        [System.String]
+        $Name,
+
+        [Parameter()]
+        [System.Object]
+        $Organization,
+
+        [Parameter()]
+        [System.Boolean]
+        $ZapEnabled,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Confirm
+    )
+}
+
+function Set-TeamsProtectionPolicy
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $AdminDisplayName,
+
+        [Parameter()]
+        [System.String]
+        $HighConfidencePhishQuarantineTag,
+
+        [Parameter()]
+        [System.Object]
+        $Identity,
+
+        [Parameter()]
+        [System.String]
+        $MalwareQuarantineTag,
+
+        [Parameter()]
+        [System.Boolean]
+        $ZapEnabled,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Confirm
+    )
+}
+#endregion
+
+#region TeamsProtectionPolicy
+function Get-TeamsProtectionPolicy
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.Object]
+        $Identity
+    )
+}
+
+function New-TeamsProtectionPolicy
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $HighConfidencePhishQuarantineTag,
+
+        [Parameter()]
+        [System.String]
+        $MalwareQuarantineTag,
+
+        [Parameter()]
+        [System.String]
+        $Name,
+
+        [Parameter()]
+        [System.Object]
+        $Organization,
+
+        [Parameter()]
+        [System.Boolean]
+        $ZapEnabled,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Confirm
+    )
+}
+
+function Set-TeamsProtectionPolicy
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $AdminDisplayName,
+
+        [Parameter()]
+        [System.String]
+        $HighConfidencePhishQuarantineTag,
+
+        [Parameter()]
+        [System.Object]
+        $Identity,
+
+        [Parameter()]
+        [System.String]
+        $MalwareQuarantineTag,
+
+        [Parameter()]
+        [System.Boolean]
+        $ZapEnabled,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Confirm
+    )
+}
+#endregion
 #region MgBetaDeviceManagementRoleScopeTagAssignment
 function Get-MgBetaDeviceManagementRoleScopeTagAssignment
 {

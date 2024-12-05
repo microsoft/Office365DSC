@@ -183,13 +183,13 @@ function Set-TargetResource
     if ($Ensure -eq 'Present')
     {
         Write-Verbose -Message "Assigning authentication policy {$AuthenticationPolicyName} to {$UserName}."
-        Set-User -Identity $UserName -AuthenticationPolicy $AuthenticationPolicyName | Out-Null
+        Set-User -Identity $UserName -AuthenticationPolicy $AuthenticationPolicyName -Confirm:$false | Out-Null
     }
     # CASE: Authentication Policy exists but it shouldn't;
     elseif ($Ensure -eq 'Absent' -and $currentPolicyAssignment.Ensure -eq 'Present')
     {
         Write-Verbose -Message "Removing authentication policy assignment {$AuthenticationPolicyName} for {$UserName}."
-        Set-User -Identity $UserName -AuthenticationPolicy $null | Out-Null
+        Set-User -Identity $UserName -AuthenticationPolicy $null -Confirm:$false | Out-Null
     }
 }
 

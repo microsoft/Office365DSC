@@ -347,7 +347,7 @@ function Set-TargetResource
         Write-Verbose -Message "Creating ClientAccessRule $($Identity)."
         $ClientAccessRuleParams.Add('Name', $Identity)
         $ClientAccessRuleParams.Remove('Identity') | Out-Null
-        New-ClientAccessRule @ClientAccessRuleParams
+        New-ClientAccessRule @ClientAccessRuleParams -Confirm:$false
     }
     elseif (('Present' -eq $Ensure ) -and ($Null -ne $ClientAccessRule))
     {

@@ -61,10 +61,19 @@ It is not meant to use as a production baseline.
 ```powershell
 Configuration Example
 {
-    param(
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
     Import-DscResource -ModuleName Microsoft365DSC
 
@@ -72,16 +81,18 @@ Configuration Example
     {
         TeamsShiftsPolicy 'Example'
         {
-            AccessGracePeriodMinutes       = 15;
-            AccessType                     = "UnrestrictedAccess_TeamsApp";
-            Credential                     = $Credscredential;
-            EnableScheduleOwnerPermissions = $False;
-            EnableShiftPresence            = $False;
-            Ensure                         = "Present";
-            Identity                       = "Global";
-            ShiftNoticeFrequency           = "Never";
-            ShiftNoticeMessageCustom       = "";
-            ShiftNoticeMessageType         = "DefaultMessage";
+            Identity                       = 'Global'
+            AccessGracePeriodMinutes       = 15
+            AccessType                     = 'UnrestrictedAccess_TeamsApp'
+            EnableScheduleOwnerPermissions = $False
+            EnableShiftPresence            = $False
+            Ensure                         = 'Present'
+            ShiftNoticeFrequency           = 'Never'
+            ShiftNoticeMessageCustom       = ''
+            ShiftNoticeMessageType         = 'DefaultMessage'
+            ApplicationId                  = $ApplicationId
+            TenantId                       = $TenantId
+            CertificateThumbprint          = $CertificateThumbprint
         }
     }
 }

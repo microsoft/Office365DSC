@@ -1,0 +1,34 @@
+﻿{
+    "resourceName": "EXOTeamsProtectionPolicy",
+    "description": "",
+    "roles": {
+        "read": [
+            "Security Reader"
+        ],
+        "update": [
+            "Security Administrator"
+        ]
+    },
+    "permissions": {
+        "graph": {
+            "delegated": {
+                "read": [],
+                "update": []
+            },
+            "application": {
+                "read": [],
+                "update": []
+            }
+        },
+        "exchange": {
+            "requiredroles": [
+                "Compliance Management",
+                "Delegated Setup",
+                "Hygiene Management",
+                "Organization Management",
+                "View-Only Organization Management"
+            ],
+            "requiredrolegroups": "Organization Management"
+        }
+    }
+}

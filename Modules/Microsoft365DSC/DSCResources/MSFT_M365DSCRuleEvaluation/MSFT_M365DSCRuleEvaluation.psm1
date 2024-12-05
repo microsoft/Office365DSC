@@ -162,12 +162,15 @@ function Test-TargetResource
             TenantId              = $PSBoundParameters.TenantId
             CertificateThumbprint = $PSBoundParameters.CertificateThumbprint
             ManagedIdentity       = $PSBoundParameters.ManagedIdentity
-            AccessTokens          = $AccessTokens
         }
 
         if ($null -ne $PSBoundParameters.ApplicationSecret)
         {
             $params.Add('ApplicationSecret', $PSBoundParameters.ApplicationSecret)
+        }
+        if ($null -ne $PSBoundParameters.AccessTokens)
+        {
+            $params.Add('AccessTokens', $PSBoundParameters.AccessTokens)
         }
 
         Write-Verbose -Message "Importing module from Path {$($module)}"

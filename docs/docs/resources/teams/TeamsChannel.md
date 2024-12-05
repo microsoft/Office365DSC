@@ -57,23 +57,35 @@ It is not meant to use as a production baseline.
 ```powershell
 Configuration Example
 {
-    param(
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
     node localhost
     {
         TeamsChannel 'ConfigureChannel'
         {
-            TeamName           = "SuperSecretTeam"
-            DisplayName        = "SP2013 Review teams group"
-            NewDisplayName     = "SP2016 Review teams group"
-            Description        = "SP2016 Code reviews for SPFX"
-            Ensure             = "Present"
-            Credential         = $Credscredential
+            TeamName              = 'SuperSecretTeam'
+            DisplayName           = 'SP2013 Review teams group'
+            NewDisplayName        = 'SP2016 Review teams group'
+            Description           = 'SP2016 Code reviews for SPFX'
+            Ensure                = 'Present'
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

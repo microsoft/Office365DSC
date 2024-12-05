@@ -61,10 +61,19 @@ It is not meant to use as a production baseline.
 ```powershell
 Configuration Example
 {
-    param(
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
     Import-DscResource -ModuleName Microsoft365DSC
 
@@ -72,14 +81,16 @@ Configuration Example
     {
         SCCaseHoldPolicy 'CaseHoldPolicy'
         {
-            Case                 = "Test Case"
-            ExchangeLocation     = "DemoGroup@contoso.onmicrosoft.com"
-            Name                 = "Demo Hold"
-            PublicFolderLocation = "All"
-            Comment              = "This is a demo"
-            Enabled              = $True
-            Ensure               = "Present"
-            Credential           = $Credscredential
+            Case                  = 'Test Case'
+            ExchangeLocation      = 'DemoGroup@contoso.onmicrosoft.com'
+            Name                  = 'Demo Hold'
+            PublicFolderLocation  = 'All'
+            Comment               = 'This is a demo'
+            Enabled               = $True
+            Ensure                = 'Present'
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

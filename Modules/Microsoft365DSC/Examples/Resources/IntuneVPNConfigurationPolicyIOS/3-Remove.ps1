@@ -19,8 +19,16 @@ Configuration Example
         $CertificateThumbprint
     )
     Import-DscResource -ModuleName Microsoft365DSC
+
     node localhost
     {
-        
+        IntuneVPNConfigurationPolicyIOS "IntuneVPNConfigurationPolicyIOS-Example"
+        {
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
+            DisplayName            = "IntuneVPNConfigurationPolicyIOS-Example";
+            Ensure                 = "Absent";
+        }
     }
 }

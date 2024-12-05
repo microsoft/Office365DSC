@@ -1,0 +1,18 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("EXOTeamsProtectionPolicy")]
+class MSFT_EXOTeamsProtectionPolicy : OMI_BaseResource
+{
+    [Key, Description("Only valid value is 'Yes'."), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
+    [Write, Description("The AdminDisplayName parameter specifies a description for the policy.")] String AdminDisplayName;
+    [Write, Description("The HighConfidencePhishQuarantineTag parameter specifies the quarantine policy that's used for messages that are quarantined as high confidence phishing by ZAP for Teams."), ValueMap{"AdminOnlyAccessPolicy","DefaultFullAccessPolicy","DefaultFullAccessWithNotificationPolicy"}, Values{"AdminOnlyAccessPolicy","DefaultFullAccessPolicy","DefaultFullAccessWithNotificationPolicy"}] String HighConfidencePhishQuarantineTag;
+    [Write, Description("The MalwareQuarantineTag parameter specifies the quarantine policy that's used for messages that are quarantined as malware by ZAP for Teams."), ValueMap{"AdminOnlyAccessPolicy","DefaultFullAccessPolicy","DefaultFullAccessWithNotificationPolicy"}, Values{"AdminOnlyAccessPolicy","DefaultFullAccessPolicy","DefaultFullAccessWithNotificationPolicy"}] String MalwareQuarantineTag;
+    [Write, Description("The ZapEnabled parameter specifies whether to enable zero-hour auto purge (ZAP) for malware and high confidence phishing messages in Teams messages.")] Boolean ZapEnabled;
+    [Write, Description("Credentials of the Exchange Global Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Username can be made up to anything but password will be used for CertificatePassword"), EmbeddedInstance("MSFT_Credential")] String CertificatePassword;
+    [Write, Description("Path to certificate used in service principal usually a PFX file.")] String CertificatePath;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

@@ -1797,6 +1797,20 @@ function Set-TargetResource
     if ($Ensure -eq 'Present' -and $currentTransportRuleConfig.Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Transport Rule '$($Name)' does not exist but it should. Create and configure it."
+
+        $nullKeysToRemove = @()
+        foreach ($key in $NewTransportRuleParams.Keys)
+        {
+            if ($NewTransportRuleParams.$key.GetType().Name -eq 'String[]' -and $NewTransportRuleParams.$key.Length -eq 0)
+            {
+                $nullKeysToRemove += $key
+            }
+        }
+        foreach ($paramToRemove in $nullKeysToRemove)
+        {
+            $NewTransportRuleParams.Remove($paramToRemove) | Out-Null
+        }
+
         # Create Transport Rule
         New-TransportRule @NewTransportRuleParams
 
@@ -1809,7 +1823,34 @@ function Set-TargetResource
     }
     # CASE: Transport Rule exists and it should, but has different values than the desired ones
     elseif ($Ensure -eq 'Present' -and $currentTransportRuleConfig.Ensure -eq 'Present')
-    {
+    {        
+        if ($null -ne $HeaderContainsMessageHeader -and $null -eq $currentTransportRuleConfig.HeaderContainsMessageHeader)
+        {
+            $SetTransportRuleParams.Add("HeaderContainsMessageHeader",$null)
+        }
+        if ($null -ne $HeaderMatchesPatterns -and $null -eq $currentTransportRuleConfig.HeaderMatchesMessageHeader)
+        {
+            $SetTransportRuleParams.Add("HeaderMatchesMessageHeader",$null)
+        }
+        if ($null -ne $ExceptIfHeaderContainsWords -and $null -eq $currentTransportRuleConfig.ExceptIfHeaderContainsMessageHeader)
+        {
+            $SetTransportRuleParams.Add("ExceptIfHeaderContainsMessageHeader",$null)
+        }        
+        if ($null -ne $ExceptIfHeaderMatchesPatterns -and $null -eq $currentTransportRuleConfig.ExceptIfHeaderMatchesMessageHeader)
+        {
+            $SetTransportRuleParams.Add("ExceptIfHeaderMatchesMessageHeader",$null)
+        }
+        if ($null -ne $ApplyOME)
+        {
+            Write-Warning -Message "ApplyOME is deprecated. Use ApplyRightsProtectionTemplate instead."
+            $SetTransportRuleParams.Remove("ApplyOME") | Out-Null
+        }
+        if ($null -ne $RemoveOME)
+        {
+            Write-Warning -Message "RemoveOME is deprecated. Use RemoveOMEv2 instead."
+            $SetTransportRuleParams.Remove("RemoveOME") | Out-Null
+        }
+
         Write-Verbose -Message "Transport Rule '$($Name)' already exists, but needs updating."
         Write-Verbose -Message "Setting Transport Rule $($Name) with values: $(Convert-M365DscHashtableToString -Hashtable $SetTransportRuleParams)"
         Set-TransportRule @SetTransportRuleParams

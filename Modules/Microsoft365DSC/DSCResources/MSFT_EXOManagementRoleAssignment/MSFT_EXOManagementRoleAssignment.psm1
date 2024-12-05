@@ -186,7 +186,10 @@ function Get-TargetResource
             }
             elseif ($roleAssignment.RoleAssigneeType -eq 'User')
             {
-                $result.Add('User', $roleAssignment.RoleAssignee)
+                $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
+                    -InboundParameters $PSBoundParameters
+                $userInfo = Get-MgUser -UserId ($roleAssignment.RoleAssignee)
+                $result.Add('User', $userInfo.UserPrincipalName)
             }
 
             Write-Verbose -Message "Found Management Role Assignment $($Name)"
@@ -298,8 +301,6 @@ function Set-TargetResource
     )
     Write-Verbose -Message "Setting Management Role Assignment for $Name"
 
-    $currentManagementRoleConfig = Get-TargetResource @PSBoundParameters
-
     #Ensure the proper dependencies are installed in the current environment.
     Confirm-M365DSCDependencies
 
@@ -314,6 +315,8 @@ function Set-TargetResource
 
     $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
         -InboundParameters $PSBoundParameters
+
+    $currentManagementRoleConfig = Get-TargetResource @PSBoundParameters
 
     $NewManagementRoleParams = ([Hashtable]$PSBoundParameters).Clone()
     $NewManagementRoleParams.Remove('Ensure') | Out-Null
@@ -356,16 +359,9 @@ function Set-TargetResource
     # CASE: Management Role exists and it should, but has different values than the desired ones
     elseif ($Ensure -eq 'Present' -and $currentManagementRoleConfig.Ensure -eq 'Present')
     {
-        Write-Verbose -Message "Management Role Assignment'$($Name)' already exists, but needs updating."
-        $NewManagementRoleParams.Add('Identity', $Name)
-        $NewManagementRoleParams.Remove('Name') | Out-Null
-        $NewManagementRoleParams.Remove('User') | Out-Null
-        $NewManagementRoleParams.Remove('Role') | Out-Null
-        $NewManagementRoleParams.Remove('Computer') | Out-Null
-        $NewManagementRoleParams.Remove('App') | Out-Null
-        $NewManagementRoleParams.Remove('Policy') | Out-Null
-        $NewManagementRoleParams.Remove('SecurityGroup') | Out-Null
-        Set-ManagementRoleAssignment @NewManagementRoleParams | Out-Null
+        Write-Verbose -Message "Management Role Assignment'$($Name)' already exists, but needs updating. Deleting and recreating the instance."
+        Remove-ManagementRoleAssignment -Identity $Name -Confirm:$false -Force | Out-Null
+        New-ManagementRoleAssignment @NewManagementRoleParams | Out-Null
     }
 
     # Wait for the permission to be applied
@@ -378,7 +374,7 @@ function Set-TargetResource
         $testResults = Test-TargetResource @PSBoundParameters
         if (-not $testResults)
         {
-            Write-Verbose -Message "Test-TargetResource returned $false. Waiting for a total of $(($count * 10).ToString()) out of $(($retries * 10).ToString())"
+            Write-Verbose -Message "Test-TargetResource returned $false. Waiting for a total of $(($count * 10).ToString()) out of 120)"
             Start-Sleep -Seconds 10
         }
         $retries--
@@ -507,12 +503,6 @@ function Test-TargetResource
     Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $PSBoundParameters)"
 
     $ValuesToCheck = $PSBoundParameters
-    $ValuesToCheck.Remove('User') | Out-Null
-    $ValuesToCheck.Remove('Role') | Out-Null
-    $ValuesToCheck.Remove('Computer') | Out-Null
-    $ValuesToCheck.Remove('App') | Out-Null
-    $ValuesToCheck.Remove('Policy') | Out-Null
-    $ValuesToCheck.Remove('SecurityGroup') | Out-Null
 
     $TestResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
         -Source $($MyInvocation.MyCommand.Source) `

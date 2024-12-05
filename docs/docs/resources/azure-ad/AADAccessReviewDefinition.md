@@ -31,7 +31,7 @@
 | **QueryType** | Write | String | Indicates the type of query. Types include MicrosoftGraph and ARM. | |
 | **PrincipalScopes** | Write | MSFT_MicrosoftGraphAccessReviewScope[] | Defines the scopes of the principals for which access to resources are reviewed in the access review. | |
 | **ResourceScopes** | Write | MSFT_MicrosoftGraphAccessReviewScope[] | Defines the scopes of the resources for which access is reviewed. | |
-| **odataType** | Write | String | The type of the entity. | `#microsoft.graph.accessReviewQueryScope`, `#microsoft.graph.accessReviewReviewerScope`, `#microsoft.graph.principalResourceMembershipsScope` |
+| **odataType** | Write | String | The type of the entity. | `#microsoft.graph.accessReviewQueryScope`, `#microsoft.graph.accessReviewReviewerScope`, `#microsoft.graph.principalResourceMembershipsScope`, `#microsoft.graph.accessReviewInactiveUsersQueryScope` |
 
 ### MSFT_MicrosoftGraphAccessReviewScheduleSettings
 

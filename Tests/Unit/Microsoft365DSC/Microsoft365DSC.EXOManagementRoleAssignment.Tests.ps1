@@ -48,6 +48,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-PSSession -MockWith {
             }
 
+            Mock -CommandName Get-MgUser -MockWith {
+                return @{
+                    UserPrincipalName = "John.Smith"
+                }
+            }
+
             Mock -CommandName Start-Sleep -MockWith {
             }
 
@@ -149,7 +155,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 Set-TargetResource @testParams
-                Assert-MockCalled -CommandName Set-ManagementRoleAssignment -Exactly 1
+                Assert-MockCalled -CommandName Remove-ManagementRoleAssignment -Exactly 1
+                Assert-MockCalled -CommandName New-ManagementRoleAssignment -Exactly 1
             }
         }
 

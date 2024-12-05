@@ -1,0 +1,16 @@
+[ClassVersion("1.0.0.0"), FriendlyName("SPORetentionLabelsSettings")]
+class MSFT_SPORetentionLabelsSettings : OMI_BaseResource
+{
+    [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'"),ValueMap{"Yes"},Values{"Yes"}] String IsSingleInstance;
+    [Write, Description("Set whether files with Keep Label can be deleted in OneDrive for Business.")] Boolean AllowFilesWithKeepLabelToBeDeletedODB;
+    [Write, Description("Set whether files with Keep Label can be deleted in SharePoint Online.")] Boolean AllowFilesWithKeepLabelToBeDeletedSPO;
+    [Write, Description("Set to enable or disable the advanced record versioning.")] Boolean AdvancedRecordVersioningDisabled;
+    [Write, Description("Set metadata edit blocking enabled setting.")] Boolean MetadataEditBlockingEnabled;
+
+    [Write, Description("Credentials of the workload's Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Managed ID being used for authentication.")] Boolean ManagedIdentity;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

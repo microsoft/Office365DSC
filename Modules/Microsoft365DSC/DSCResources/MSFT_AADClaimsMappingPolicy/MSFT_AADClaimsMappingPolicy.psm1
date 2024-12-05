@@ -93,10 +93,7 @@ function Get-TargetResource
             {
                 $getValue = Get-MgBetaPolicyClaimMappingPolicy `
                     -Filter "DisplayName eq '$DisplayName'" `
-                    -ErrorAction SilentlyContinue | Where-Object `
-                    -FilterScript {
-                    $_.AdditionalProperties.'@odata.type' -eq '#microsoft.graph.ClaimsMappingPolicy'
-                }
+                    -ErrorAction SilentlyContinue
             }
         }
         #endregion

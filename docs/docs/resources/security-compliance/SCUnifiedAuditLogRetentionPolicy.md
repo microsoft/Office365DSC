@@ -35,22 +35,35 @@ It is not meant to use as a production baseline.
 ```powershell
 Configuration Example
 {
-    param(
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credentials
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
     node localhost
     {
         SCUnifiedAuditLogRetentionPolicy 'Example'
         {
-            Credential           = $Credentials;
-            Ensure               = "Present";
-            Name                 = "Test Policy";
-            Priority             = 1;
-            RetentionDuration    = "SevenDays";
+            Credential            = $Credentials
+            Ensure                = 'Present'
+            Name                  = 'Test Policy'
+            Priority              = 1
+            RetentionDuration     = 'SevenDays'
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

@@ -94,7 +94,6 @@ function Get-TargetResource
             AppName               = $servicePrincipal.AppDisplayName
             DisplayName           = $instance.DisplayName
             AppId                 = $instance.AppId
-            ObjectId              = $instance.ObjectId
             Ensure                = 'Present'
             Credential            = $Credential
             ApplicationId         = $ApplicationId
@@ -195,7 +194,6 @@ function Set-TargetResource
     elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
     {
         $setParameters.Remove('AppId')
-        $setParameters.Remove('ObjectId')
         Set-ServicePrincipal -DisplayName $DisplayName -Identity $servicePrincipal.Id
     }
     # REMOVE
@@ -354,6 +352,11 @@ function Export-TargetResource
         }
         foreach ($config in $Script:exportedInstances)
         {
+            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            {
+                $Global:M365DSCExportResourceInstancesCount++
+            }
+
             $servicePrincipal = Get-MgServicePrincipal -ServicePrincipalId $config.Identity
 
             $displayedKey = $servicePrincipal.AppDisplayName
