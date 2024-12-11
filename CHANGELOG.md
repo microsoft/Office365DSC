@@ -2,6 +2,12 @@
 
 # UNRELEASED
 
+* AADApplication
+  * Changed logic to remove all permissions when an empty array is specified.
+    FIXES [#5534](https://github.com/microsoft/Microsoft365DSC/issues/5534)
+* AADFeatureRolloutPolicy
+  * Fixed policy retrieval
+    FIXES [#5521](https://github.com/microsoft/Microsoft365DSC/issues/5521)
 * AADGroup
   * Only get Members & GroupAsMembers when a static group is defined.
 * IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy
@@ -35,6 +41,12 @@
 * IntuneFirewallPolicyWindows10
   * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
   * Fix export of properties that appear multiple times in subsections.
+* M365DSCDRGUtil
+  * Improve settings catalog handling for nested objects.
+* M365DSCResourceGenerator
+  * Fixes an issue with nested object creation.
+* DEPENDENCIES
+  * Updated MSCloudLoginAssistant to version 1.1.29.
 
 # 1.24.1204.1
 
@@ -65,7 +77,13 @@
     FIXES [#5296](https://github.com/microsoft/Microsoft365DSC/issues/5296)
 * EXOTransportRule
   * Fixed conditional logic for creation and update.
+* PPPowerAppsEnvironmant
+  * Fixed [[#5508](https://github.com/microsoft/Microsoft365DSC/issues/5508)]
 * IntuneTrustedRootCertificateIOS
+  * Initial release
+* IntuneVPNConfigurationPolicyAndroidDeviceOwner
+  * Initial release
+* IntuneVPNConfigurationPolicyAndroidEnterprise
   * Initial release
 * IntuneVPNConfigurationPolicyIOS
   * Initial release.
@@ -76,7 +94,8 @@
 * MISC
   * M365DSCDRGUtil
     * Add separate check for strings with ordinal comparison and standardized line breaks.
-
+  * M365DSCReport
+    * Add support for creating report in CSV-format
 
 # 1.24.1127.1
 

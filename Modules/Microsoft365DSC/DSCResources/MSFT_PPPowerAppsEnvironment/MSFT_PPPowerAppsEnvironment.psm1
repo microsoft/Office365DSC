@@ -78,7 +78,7 @@ function Get-TargetResource
 
     try
     {
-        $environment = Get-AdminPowerAppEnvironment -ErrorAction Stop | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName }
+        $environment = Get-AdminPowerAppEnvironment -ErrorAction Stop | Where-Object -FilterScript { $_.DisplayName -match $DisplayName }
 
         if ($null -eq $environment)
         {

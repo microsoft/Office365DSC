@@ -975,72 +975,81 @@ function Set-TargetResource
         }
     }
 
-    if ($needToUpdatePermissions -and -not [System.String]::IsNullOrEmpty($Permissions) -and $Permissions.Length -gt 0)
+    if ($needToUpdatePermissions -and $null -ne $Permissions)
     {
         Write-Verbose -Message "Will update permissions for Azure AD Application {$($currentAADApp.DisplayName)}"
-        $allSourceAPIs = $Permissions.SourceAPI | Select-Object -Unique
-        $allRequiredAccess = @()
 
-        foreach ($sourceAPI in $allSourceAPIs)
+        if ($Permissions.Length -eq 0)
         {
-            Write-Verbose -Message "Adding permissions for API {$($sourceAPI)}"
-            $permissionsForcurrentAPI = $Permissions | Where-Object -FilterScript { $_.SourceAPI -eq $sourceAPI }
-            $apiPrincipal = Get-MgServicePrincipal -Filter "DisplayName eq '$($sourceAPI)'"
-            $currentAPIAccess = @{
-                ResourceAppId  = $apiPrincipal.AppId
-                ResourceAccess = @()
-            }
-            foreach ($permission in $permissionsForcurrentAPI)
+            Write-Verbose -Message "Desired set of permissions is empty, removing all permissions on the app."
+            $allRequiredAccess = @()
+        }
+        else
             {
-                if ($permission.Type -eq 'Delegated')
-                {
-                    $scope = $apiPrincipal.Oauth2PermissionScopes | Where-Object -FilterScript { $_.Value -eq $permission.Name }
-                    $scopeId = $null
-                    if ($null -eq $scope)
-                    {
-                        $ObjectGuid = [System.Guid]::empty
-                        if ([System.Guid]::TryParse($permission.Name, [System.Management.Automation.PSReference]$ObjectGuid))
-                        {
-                            $scopeId = $permission.Name
-                        }
-                    }
-                    else
-                    {
-                        $scopeId = $scope.Id
-                    }
-                    Write-Verbose -Message "Adding Delegated Permission {$($scopeId)}"
-                    $delPermission = @{
-                        Id   = $scopeId
-                        Type = 'Scope'
-                    }
-                    $currentAPIAccess.ResourceAccess += $delPermission
-                }
-                elseif ($permission.Type -eq 'AppOnly')
-                {
-                    $role = $apiPrincipal.AppRoles | Where-Object -FilterScript { $_.Value -eq $permission.Name }
-                    $roleId = $null
-                    if ($null -eq $role)
-                    {
-                        $ObjectGuid = [System.Guid]::empty
-                        if ([System.Guid]::TryParse($permission.Name, [System.Management.Automation.PSReference]$ObjectGuid))
-                        {
-                            $roleId = $permission.Name
-                        }
-                    }
-                    else
-                    {
-                        $roleId = $role.Id
-                    }
-                    $appPermission = @{
-                        Id   = $roleId
-                        Type = 'Role'
-                    }
-                    $currentAPIAccess.ResourceAccess += $appPermission
-                }
-            }
-            if ($null -ne $currentAPIAccess)
+            $allSourceAPIs = $Permissions.SourceAPI | Select-Object -Unique
+            $allRequiredAccess = @()
+
+            foreach ($sourceAPI in $allSourceAPIs)
             {
-                $allRequiredAccess += $currentAPIAccess
+                Write-Verbose -Message "Adding permissions for API {$($sourceAPI)}"
+                $permissionsForcurrentAPI = $Permissions | Where-Object -FilterScript { $_.SourceAPI -eq $sourceAPI }
+                $apiPrincipal = Get-MgServicePrincipal -Filter "DisplayName eq '$($sourceAPI)'"
+                $currentAPIAccess = @{
+                    ResourceAppId  = $apiPrincipal.AppId
+                    ResourceAccess = @()
+                }
+                foreach ($permission in $permissionsForcurrentAPI)
+                {
+                    if ($permission.Type -eq 'Delegated')
+                    {
+                        $scope = $apiPrincipal.Oauth2PermissionScopes | Where-Object -FilterScript { $_.Value -eq $permission.Name }
+                        $scopeId = $null
+                        if ($null -eq $scope)
+                        {
+                            $ObjectGuid = [System.Guid]::empty
+                            if ([System.Guid]::TryParse($permission.Name, [System.Management.Automation.PSReference]$ObjectGuid))
+                            {
+                                $scopeId = $permission.Name
+                            }
+                        }
+                        else
+                        {
+                            $scopeId = $scope.Id
+                        }
+                        Write-Verbose -Message "Adding Delegated Permission {$($scopeId)}"
+                        $delPermission = @{
+                            Id   = $scopeId
+                            Type = 'Scope'
+                        }
+                        $currentAPIAccess.ResourceAccess += $delPermission
+                    }
+                    elseif ($permission.Type -eq 'AppOnly')
+                    {
+                        $role = $apiPrincipal.AppRoles | Where-Object -FilterScript { $_.Value -eq $permission.Name }
+                        $roleId = $null
+                        if ($null -eq $role)
+                        {
+                            $ObjectGuid = [System.Guid]::empty
+                            if ([System.Guid]::TryParse($permission.Name, [System.Management.Automation.PSReference]$ObjectGuid))
+                            {
+                                $roleId = $permission.Name
+                            }
+                        }
+                        else
+                        {
+                            $roleId = $role.Id
+                        }
+                        $appPermission = @{
+                            Id   = $roleId
+                            Type = 'Role'
+                        }
+                        $currentAPIAccess.ResourceAccess += $appPermission
+                    }
+                }
+                if ($null -ne $currentAPIAccess)
+                {
+                    $allRequiredAccess += $currentAPIAccess
+                }
             }
         }
 
@@ -1298,9 +1307,15 @@ function Test-TargetResource
 
     $CurrentValues = Get-TargetResource @PSBoundParameters
 
-    if ($CurrentValues.Permissions.Length -gt 0 -and $null -ne $CurrentValues.Permissions.Name -and $Permissions.Name.Length -gt 0)
+    if ($CurrentValues.Permissions.Length -gt 0 -and `
+        $null -ne $CurrentValues.Permissions.Name)
     {
-        $permissionsDiff = Compare-Object -ReferenceObject ($CurrentValues.Permissions.Name) -DifferenceObject ($Permissions.Name)
+        $differenceObject = $Permissions.Name
+        if ($null -eq $differenceObject)
+        {
+            $differenceObject = @()
+        }
+        $permissionsDiff = Compare-Object -ReferenceObject ($CurrentValues.Permissions.Name) -DifferenceObject $differenceObject
         $driftedParams = @{}
         if ($null -ne $permissionsDiff)
         {

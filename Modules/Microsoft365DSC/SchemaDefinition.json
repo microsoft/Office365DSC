@@ -47491,56 +47491,6 @@
                        ]
     },
     {
-        "ClassName":  "MSFT_DeviceManagementConfigurationPolicyVpnOnDemandRule",
-        "Parameters":  [
-                           {
-                               "CIMType":  "String[]",
-                               "Name":  "ssids",
-                               "Option":  "Write"
-                           },
-                           {
-                               "CIMType":  "String[]",
-                               "Name":  "dnsSearchDomains",
-                               "Option":  "Write"
-                           },
-                           {
-                               "CIMType":  "String",
-                               "Name":  "probeUrl",
-                               "Option":  "Write"
-                           },
-                           {
-                               "CIMType":  "String",
-                               "Name":  "action",
-                               "Option":  "Write"
-                           },
-                           {
-                               "CIMType":  "String",
-                               "Name":  "domainAction",
-                               "Option":  "Write"
-                           },
-                           {
-                               "CIMType":  "String[]",
-                               "Name":  "domains",
-                               "Option":  "Write"
-                           },
-                           {
-                               "CIMType":  "String",
-                               "Name":  "probeRequiredUrl",
-                               "Option":  "Write"
-                           },
-                           {
-                               "CIMType":  "String",
-                               "Name":  "interfaceTypeMatch",
-                               "Option":  "Write"
-                           },
-                           {
-                               "CIMType":  "String[]",
-                               "Name":  "dnsServerAddressMatch",
-                               "Option":  "Write"
-                           }
-                       ]
-    },
-    {
         "ClassName":  "MSFT_MicrosoftvpnProxyServer",
         "Parameters":  [
                            {
@@ -47611,6 +47561,336 @@
                            {
                                "CIMType":  "String",
                                "Name":  "value",
+                               "Option":  "Write"
+                           }
+                       ]
+    },
+    {
+        "ClassName":  "MSFT_IntuneVPNConfigurationPolicyAndroidDeviceOwner",
+        "Parameters":  [
+                           {
+                               "CIMType":  "String",
+                               "Name":  "Id",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "DisplayName",
+                               "Option":  "Key"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "Description",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "authenticationMethod",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "connectionName",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "role",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "realm",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_MicrosoftGraphvpnServer[]",
+                               "Name":  "servers",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "connectionType",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_MicrosoftvpnProxyServer[]",
+                               "Name":  "proxyServer",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "targetedPackageIds",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_targetedMobileApps[]",
+                               "Name":  "targetedMobileApps",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "Boolean",
+                               "Name":  "alwaysOn",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "Boolean",
+                               "Name":  "alwaysOnLockdown",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "microsoftTunnelSiteId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "proxyExclusionList",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_customData[]",
+                               "Name":  "customData",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_customKeyValueData[]",
+                               "Name":  "customKeyValueData",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_DeviceManagementConfigurationPolicyAssignments[]",
+                               "Name":  "Assignments",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "string",
+                               "Name":  "Ensure",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_Credential",
+                               "Name":  "Credential",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "ApplicationId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "TenantId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_Credential",
+                               "Name":  "ApplicationSecret",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "CertificateThumbprint",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "Boolean",
+                               "Name":  "ManagedIdentity",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "AccessTokens",
+                               "Option":  "Write"
+                           }
+                       ]
+    },
+    {
+        "ClassName":  "MSFT_IntuneVPNConfigurationPolicyAndroidEnterprise",
+        "Parameters":  [
+                           {
+                               "CIMType":  "String",
+                               "Name":  "Id",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "DisplayName",
+                               "Option":  "Key"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "Description",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "authenticationMethod",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "connectionName",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "role",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "realm",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_MicrosoftGraphvpnServer[]",
+                               "Name":  "servers",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "connectionType",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_MicrosoftvpnProxyServer[]",
+                               "Name":  "proxyServer",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "targetedPackageIds",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_targetedMobileApps[]",
+                               "Name":  "targetedMobileApps",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "Boolean",
+                               "Name":  "alwaysOn",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "Boolean",
+                               "Name":  "alwaysOnLockdown",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "microsoftTunnelSiteId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "proxyExclusionList",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_customData[]",
+                               "Name":  "customData",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_customKeyValueData[]",
+                               "Name":  "customKeyValueData",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_DeviceManagementConfigurationPolicyAssignments[]",
+                               "Name":  "Assignments",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "string",
+                               "Name":  "Ensure",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_Credential",
+                               "Name":  "Credential",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "ApplicationId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "TenantId",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "MSFT_Credential",
+                               "Name":  "ApplicationSecret",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "CertificateThumbprint",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "Boolean",
+                               "Name":  "ManagedIdentity",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "AccessTokens",
+                               "Option":  "Write"
+                           }
+                       ]
+    },
+    {
+        "ClassName":  "MSFT_DeviceManagementConfigurationPolicyVpnOnDemandRule",
+        "Parameters":  [
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "ssids",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "dnsSearchDomains",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "probeUrl",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "action",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "domainAction",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "domains",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "probeRequiredUrl",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String",
+                               "Name":  "interfaceTypeMatch",
+                               "Option":  "Write"
+                           },
+                           {
+                               "CIMType":  "String[]",
+                               "Name":  "dnsServerAddressMatch",
                                "Option":  "Write"
                            }
                        ]

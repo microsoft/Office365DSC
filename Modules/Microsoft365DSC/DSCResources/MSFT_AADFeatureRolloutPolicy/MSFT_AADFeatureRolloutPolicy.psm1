@@ -98,10 +98,7 @@ function Get-TargetResource
             {
                 $getValue = Get-MgBetaPolicyFeatureRolloutPolicy `
                     -Filter "DisplayName eq '$DisplayName'" `
-                    -ErrorAction SilentlyContinue | Where-Object `
-                    -FilterScript {
-                    $_.AdditionalProperties.'@odata.type' -eq '#microsoft.graph.FeatureRolloutPolicy'
-                }
+                    -ErrorAction SilentlyContinue
             }
         }
         #endregion

@@ -556,6 +556,105 @@ function New-M365DSCConfigurationToExcel
 
 <#
 .Description
+This function creates a new CSV file from the specified exported configuration
+
+.Functionality
+Internal, Hidden
+#>
+function New-M365DSCConfigurationToCSV
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [Array]
+        $ParsedContent,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $OutputPath,
+
+        [Parameter()]
+        [System.String]
+        $Delimiter = ','
+    )
+
+    $modelRow = @{'Component Name'=$null; Property=$null; Value = $null}
+    $row = 0
+    $csvOutput = @()
+
+    foreach ($resource in $parsedContent)
+    {
+        $newRow = $modelRow.Clone()
+        if ($row -gt 0)
+        {
+            Write-Verbose -Message "add separator-line in CSV-file between resources"
+            $newRow.'Component Name' = '======================'
+            $csvOutput += [pscustomobject]$newRow
+            $row++
+        }
+        $beginRow = $row
+        foreach ($property in $resource.Keys)
+        {
+            $newRow = $modelRow.Clone()
+            if ($property -ne 'ResourceName' -and $property -ne 'Credential')
+            {
+                $newRow.'Component Name' = $resource.ResourceName
+                $newRow.Property        = $property
+                try
+                {
+                    if ([System.String]::IsNullOrEmpty($resource.$property))
+                    {
+                        $newRow.Value = "`$Null"
+                    }
+                    else
+                    {
+                        if ($resource.$property.GetType().Name -eq 'Object[]')
+                        {
+                            $value = $resource.$property | Out-String
+                            $newRow.Value = $value
+                        }
+                        else
+                        {
+                            $value = ($resource.$property).ToString().Replace('$', '')
+                            $value = $value.Replace('@', '')
+                            $value = $value.Replace('(', '')
+                            $value = $value.Replace(')', '')
+                            $newRow.Value = $value
+                        }
+                    }
+                }
+                catch
+                {
+                    New-M365DSCLogEntry -Message 'Error during conversion to CSV:' `
+                        -Exception $_ `
+                        -Source $($MyInvocation.MyCommand.Source) `
+                        -TenantId $TenantId `
+                        -Credential $Credential
+                }
+
+                if ($property -in @('Identity', 'Name', 'IsSingleInstance', 'DisplayName'))
+                {
+                    $OriginPropertyName  = $csvOutput[$beginRow].Property
+                    $OriginPropertyValue  = $csvOutput[$beginRow].Value
+                    $CurrentPropertyName  = $newRow.Property
+                    $CurrentPropertyValue = $newRow.Value
+
+                    $csvOutput[$beginRow].Property = $CurrentPropertyName
+                    $csvOutput[$beginRow].Value    = $CurrentPropertyValue
+                    $newRow.Property = $OriginPropertyName
+                    $newRow.Value    = $OriginPropertyValue
+                }
+                $csvOutput += [pscustomobject]$newRow
+                $row++
+            }
+        }
+    }
+    $csvOutput | Export-Csv -Path $OutputPath -Encoding UTF8 -Delimiter $Delimiter -NoTypeInformation
+}
+
+<#
+.Description
 This function creates a report from the specified exported configuration,
 either in HTML or Excel format
 
@@ -586,7 +685,7 @@ function New-M365DSCReportFromConfiguration
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Excel', 'HTML', 'JSON', 'Markdown')]
+        [ValidateSet('Excel', 'HTML', 'JSON', 'Markdown', 'CSV')]
         [System.String]
         $Type,
 
@@ -598,51 +697,81 @@ function New-M365DSCReportFromConfiguration
         [System.String]
         $OutputPath
     )
-
-    # Validate that the latest version of the module is installed.
-    Test-M365DSCModuleValidity
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $data = [System.Collections.Generic.Dictionary[[String], [String]]]::new()
-    $data.Add('Event', 'Report')
-    $data.Add('Type', $Type)
-    Add-M365DSCTelemetryEvent -Data $data -Type 'NewReport'
-    #endregion
-
-    [Array] $parsedContent = Initialize-M365DSCReporting -ConfigurationPath $ConfigurationPath
-
-    if ($null -ne $parsedContent)
+    DynamicParam # parameter 'Delimiter' is only available when Type = 'CSV'
     {
-        switch ($Type)
+        $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
+        if ($Type -eq 'CSV')
         {
-            'Excel'
-            {
-                New-M365DSCConfigurationToExcel -ParsedContent $parsedContent -OutputPath $OutputPath
-            }
-            'HTML'
-            {
-                $template = Get-Item $ConfigurationPath
-                $templateName = $Template.Name.Split('.')[0]
-                New-M365DSCConfigurationToHTML -ParsedContent $parsedContent -OutputPath $OutputPath -TemplateName $templateName
-            }
-            'JSON'
-            {
-                New-M365DSCConfigurationToJSON -ParsedContent $parsedContent -OutputPath $OutputPath
-            }
-            'Markdown'
-            {
-                $template = Get-Item $ConfigurationPath
-                $templateName = $Template.Name.Split('.')[0]
-                New-M365DSCConfigurationToMarkdown -ParsedContent $parsedContent -OutputPath $OutputPath -TemplateName $templateName
-            }
+            $delimiterAttr = [System.Management.Automation.ParameterAttribute]::New()
+            $delimiterAttr.Mandatory = $false
+            $attributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::New()
+            $attributeCollection.Add($delimiterAttr)
+            $delimiterParam = [System.Management.Automation.RuntimeDefinedParameter]::New("Delimiter", [System.String], $attributeCollection)
+            $delimiterParam.Value = ';' # default value, comma makes a mess when importing a CSV-file in Excel
+            $paramDictionary.Add("Delimiter", $delimiterParam)
+        }
+        return $paramDictionary
+    }
+
+    begin
+    {
+        if ($PSBoundParameters.ContainsKey('Delimiter'))
+        {
+            $Delimiter = $PSBoundParameters.Delimiter
         }
     }
-    else
+    process # required with DynamicParam
     {
-        Write-Warning -Message "Parsed content was null. No report was generated."
+    
+        # Validate that the latest version of the module is installed.
+        Test-M365DSCModuleValidity
+    
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+    
+        #region Telemetry
+        $data = [System.Collections.Generic.Dictionary[[String], [String]]]::new()
+        $data.Add('Event', 'Report')
+        $data.Add('Type', $Type)
+        Add-M365DSCTelemetryEvent -Data $data -Type 'NewReport'
+        #endregion
+    
+        [Array] $parsedContent = Initialize-M365DSCReporting -ConfigurationPath $ConfigurationPath
+    
+        if ($null -ne $parsedContent)
+        {
+            switch ($Type)
+            {
+                'Excel'
+                {
+                    New-M365DSCConfigurationToExcel -ParsedContent $parsedContent -OutputPath $OutputPath
+                }
+                'HTML'
+                {
+                    $template = Get-Item $ConfigurationPath
+                    $templateName = $Template.Name.Split('.')[0]
+                    New-M365DSCConfigurationToHTML -ParsedContent $parsedContent -OutputPath $OutputPath -TemplateName $templateName
+                }
+                'JSON'
+                {
+                    New-M365DSCConfigurationToJSON -ParsedContent $parsedContent -OutputPath $OutputPath
+                }
+                'Markdown'
+                {
+                    $template = Get-Item $ConfigurationPath
+                    $templateName = $Template.Name.Split('.')[0]
+                    New-M365DSCConfigurationToMarkdown -ParsedContent $parsedContent -OutputPath $OutputPath -TemplateName  $templateName
+                }
+                'CSV'
+                {
+                    New-M365DSCConfigurationToCSV -ParsedContent $parsedContent -OutputPath $OutputPath -Delimiter $Delimiter
+                }
+            }
+        }
+        else
+        {
+            Write-Warning -Message "Parsed content was null. No report was generated."
+        }
     }
 }
 
