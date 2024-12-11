@@ -352,32 +352,44 @@ function Get-TargetResource
         Add-M365DSCTelemetryEvent -Data $data
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
-
         $templateReferenceId = '46ddfc50-d10f-4867-b852-9434254b3bff_1'
-        $getValue = $null
-        #region resource generator code
-        $getValue = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Id -ErrorAction SilentlyContinue
 
-        if ($null -eq $getValue)
+        if ($PSBoundParameters.ContainsKey('Id'))
         {
-            Write-Verbose -Message "Could not find an Intune Disk Encryption for Windows10 with Id {$Id}"
-
-            if (-not [System.String]::IsNullOrEmpty($DisplayName))
+            Write-Verbose -Message 'PolicyID was specified'
+            try
             {
-                $getValue = Get-MgBetaDeviceManagementConfigurationPolicy `
-                    -All `
-                    -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'" `
-                    -ErrorAction SilentlyContinue
+                $getValue = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Id -ErrorAction Stop
+            }
+            catch
+            {
+                Write-Verbose -Message "Couldn't find existing policy by ID {$Id}"
+                $getValue = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'"
+                if ($getValue.Length -gt 1)
+                {
+                    throw "Duplicate Intune Disk Encryption for Windows10 named $DisplayName exist in tenant"
+                }
             }
         }
-        #endregion
-        if ($null -eq $getValue)
+        else
         {
-            Write-Verbose -Message "Could not find an Intune Disk Encryption for Windows10 with Name {$DisplayName}."
-            return $nullResult
+            Write-Verbose -Message 'Id was NOT specified'
+            ## Can retreive multiple Intune Policies since displayname is not unique
+            $getValue = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'"
+            if ($getValue.Length -gt 1)
+            {
+                throw "Duplicate Intune Disk Encryption for Windows10 named $DisplayName exist in tenant"
+            }
         }
+
+        if ([String]::IsNullOrEmpty($getValue.id))
+        {
+            Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
+            $currentValues = $PSBoundParameters
+            $currentValues.Ensure = 'Absent'
+            return $currentValues
+        }
+
         $Id = $getValue.Id
         Write-Verbose -Message "An Intune Disk Encryption for Windows10 with Id {$Id} and Name {$DisplayName} was found"
 

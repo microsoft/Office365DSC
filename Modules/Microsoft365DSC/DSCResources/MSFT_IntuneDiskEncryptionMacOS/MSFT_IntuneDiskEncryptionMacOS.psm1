@@ -112,36 +112,44 @@ function Get-TargetResource
         Add-M365DSCTelemetryEvent -Data $data
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
-
-        $getValue = $null
-        #region resource generator code
-        $getValue = Get-MgBetaDeviceManagementIntent -DeviceManagementIntentId $Id -ErrorAction SilentlyContinue
-
-        if ($null -eq $getValue)
+        if ($PSBoundParameters.ContainsKey('Id'))
         {
-            Write-Verbose -Message "Could not find an Intune Disk Encryption for macOS with Id {$Id}"
-
-            if (-Not [string]::IsNullOrEmpty($DisplayName))
+            Write-Verbose -Message 'PolicyID was specified'
+            try
             {
-                $getValue = Get-MgBetaDeviceManagementIntent `
-                    -All `
-                    -Filter "DisplayName eq '$DisplayName'" `
-                    -ErrorAction SilentlyContinue | Where-Object `
-                    -FilterScript { `
-                        $_.TemplateId -eq 'a239407c-698d-4ef8-b314-e3ae409204b8' `
+                $getValue = Get-MgBetaDeviceManagementIntent -DeviceManagementIntentId $Id -ErrorAction Stop
+            }
+            catch
+            {
+                Write-Verbose -Message "Couldn't find existing policy by ID {$Id}"
+                $getValue = Get-MgBetaDeviceManagementIntent -All -Filter "DisplayName eq '$DisplayName'" | Where-Object -FilterScript {$_.TemplateId -eq 'a239407c-698d-4ef8-b314-e3ae409204b8'}
+                if ($getValue.Length -gt 1)
+                {
+                    throw "Duplicate Intune Disk Encryption for macOS named $DisplayName exist in tenant"
                 }
             }
         }
-        #endregion
-        if ($null -eq $getValue)
+        else
         {
-            Write-Verbose -Message "Could not find an Intune Disk Encryption for macOS with DisplayName {$DisplayName}"
-            return $nullResult
+            Write-Verbose -Message 'Id was NOT specified'
+            ## Can retreive multiple Intune Policies since displayname is not unique
+            $getValue = Get-MgBetaDeviceManagementIntent -All -Filter "DisplayName eq '$DisplayName'" | Where-Object -FilterScript {$_.TemplateId -eq 'a239407c-698d-4ef8-b314-e3ae409204b8'}
+            if ($getValue.Length -gt 1)
+            {
+                throw "Duplicate Intune Disk Encryption for macOS named $DisplayName exist in tenant"
+            }
         }
+
+        if ([String]::IsNullOrEmpty($getValue.id))
+        {
+            Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
+            $currentValues = $PSBoundParameters
+            $currentValues.Ensure = 'Absent'
+            return $currentValues
+        }
+
         $Id = $getValue.Id
-        Write-Verbose -Message "An Intune Disk Encryption for macOS with Id {$Id} and DisplayName {$DisplayName} was found."
+        Write-Verbose -Message "An Intune Disk Encryption for macOS with Id {$Id} and Name {$DisplayName} was found"
 
         #Retrieve policy specific settings
         [array]$settings = Get-MgBetaDeviceManagementIntentSetting `

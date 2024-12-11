@@ -90,32 +90,45 @@ function Get-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
-    $nullResult = $PSBoundParameters
-    $nullResult.Ensure = 'Absent'
-
     try
     {
         #Retrieve policy general settings
-        $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction SilentlyContinue
-
-        if ($null -eq $policy)
+        if ($PSBoundParameters.ContainsKey('Identity'))
         {
-            Write-Verbose -Message "Could not find an Intune Endpoint Detection And Response Policy for Windows10 with Id {$Identity}"
-
-            if (-not [System.String]::IsNullOrEmpty($DisplayName))
+            Write-Verbose -Message 'PolicyID was specified'
+            try
             {
-                $policy = Get-MgBetaDeviceManagementConfigurationPolicy `
-                    -All `
-                    -Filter "Name eq '$DisplayName'" `
-                    -ErrorAction SilentlyContinue
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction Stop
+            }
+            catch
+            {
+                Write-Verbose -Message "Couldn't find existing policy by ID {$Identity}"
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName'"
+                if ($policy.Length -gt 1)
+                {
+                    throw "Duplicate Intune Endpoint Detection And Response Policy MacOS named $DisplayName exist in tenant"
+                }
+            }
+        }
+        else
+        {
+            Write-Verbose -Message 'Id was NOT specified'
+            ## Can retreive multiple Intune Policies since displayname is not unique
+            $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName'"
+            if ($policy.Length -gt 1)
+            {
+                throw "Duplicate Intune Endpoint Detection And Response Policy for Windows10 named $DisplayName exist in tenant"
             }
         }
 
-        if ($null -eq $policy)
+        if ([String]::IsNullOrEmpty($policy.id))
         {
-            Write-Verbose -Message "Could not find an Intune Endpoint Detection And Response Policy for Windows10 with Name {$DisplayName}."
-            return $nullResult
+            Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
+            $currentValues = $PSBoundParameters
+            $currentValues.Ensure = 'Absent'
+            return $currentValues
         }
+
         $Identity = $policy.Id
         Write-Verbose -Message "An Intune Endpoint Detection And Response Policy for Windows10 with Id {$Identity} and Name {$DisplayName} was found"
 

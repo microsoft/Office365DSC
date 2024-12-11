@@ -129,34 +129,47 @@ function Get-TargetResource
         Add-M365DSCTelemetryEvent -Data $data
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
-
+        #Retrieve policy general settings
         $templateReferenceId = 'adc46e5a-f4aa-4ff6-aeff-4f27bc525796_1'
 
-        # Retrieve policy general settings
-        $policy = $null
-        $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction SilentlyContinue
-
-        if ($null -eq $policy)
+        if ($PSBoundParameters.ContainsKey('Identity'))
         {
-            Write-Verbose -Message "No Account Protection LAPS Policy with Id {$Identity} was found"
-
-            if (-not [System.String]::IsNullOrEmpty($DisplayName))
+            Write-Verbose -Message 'PolicyID was specified'
+            try
             {
-                $policy = Get-MgBetaDeviceManagementConfigurationPolicy `
-                    -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'" `
-                    -ErrorAction SilentlyContinue
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction Stop
+            }
+            catch
+            {
+                Write-Verbose -Message "Couldn't find existing policy by ID {$Identity}"
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'"
+                if ($policy.Length -gt 1)
+                {
+                    throw "Duplicate Account Protection LAPS Policyy named $DisplayName exist in tenant"
+                }
+            }
+        }
+        else
+        {
+            Write-Verbose -Message 'Id was NOT specified'
+            ## Can retreive multiple Intune Policies since displayname is not unique
+            $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'"
+            if ($policy.Length -gt 1)
+            {
+                throw "Duplicate Account Protection LAPS Policy named $DisplayName exist in tenant"
             }
         }
 
-        if ($null -eq $policy)
+        if ([String]::IsNullOrEmpty($policy.id))
         {
-            Write-Verbose -Message "No Account Protection LAPS Policy with Name {$DisplayName} was found"
-            return $nullResult
+            Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
+            $currentValues = $PSBoundParameters
+            $currentValues.Ensure = 'Absent'
+            return $currentValues
         }
+
         $Identity = $policy.Id
-        Write-Verbose "Found Account Protection LAPS Policy with Id {$Identity} and Name {$($policy.Name)}"
+        Write-Verbose -Message "An Account Protection LAPS Policy with Id {$Identity} and Name {$DisplayName} was found"
 
         [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
             -DeviceManagementConfigurationPolicyId $Identity `

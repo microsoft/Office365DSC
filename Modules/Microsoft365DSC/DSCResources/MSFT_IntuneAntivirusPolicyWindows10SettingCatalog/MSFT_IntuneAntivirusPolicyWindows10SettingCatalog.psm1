@@ -439,37 +439,46 @@ function Get-TargetResource
         Add-M365DSCTelemetryEvent -Data $data
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
-
         $templateReferences = 'd948ff9b-99cb-4ee0-8012-1fbc09685377_1', 'e3f74c5a-a6de-411d-aef6-eb15628f3a0a_1', '45fea5e9-280d-4da1-9792-fb5736da0ca9_1', '804339ad-1553-4478-a742-138fb5807418_1'
 
-        #Retrieve policy general settings
-        $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction SilentlyContinue
-
-        if ($null -eq $policy)
+        if ($PSBoundParameters.ContainsKey('Identity'))
         {
-            Write-Verbose -Message "Could not find an Intune Antivirus Policy for Windows10 Setting Catalog with Id {$Identity}"
-
-            if (-not [System.String]::IsNullOrEmpty($DisplayName))
+            Write-Verbose -Message 'PolicyID was specified'
+            try
             {
-                $policy = Get-MgBetaDeviceManagementConfigurationPolicy `
-                    -All `
-                    -Filter "Name eq '$DisplayName'" `
-                    -ErrorAction SilentlyContinue | Where-Object `
-                    -FilterScript {
-                    $_.TemplateReference.TemplateId -in $templateReferences
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction Stop
+            }
+            catch
+            {
+                Write-Verbose -Message "Couldn't find existing policy by ID {$Identity}"
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName'" | Where-Object -FilterScript {$_.TemplateReference.TemplateId -in $templateReferences}
+                if ($policy.Length -gt 1)
+                {
+                    throw "Duplicate Intune Antivirus Policy for Windows10 Setting Catalog named $DisplayName exist in tenant"
                 }
             }
         }
-
-        if ($null -eq $policy)
+        else
         {
-            Write-Verbose -Message "Could not find an Intune Antivirus Policy for Windows10 Setting Catalog with Name {$DisplayName}"
-            return $nullResult
+            Write-Verbose -Message 'Id was NOT specified'
+            ## Can retreive multiple Intune Policies since displayname is not unique
+            $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName'"
+            if ($policy.Length -gt 1)
+            {
+                throw "Duplicate Intune Antivirus Policy for Windows10 Setting Catalog named $DisplayName exist in tenant"
+            }
         }
+
+        if ([String]::IsNullOrEmpty($policy.Id))
+        {
+            Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
+            $currentValues = $PSBoundParameters
+            $currentValues.Ensure = 'Absent'
+            return $currentValues
+        }
+
         $Identity = $policy.Id
-        Write-Verbose -Message "An Intune Antivirus Policy for Windows10 Setting Catalog with Id {$Identity} and Name {$DisplayName} was found."
+        Write-Verbose -Message "An Intune Antivirus Policy for Windows10 Setting Catalog with Id {$Identity} and Name {$DisplayName} was found"
 
         #Retrieve policy specific settings
         [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `

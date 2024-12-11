@@ -258,35 +258,46 @@ function Get-TargetResource
         Add-M365DSCTelemetryEvent -Data $data
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
-
         $templateReferenceId = 'e8c053d6-9f95-42b1-a7f1-ebfd71c67a4b_1'
 
-        #Retrieve policy general settings
-        $policy = $null
-        $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction SilentlyContinue
-
-        if ($null -eq $policy)
+        if ($PSBoundParameters.ContainsKey('Identity'))
         {
-            Write-Verbose -Message "No Endpoint Protection Attack Surface Reduction Rules Policy {$Identity} was found"
-
-            if (-not [System.String]::IsNullOrEmpty($DisplayName))
+            Write-Verbose -Message 'PolicyID was specified'
+            try
             {
-                $policy = Get-MgBetaDeviceManagementConfigurationPolicy `
-                    -All `
-                    -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'" `
-                    -ErrorAction SilentlyContinue
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction Stop
+            }
+            catch
+            {
+                Write-Verbose -Message "Couldn't find existing policy by ID {$Identity}"
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'"
+                if ($policy.Length -gt 1)
+                {
+                    throw "Duplicate Endpoint Protection Attack Surface Reduction Rules Policy named $DisplayName exist in tenant"
+                }
+            }
+        }
+        else
+        {
+            Write-Verbose -Message 'Id was NOT specified'
+            ## Can retreive multiple CA Policies since displayname is not unique
+            $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'"
+            if ($policy.Length -gt 1)
+            {
+                throw "Duplicate Endpoint Protection Attack Surface Reduction Rules Policy named $DisplayName exist in tenant"
             }
         }
 
-        if ($null -eq $policy)
+        if ([String]::IsNullOrEmpty($policy.id))
         {
-            Write-Verbose -Message "No Endpoint Protection Attack Surface Reduction Rules Policy {$DisplayName} was found"
-            return $nullResult
+            Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
+            $currentValues = $PSBoundParameters
+            $currentValues.Ensure = 'Absent'
+            return $currentValues
         }
+
         $Identity = $policy.Id
-        Write-Verbose -Message "Found Endpoint Protection Attack Surface Reduction Rules Policy with Id {$Identity} and Name {$DisplayName)}."
+        Write-Verbose -Message "An Endpoint Protection Attack Surface Reduction Rules Policy with Id {$Identity} and Name {$DisplayName} was found"
 
         #Retrieve policy specific settings
         [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
