@@ -382,7 +382,7 @@ function Get-TargetResource
             }
         }
 
-        if ([String]::IsNullOrEmpty($getValue.id))
+        if ([String]::IsNullOrEmpty($getValue.Id))
         {
             Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
             $currentValues = $PSBoundParameters
