@@ -145,7 +145,7 @@ function Get-TargetResource
                 $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'"
                 if ($policy.Length -gt 1)
                 {
-                    throw "Duplicate Account Protection LAPS Policyy named $DisplayName exist in tenant"
+                    throw "Duplicate Account Protection LAPS Policy named $DisplayName exist in tenant"
                 }
             }
         }
