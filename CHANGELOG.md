@@ -2,9 +2,38 @@
 
 # UNRELEASED
 
+* AADGroup
+  * Only get Members & GroupAsMembers when a static group is defined.
+* IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneAccountProtectionPolicyWindows10
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneAntivirusPolicyLinux
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneAntivirusPolicyMacOS
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneAntivirusPolicyWindows10SettingCatalog
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneAppAndBrowserIsolationPolicyWindows10
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneDeviceControlPolicyWindows10
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneDiskEncryptionMacOS
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneDiskEncryptionWindows10
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneEndpointDetectionAndResponsePolicyLinux
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneEndpointDetectionAndResponsePolicyMacOS
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneEndpointDetectionAndResponsePolicyWindows10
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
+* IntuneSettingCatalogASRRulesPolicyWindows10
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
 * IntuneDeviceManagementAndroidDeviceOwnerEnrollmentProfile
   * Fixing issue with the way the QrCodeImage property was exported and handled.
 * IntuneFirewallPolicyWindows10
+  * Fixed creation of policy while it was found by name, now it updates existing policies correctly.
   * Fix export of properties that appear multiple times in subsections.
 
 # 1.24.1204.1

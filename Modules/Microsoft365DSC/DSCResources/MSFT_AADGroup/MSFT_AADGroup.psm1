@@ -216,6 +216,7 @@ function Get-TargetResource
             }
 
             $MembersValues = $null
+            $result = @{}
             if ($Group.MembershipRuleProcessingState -ne 'On')
             {
                 # Members
@@ -237,6 +238,8 @@ function Get-TargetResource
                         $GroupAsMembersValues += $member.AdditionalProperties.displayName
                     }
                 }
+                $result.Add('Members', $MembersValues)
+                $result.Add('GroupAsMembers', $GroupAsMembersValues)
             }
 
             # MemberOf
@@ -273,15 +276,12 @@ function Get-TargetResource
             if ($assignedLicensesRequest.value.Length -gt 0)
             {
                 $assignedLicensesValues = Get-M365DSCAzureADGroupLicenses -AssignedLicenses $assignedLicensesRequest.value
-
             }
 
-            $result = @{
+            $policySettings = @{
                 DisplayName                   = $Group.DisplayName
                 Id                            = $Group.Id
                 Owners                        = $OwnersValues
-                Members                       = $MembersValues
-                GroupAsMembers                = $GroupAsMembersValues
                 MemberOf                      = $MemberOfValues
                 Description                   = $Group.Description
                 GroupTypes                    = [System.String[]]$Group.GroupTypes
@@ -303,6 +303,7 @@ function Get-TargetResource
                 Managedidentity               = $ManagedIdentity.IsPresent
                 AccessTokens                  = $AccessTokens
             }
+            $result += $policySettings
 
             return $result
         }
