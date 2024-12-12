@@ -121,7 +121,7 @@ function Get-TargetResource
             }
             catch
             {
-                Write-Verbose -Message "Couldn't find existing policy by ID {$Id}"
+                Write-Verbose -Message "No Intune Disk Encryption for macOS with Id {$Id} was found"
                 $getValue = Get-MgBetaDeviceManagementIntent -All -Filter "DisplayName eq '$DisplayName'" | Where-Object -FilterScript {$_.TemplateId -eq 'a239407c-698d-4ef8-b314-e3ae409204b8'}
                 if ($getValue.Length -gt 1)
                 {
@@ -142,7 +142,7 @@ function Get-TargetResource
 
         if ([String]::IsNullOrEmpty($getValue.Id))
         {
-            Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
+            Write-Verbose -Message "No Intune Disk Encryption for macOS with Name {$DisplayName} were found"
             $currentValues = $PSBoundParameters
             $currentValues.Ensure = 'Absent'
             return $currentValues

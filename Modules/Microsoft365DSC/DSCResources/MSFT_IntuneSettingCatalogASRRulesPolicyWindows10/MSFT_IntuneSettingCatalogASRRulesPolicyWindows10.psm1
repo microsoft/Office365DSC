@@ -269,7 +269,7 @@ function Get-TargetResource
             }
             catch
             {
-                Write-Verbose -Message "Couldn't find existing policy by ID {$Identity}"
+                Write-Verbose -Message "No Endpoint Protection Attack Surface Reduction Rules Policy with Id {$Identity} was found"
                 $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName' and templateReference/TemplateId eq '$templateReferenceId'"
                 if ($policy.Length -gt 1)
                 {
@@ -290,7 +290,7 @@ function Get-TargetResource
 
         if ([String]::IsNullOrEmpty($policy.Id))
         {
-            Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
+            Write-Verbose -Message "No Endpoint Protection Attack Surface Reduction Rules Policy with Name {$DisplayName} were found"
             $currentValues = $PSBoundParameters
             $currentValues.Ensure = 'Absent'
             return $currentValues

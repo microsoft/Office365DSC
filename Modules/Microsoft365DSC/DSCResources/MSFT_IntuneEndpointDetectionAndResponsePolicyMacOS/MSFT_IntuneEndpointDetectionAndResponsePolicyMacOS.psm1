@@ -95,7 +95,7 @@ function Get-TargetResource
             }
             catch
             {
-                Write-Verbose -Message "Couldn't find existing policy by ID {$Id}"
+                Write-Verbose -Message "No Intune Endpoint Detection And Response Policy MacOS with Id {$Id} was found"
                 $getValue = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$DisplayName'"
                 if ($getValue.Length -gt 1)
                 {
@@ -116,7 +116,7 @@ function Get-TargetResource
 
         if ([String]::IsNullOrEmpty($getValue.Id))
         {
-            Write-Verbose -Message "No existing Policy with name {$DisplayName} were found"
+            Write-Verbose -Message "No Intune Endpoint Detection And Response Policy MacOS with Name {$DisplayName} were found"
             $currentValues = $PSBoundParameters
             $currentValues.Ensure = 'Absent'
             return $currentValues
