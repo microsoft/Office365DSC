@@ -28862,7 +28862,7 @@ function Get-MgBetaDirectory
         $Break
     )
 }
-function Get-MgDirectoryAdministrativeUnit
+function Get-MgBetaDirectoryAdministrativeUnit
 {
     [CmdletBinding()]
     param(
@@ -28939,7 +28939,7 @@ function Get-MgDirectoryAdministrativeUnit
         $HttpPipelineAppend
     )
 }
-function Get-MgDirectoryAdministrativeUnitMember
+function Get-MgBetaDirectoryAdministrativeUnitMember
 {
     [CmdletBinding()]
     param(
@@ -29016,7 +29016,7 @@ function Get-MgDirectoryAdministrativeUnitMember
         $HttpPipelineAppend
     )
 }
-function Get-MgDirectoryAdministrativeUnitedRoleMember
+function Get-MgBetaDirectoryAdministrativeUnitScopedRoleMember
 {
     [CmdletBinding()]
     param(
@@ -29091,153 +29091,6 @@ function Get-MgDirectoryAdministrativeUnitedRoleMember
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $ProxyUseDefaultCredentials,
-
-        [Parameter()]
-        [PSObject]
-        $HttpPipelineAppend
-    )
-}
-
-function Get-MgDirectoryRole
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String[]]
-        $Property,
-
-        [Parameter()]
-        [PSObject]
-        $InputObject,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $ProxyUseDefaultCredentials,
-
-        [Parameter()]
-        [System.Int32]
-        $PageSize,
-
-        [Parameter()]
-        [PSObject]
-        $HttpPipelinePrepend,
-
-        [Parameter()]
-        [System.Int32]
-        $Skip,
-
-        [Parameter()]
-        [System.String]
-        $CountVariable,
-
-        [Parameter()]
-        [System.Uri]
-        $Proxy,
-
-        [Parameter()]
-        [System.String[]]
-        $Sort,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $All,
-
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ProxyCredential,
-
-        [Parameter()]
-        [System.String]
-        $Search,
-
-        [Parameter()]
-        [System.String]
-        $DirectoryRoleId,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Break,
-
-        [Parameter()]
-        [System.String[]]
-        $ExpandProperty,
-
-        [Parameter()]
-        [PSObject]
-        $HttpPipelineAppend
-    )
-}
-function Get-MgDirectoryRoleTemplate
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String[]]
-        $Property,
-
-        [Parameter()]
-        [PSObject]
-        $InputObject,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $ProxyUseDefaultCredentials,
-
-        [Parameter()]
-        [System.Int32]
-        $PageSize,
-
-        [Parameter()]
-        [PSObject]
-        $HttpPipelinePrepend,
-
-        [Parameter()]
-        [System.String]
-        $CountVariable,
-
-        [Parameter()]
-        [System.Int32]
-        $Skip,
-
-        [Parameter()]
-        [System.String]
-        $DirectoryRoleTemplateId,
-
-        [Parameter()]
-        [System.Uri]
-        $Proxy,
-
-        [Parameter()]
-        [System.String[]]
-        $Sort,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $All,
-
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ProxyCredential,
-
-        [Parameter()]
-        [System.String]
-        $Search,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Break,
-
-        [Parameter()]
-        [System.String[]]
-        $ExpandProperty,
 
         [Parameter()]
         [PSObject]
@@ -29961,7 +29814,7 @@ function New-MgBetaDevice
         $Kind
     )
 }
-function New-MgDirectoryAdministrativeUnit
+function New-MgBetaDirectoryAdministrativeUnit
 {
     [CmdletBinding()]
     param(
@@ -30038,7 +29891,7 @@ function New-MgDirectoryAdministrativeUnit
         $HttpPipelineAppend
     )
 }
-function New-MgDirectoryAdministrativeUniter
+function New-MgBetaDirectoryAdministrativeUnitMember
 {
     [CmdletBinding()]
     param(
@@ -30095,7 +29948,7 @@ function New-MgDirectoryAdministrativeUniter
         $Break
     )
 }
-function New-MgDirectoryAdministrativeUnitMemberByRef
+function New-MgBetaDirectoryAdministrativeUnitMemberByRef
 {
     [CmdletBinding()]
     param(
@@ -30152,7 +30005,7 @@ function New-MgDirectoryAdministrativeUnitMemberByRef
         $Break
     )
 }
-function New-MgDirectoryAdministrativeUnitScopedRoleMember
+function New-MgBetaDirectoryAdministrativeUnitScopedRoleMember
 {
     [CmdletBinding()]
     param(
@@ -30207,76 +30060,6 @@ function New-MgDirectoryAdministrativeUnitScopedRoleMember
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $ProxyCredential,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Break,
-
-        [Parameter()]
-        [PSObject]
-        $HttpPipelineAppend
-    )
-}
-
-function New-MgDirectoryRole
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String]
-        $RoleTemplateId,
-
-        [Parameter()]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $AdditionalProperties,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $ProxyUseDefaultCredentials,
-
-        [Parameter()]
-        [PSObject]
-        $HttpPipelinePrepend,
-
-        [Parameter()]
-        [PSObject]
-        $ScopedMembers,
-
-        [Parameter()]
-        [PSObject]
-        $Members,
-
-        [Parameter()]
-        [System.Uri]
-        $Proxy,
-
-        [Parameter()]
-        [PSObject]
-        $BodyParameter,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Confirm,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ProxyCredential,
-
-        [Parameter()]
-        [System.DateTime]
-        $DeletedDateTime,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -30519,7 +30302,7 @@ function Remove-MgBetaDevice
         $HttpPipelineAppend
     )
 }
-function Remove-MgDirectoryAdministrativeUnit
+function Remove-MgBetaDirectoryAdministrativeUnit
 {
     [CmdletBinding()]
     param(
@@ -30568,7 +30351,7 @@ function Remove-MgDirectoryAdministrativeUnit
         $Break
     )
 }
-function Remove-MgDirectoryAdministrativeUnitMemberDirectoryObjectByRef
+function Remove-MgBetaDirectoryAdministrativeUnitMemberDirectoryObjectByRef
 {
     [CmdletBinding()]
     param(
@@ -30625,7 +30408,7 @@ function Remove-MgDirectoryAdministrativeUnitMemberDirectoryObjectByRef
         $Break
     )
 }
-function Remove-MgDirectoryAdministrativeUnitedRoleMember
+function Remove-MgBetaDirectoryAdministrativeUnitScopedRoleMember
 {
     [CmdletBinding()]
     param(
@@ -31208,7 +30991,7 @@ function Update-MgBetaDirectory
         $HttpPipelineAppend
     )
 }
-function Update-MgDirectoryAdministrativeUnit
+function Update-MgBetaDirectoryAdministrativeUnit
 {
     [CmdletBinding()]
     param(
@@ -61857,7 +61640,7 @@ function Get-MgBetaDirectory
         $Break
     )
 }
-function Get-MgDirectoryAdministrativeUnit
+function Get-MgBetaDirectoryAdministrativeUnit
 {
     [CmdletBinding()]
     param(
@@ -61934,7 +61717,7 @@ function Get-MgDirectoryAdministrativeUnit
         $HttpPipelineAppend
     )
 }
-function Get-MgDirectoryAdministrativeUnit
+function Get-MgBetaDirectoryAdministrativeUnitMember
 {
     [CmdletBinding()]
     param(
@@ -62011,7 +61794,7 @@ function Get-MgDirectoryAdministrativeUnit
         $HttpPipelineAppend
     )
 }
-function Get-MgDirectoryAdministrativeUnitScopedRoleMember
+function Get-MgBetaDirectoryAdministrativeUnitScopedRoleMember
 {
     [CmdletBinding()]
     param(
@@ -63008,7 +62791,7 @@ function New-MgBetaDevice
         $Kind
     )
 }
-function New-MgDirectoryAdministrativeUnit
+function New-MgBetaDirectoryAdministrativeUnit
 {
     [CmdletBinding()]
     param(
@@ -63085,7 +62868,7 @@ function New-MgDirectoryAdministrativeUnit
         $HttpPipelineAppend
     )
 }
-function New-MgDirectoryAdministrativeUniter
+function New-MgBetaDirectoryAdministrativeUnitMember
 {
     [CmdletBinding()]
     param(
@@ -63142,7 +62925,7 @@ function New-MgDirectoryAdministrativeUniter
         $Break
     )
 }
-function New-MgDirectoryAdministrativeUnitMemberByRef
+function New-MgBetaDirectoryAdministrativeUnitMemberByRef
 {
     [CmdletBinding()]
     param(
@@ -63199,7 +62982,7 @@ function New-MgDirectoryAdministrativeUnitMemberByRef
         $Break
     )
 }
-function New-MgDirectoryAdministrativeUnitScopedRoleMember
+function New-MgBetaDirectoryAdministrativeUnitScopedRoleMember
 {
     [CmdletBinding()]
     param(
@@ -63549,7 +63332,7 @@ function Remove-MgBetaDevice
         $HttpPipelineAppend
     )
 }
-function Remove-MgDirectoryAdministrativeUnit
+function Remove-MgBetaDirectoryAdministrativeUnit
 {
     [CmdletBinding()]
     param(
@@ -63598,7 +63381,7 @@ function Remove-MgDirectoryAdministrativeUnit
         $Break
     )
 }
-function Remove-MgDirectoryAdministrativeUniterDirectoryObjectByRef
+function Remove-MgBetaDirectoryAdministrativeUnitMemberDirectoryObjectByRef
 {
     [CmdletBinding()]
     param(
@@ -63675,7 +63458,7 @@ function Get-MgBetaDirectoryDeletedItemAsGroup
     )
 }
 
-function Remove-MgDirectoryAdministrativeUnitScopedRoleMember
+function Remove-MgBetaDirectoryAdministrativeUnitScopedRoleMember
 {
     [CmdletBinding()]
     param(
@@ -64307,7 +64090,7 @@ function Update-MgBetaDirectory
         $HttpPipelineAppend
     )
 }
-function Update-MgDirectoryAdministrativeUnit
+function Update-MgBetaDirectoryAdministrativeUnit
 {
     [CmdletBinding()]
     param(
@@ -104921,156 +104704,6 @@ function Get-MgBetaRoleManagementDirectoryRoleAssignmentScheduleRequest
         [Parameter()]
         [PSObject]
         $HttpPipelineAppend
-    )
-}
-#endregion
-
-#region TeamsProtectionPolicy
-function Get-TeamsProtectionPolicy
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.Object]
-        $Identity
-    )
-}
-
-function New-TeamsProtectionPolicy
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $HighConfidencePhishQuarantineTag,
-
-        [Parameter()]
-        [System.String]
-        $MalwareQuarantineTag,
-
-        [Parameter()]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.Object]
-        $Organization,
-
-        [Parameter()]
-        [System.Boolean]
-        $ZapEnabled,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Confirm
-    )
-}
-
-function Set-TeamsProtectionPolicy
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $AdminDisplayName,
-
-        [Parameter()]
-        [System.String]
-        $HighConfidencePhishQuarantineTag,
-
-        [Parameter()]
-        [System.Object]
-        $Identity,
-
-        [Parameter()]
-        [System.String]
-        $MalwareQuarantineTag,
-
-        [Parameter()]
-        [System.Boolean]
-        $ZapEnabled,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Confirm
-    )
-}
-#endregion
-
-#region TeamsProtectionPolicy
-function Get-TeamsProtectionPolicy
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.Object]
-        $Identity
-    )
-}
-
-function New-TeamsProtectionPolicy
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $HighConfidencePhishQuarantineTag,
-
-        [Parameter()]
-        [System.String]
-        $MalwareQuarantineTag,
-
-        [Parameter()]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.Object]
-        $Organization,
-
-        [Parameter()]
-        [System.Boolean]
-        $ZapEnabled,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Confirm
-    )
-}
-
-function Set-TeamsProtectionPolicy
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $AdminDisplayName,
-
-        [Parameter()]
-        [System.String]
-        $HighConfidencePhishQuarantineTag,
-
-        [Parameter()]
-        [System.Object]
-        $Identity,
-
-        [Parameter()]
-        [System.String]
-        $MalwareQuarantineTag,
-
-        [Parameter()]
-        [System.Boolean]
-        $ZapEnabled,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Confirm
     )
 }
 #endregion
