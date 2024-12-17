@@ -4,6 +4,12 @@
 
 * AADApplication
   * Added support for Oauth2PermissionScopes.
+* AADAdministrativeUnit
+  * Upgrade from beta to v1.0 Microsoft Graph endpoint for Administrative Units.
+    FIXES [#4438](https://github.com/microsoft/Microsoft365DSC/issues/4438)
+* EXOManagementRoleAssignment
+  * Upgrade from beta to v1.0 Microsoft Graph endpoint for Administrative Units.
+    FIXES [#4438](https://github.com/microsoft/Microsoft365DSC/issues/4438)
 * TeamsMeetingPolicy
   * FIXES [#5550](https://github.com/microsoft/Microsoft365DSC/issues/5550)
 * MISC
@@ -14,6 +20,7 @@
   * Update `Get-M365DSCWorkloadsListFromResourceNames` function for more input types.
     FIXES [#5525](https://github.com/microsoft/Microsoft365DSC/issues/5525)
 * DEPENDENCIES
+  * Added dependency on Microsoft.Graph.Identity.DirectoryManagement.
   * Updated Microsoft.PowerApps.Administration.PowerShell to version 2.0.202.
   * Updated MSCloudLoginAssistant to version 1.1.30.
   * Updated ReverseDSC to version 2.0.0.23.
