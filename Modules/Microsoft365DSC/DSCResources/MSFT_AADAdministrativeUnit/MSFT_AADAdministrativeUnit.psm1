@@ -223,7 +223,7 @@ function Get-TargetResource
             foreach ($auScopedRoleMember in $auScopedRoleMembers)
             {
                 Write-Verbose -Message "AU {$DisplayName} verify RoleId {$($auScopedRoleMember.RoleId)}"
-                $roleObject = Get-MgBetaDirectoryRole -DirectoryRoleId $auScopedRoleMember.RoleId -ErrorAction Stop
+                $roleObject = Get-MgDirectoryRole -DirectoryRoleId $auScopedRoleMember.RoleId -ErrorAction Stop
                 Write-Verbose -Message "Found DirectoryRole '$($roleObject.DisplayName)' with id $($roleObject.Id)"
                 $scopedRoleMember = [ordered]@{
                     RoleName       = $roleObject.DisplayName
@@ -484,17 +484,17 @@ function Set-TargetResource
                 Write-Verbose -Message "AU {$DisplayName} member: role '$($roleMember.RoleName)' type '$($roleMember.RoleMemberInfo.Type)' identity $($roleMember.RoleMemberInfo.Identity)"
                 try
                 {
-                    $roleObject = Get-MgBetaDirectoryRole -Filter "DisplayName eq '$($roleMember.RoleName)'" -ErrorAction stop
+                    $roleObject = Get-MgDirectoryRole -Filter "DisplayName eq '$($roleMember.RoleName)'" -ErrorAction stop
                     Write-Verbose -Message "AU {$DisplayName} role is enabled"
                 }
                 catch
                 {
                     Write-Verbose -Message "Azure AD role {$($rolemember.RoleName)} is not enabled"
-                    $roleTemplate = Get-MgBetaDirectoryRoleTemplate -All -ErrorAction Stop | Where-Object { $_.DisplayName -eq $rolemember.RoleName }
+                    $roleTemplate = Get-MgDirectoryRoleTemplate -All -ErrorAction Stop | Where-Object { $_.DisplayName -eq $rolemember.RoleName }
                     if ($null -ne $roleTemplate)
                     {
                         Write-Verbose -Message "Enable Azure AD role {$($rolemember.RoleName)} with id {$($roleTemplate.Id)}"
-                        $roleObject = New-MgBetaDirectoryRole -RoleTemplateId $roleTemplate.Id -ErrorAction Stop
+                        $roleObject = New-MgDirectoryRole -RoleTemplateId $roleTemplate.Id -ErrorAction Stop
                     }
                 }
                 if ($null -eq $roleObject)
@@ -753,7 +753,7 @@ function Set-TargetResource
                 }
                 if ($diff.SideIndicator -ne '==')
                 {
-                    $roleObject = Get-MgBetaDirectoryRole -Filter "DisplayName eq '$($diff.RoleName)'"
+                    $roleObject = Get-MgDirectoryRole -Filter "DisplayName eq '$($diff.RoleName)'"
                     if ($null -eq $roleObject)
                     {
                         throw "AU {$DisplayName} Scoped Role {$($diff.RoleName)} does not exist as an Azure AD role"

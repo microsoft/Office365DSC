@@ -7,6 +7,8 @@ Get-MgDevice,Device.Read.All,Device.Read.All
 Get-MgDirectoryAdministrativeUnitExtension,AdministrativeUnit.Read.All,AdministrativeUnit.Read.All
 Get-MgDirectoryAdministrativeUnitMember,AdministrativeUnit.Read.All,AdministrativeUnit.Read.All
 Get-MgDirectoryAdministrativeUnitScopedRoleMember,AdministrativeUnit.Read.All,AdministrativeUnit.Read.All
+Get-MgDirectoryRole,RoleManagement.Read.Directory,RoleManagement.Read.Directory
+Get-MgDirectoryRoleTemplate,RoleManagement.Read.Directory,RoleManagement.Read.Directory
 Get-MgBetaDirectoryRole,RoleManagement.Read.Directory,RoleManagement.Read.Directory
 Get-MgBetaDirectoryRoleTemplate,RoleManagement.Read.Directory,RoleManagement.Read.Directory
 Get-MgDirectorySetting,Directory.Read.All,Directory.Read.All
@@ -47,6 +49,7 @@ New-MgApplicationOwnerByRef,Application.ReadWrite.All,Application.ReadWrite.All
 New-MgDirectoryAdministrativeUnitExtension,AdministrativeUnit.ReadWrite.All,AdministrativeUnit.ReadWrite.All
 New-MgDirectoryAdministrativeUnitMemberByRef,AdministrativeUnit.ReadWrite.All,AdministrativeUnit.ReadWrite.All
 New-MgDirectoryAdministrativeUnitScopedRoleMember,AdministrativeUnit.ReadWrite.All,AdministrativeUnit.ReadWrite.All
+New-MgDirectoryRole,RoleManagement.ReadWrite.Directory,RoleManagement.ReadWrite.Directory
 New-MgBetaDirectoryRoleMemberByRef,RoleManagement.ReadWrite.Directory,RoleManagement.ReadWrite.Directory
 New-MgDirectorySetting,Directory.ReadWrite.All,Directory.ReadWrite.All
 New-MgEntitlementManagementAccessPackage,EntitlementManagement.ReadWrite.All,EntitlementManagement.ReadWrite.All

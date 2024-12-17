@@ -270,7 +270,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         })
                 }
 
-                Mock -CommandName Get-MgBetaDirectoryRole -MockWith {
+                Mock -CommandName Get-MgDirectoryRole -MockWith {
                     return @{
                         Id          = '12345-67890'
                         DisplayName = 'User Administrator'
@@ -341,7 +341,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Get-MgBetaDirectoryRole -MockWith {
+                Mock -CommandName Get-MgDirectoryRole -MockWith {
                     return @{
                         Id          = '12345-67890'
                         DisplayName = 'User Administrator'
@@ -552,7 +552,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Get-MgBetaDirectoryRole -MockWith {
+                Mock -CommandName Get-MgDirectoryRole -MockWith {
                     return [pscustomobject]@{
                         Id          = '12345-67890'
                         DisplayName = 'User Administrator'
@@ -609,7 +609,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Get-MgBetaDirectoryRole -MockWith {
+                Mock -CommandName Get-MgDirectoryRole -MockWith {
                     return [pscustomobject]@{
                         Id          = '12345-67890'
                         DisplayName = 'User Administrator'
@@ -664,7 +664,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Get-MgBetaDirectoryRole -MockWith {
+                Mock -CommandName Get-MgDirectoryRole -MockWith {
                     return [pscustomobject]@{
                         Id          = '12345-67890'
                         DisplayName = 'User Administrator'
@@ -727,7 +727,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Get-MgBetaDirectoryRole -MockWith {
+                Mock -CommandName Get-MgDirectoryRole -MockWith {
                     return [pscustomobject]@{
                         Id          = '12345-67890'
                         DisplayName = 'User Administrator'
@@ -812,14 +812,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Get-MgBetaDirectoryRole -ParameterFilter { $DirectoryRoleId -eq '12345-67890' } -MockWith {
+                Mock -CommandName Get-MgDirectoryRole -ParameterFilter { $DirectoryRoleId -eq '12345-67890' } -MockWith {
                     return [pscustomobject]@{
                         Id          = '12345-67890'
                         DisplayName = 'DSC User Administrator'
                     }
                 }
 
-                Mock -CommandName Get-MgBetaDirectoryRole -ParameterFilter { $DirectoryRoleId -eq '09876-54321' } -MockWith {
+                Mock -CommandName Get-MgDirectoryRole -ParameterFilter { $DirectoryRoleId -eq '09876-54321' } -MockWith {
                     return [pscustomobject]@{
                         Id          = '09876-54321'
                         DisplayName = 'DSC Groups Administrator'
