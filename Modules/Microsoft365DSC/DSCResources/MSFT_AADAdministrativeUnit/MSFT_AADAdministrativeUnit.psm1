@@ -118,7 +118,7 @@ function Get-TargetResource
             }
             else
             {
-                $getValue = Get-MgBetaDirectoryAdministrativeUnit -AdministrativeUnitId $Id -ErrorAction SilentlyContinue
+                $getValue = Get-MgDirectoryAdministrativeUnit -AdministrativeUnitId $Id -ErrorAction SilentlyContinue
             }
         }
 
@@ -133,7 +133,7 @@ function Get-TargetResource
                 }
                 else
                 {
-                    $getValue = Get-MgBetaDirectoryAdministrativeUnit -Filter "DisplayName eq '$DisplayName'" -ErrorAction Stop
+                    $getValue = Get-MgDirectoryAdministrativeUnit -Filter "DisplayName eq '$DisplayName'" -ErrorAction Stop
                 }
             }
         }
@@ -180,7 +180,7 @@ function Get-TargetResource
         if ($results.MembershipType -ne 'Dynamic')
         {
             Write-Verbose -Message "AU {$DisplayName} get Members"
-            [array]$auMembers = Get-MgBetaDirectoryAdministrativeUnitMember -AdministrativeUnitId $getValue.Id -All
+            [array]$auMembers = Get-MgDirectoryAdministrativeUnitMember -AdministrativeUnitId $getValue.Id -All
             if ($auMembers.Count -gt 0)
             {
                 Write-Verbose -Message "AU {$DisplayName} process $($auMembers.Count) members"
@@ -215,7 +215,7 @@ function Get-TargetResource
 
         Write-Verbose -Message "AU {$DisplayName} get Scoped Role Members"
         $ErrorActionPreference = 'Stop'
-        [array]$auScopedRoleMembers = Get-MgBetaDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId $getValue.Id -All
+        [array]$auScopedRoleMembers = Get-MgDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId $getValue.Id -All
         if ($auScopedRoleMembers.Count -gt 0)
         {
             Write-Verbose -Message "AU {$DisplayName} process $($auScopedRoleMembers.Count) scoped role members"
@@ -556,25 +556,25 @@ function Set-TargetResource
         #region resource generator code
         Write-Verbose -Message "Creating new Administrative Unit with: $(Convert-M365DscHashtableToString -Hashtable $CreateParameters)"
 
-        $policy = New-MgBetaDirectoryAdministrativeUnit @CreateParameters
+        $policy = New-MgDirectoryAdministrativeUnit @CreateParameters
 
         if ($MembershipType -ne 'Dynamic')
         {
             foreach ($member in $memberSpecification)
             {
                 Write-Verbose -Message "Adding new dynamic member {$($member.Id)}"
-                $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/$($member.Type)/$($member.Id)"
+                $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "v1.0/$($member.Type)/$($member.Id)"
                 $memberBodyParam = @{
                     '@odata.id' = $url
                 }
 
-                New-MgBetaDirectoryAdministrativeUnitMemberByRef -AdministrativeUnitId $policy.Id -BodyParameter $memberBodyParam
+                New-MgDirectoryAdministrativeUnitMemberByRef -AdministrativeUnitId $policy.Id -BodyParameter $memberBodyParam
             }
         }
 
         foreach ($scopedRoleMember in $scopedRoleMemberSpecification)
         {
-            New-MgBetaDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId $policy.Id -BodyParameter $scopedRoleMember
+            New-MgDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId $policy.Id -BodyParameter $scopedRoleMember
         }
 
 
@@ -604,7 +604,7 @@ function Set-TargetResource
         $UpdateParameters.Remove('ScopedRoleMembers') | Out-Null
 
         #region resource generator code
-        Update-MgBetaDirectoryAdministrativeUnit @UpdateParameters `
+        Update-MgDirectoryAdministrativeUnit @UpdateParameters `
             -AdministrativeUnitId $currentInstance.Id
         #endregion
 
@@ -657,16 +657,16 @@ function Set-TargetResource
                     {
                         Write-Verbose -Message "AdministrativeUnit {$DisplayName} Adding member {$($diff.Identity)}, type {$($diff.Type)}"
 
-                        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/$memberType/$($memberObject.Id)"
+                        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "v1.0/$memberType/$($memberObject.Id)"
                         $memberBodyParam = @{
                             '@odata.id' = $url
                         }
-                        New-MgBetaDirectoryAdministrativeUnitMemberByRef -AdministrativeUnitId ($currentInstance.Id) -BodyParameter $memberBodyParam | Out-Null
+                        New-MgDirectoryAdministrativeUnitMemberByRef -AdministrativeUnitId ($currentInstance.Id) -BodyParameter $memberBodyParam | Out-Null
                     }
                     else
                     {
                         Write-Verbose -Message "Administrative Unit {$DisplayName} Removing member {$($diff.Identity)}, type {$($diff.Type)}"
-                        Remove-MgBetaDirectoryAdministrativeUnitMemberDirectoryObjectByRef -AdministrativeUnitId ($currentInstance.Id) -DirectoryObjectId ($memberObject.Id) | Out-Null
+                        Remove-MgDirectoryAdministrativeUnitMemberDirectoryObjectByRef -AdministrativeUnitId ($currentInstance.Id) -DirectoryObjectId ($memberObject.Id) | Out-Null
                     }
                 }
             }
@@ -770,15 +770,15 @@ function Set-TargetResource
                         }
                     }
                     # addition of scoped rolemember may throw if role is not supported as a scoped role
-                    New-MgBetaDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId ($currentInstance.Id) -BodyParameter $scopedRoleMemberParam -ErrorAction Stop | Out-Null
+                    New-MgDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId ($currentInstance.Id) -BodyParameter $scopedRoleMemberParam -ErrorAction Stop | Out-Null
                 }
                 else
                 {
                     if (-not [string]::IsNullOrEmpty($diff.Rolename))
                     {
                         Write-Verbose -Message "Removing scoped role {$($diff.RoleName)} member {$($diff.Identity)}, type {$($diff.Type)} from Administrative Unit {$DisplayName}"
-                        $scopedRoleMemberObject = Get-MgBetaDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId ($currentInstance.Id) -All | Where-Object -FilterScript { $_.RoleId -eq $roleObject.Id -and $_.RoleMemberInfo.Id -eq $memberObject.Id }
-                        Remove-MgBetaDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId ($currentInstance.Id) -ScopedRoleMembershipId $scopedRoleMemberObject.Id -ErrorAction Stop | Out-Null
+                        $scopedRoleMemberObject = Get-MgDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId ($currentInstance.Id) -All | Where-Object -FilterScript { $_.RoleId -eq $roleObject.Id -and $_.RoleMemberInfo.Id -eq $memberObject.Id }
+                        Remove-MgDirectoryAdministrativeUnitScopedRoleMember -AdministrativeUnitId ($currentInstance.Id) -ScopedRoleMembershipId $scopedRoleMemberObject.Id -ErrorAction Stop | Out-Null
                     }
                 }
             }
@@ -787,11 +787,7 @@ function Set-TargetResource
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
         Write-Verbose -Message "Removing AU {$DisplayName}"
-        # Workaround since Remove-MgBetaDirectoryAdministrativeUnit is not working with 2.11.1
-        # https://github.com/microsoftgraph/msgraph-sdk-powershell/issues/2529
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/administrativeUnits/$($currentInstance.Id)"
-        Invoke-MgGraphRequest -Method DELETE -Uri $url | Out-Null
-        #Remove-MgBetaDirectoryAdministrativeUnit -AdministrativeUnitId $currentInstance.Id
+        Remove-MgDirectoryAdministrativeUnit -AdministrativeUnitId $currentInstance.Id
     }
 }
 
@@ -1060,7 +1056,7 @@ function Export-TargetResource
             $ExportParameters.Add('headers', @{'ConsistencyLevel' = 'Eventual' })
         }
 
-        [array] $Script:exportedInstances = Get-MgBetaDirectoryAdministrativeUnit @ExportParameters
+        [array] $Script:exportedInstances = Get-MgDirectoryAdministrativeUnit @ExportParameters
         #endregion
 
         $i = 1
