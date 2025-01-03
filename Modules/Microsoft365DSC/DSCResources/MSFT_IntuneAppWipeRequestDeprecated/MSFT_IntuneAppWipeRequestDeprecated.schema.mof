@@ -1,0 +1,18 @@
+[ClassVersion("1.0.0.0"), FriendlyName("IntuneAppWipeRequestDeprecated")]
+class MSFT_IntuneAppWipeRequestDeprecated : OMI_BaseResource
+{
+    [Key, Description("The unique identifier (GUID) for the wipe action")] String Id;
+    [Write, Description("The status of the wipe action")] String Status;
+    [Write, Description("The targeted user's ID for the wipe action")] String TargetedUserId;
+    [Write, Description("The targeted device's registration ID for the wipe action")] String TargetedDeviceRegistrationId;
+    [Write, Description("The targeted device's name for the wipe action")] String TargetedDeviceName;
+    [Write, Description("The targeted device's MAC address for the wipe action")] String TargetedDeviceMacAddress;
+    [Write, ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}, Description("Ensure that the resource is present or absent")] String Ensure;
+    [Write, Description("Credential to use for authentication")] String Credential;
+    [Write, Description("Application ID for authentication")] String ApplicationId;
+    [Write, Description("Secret for the application, used for authentication")] String ApplicationSecret;
+    [Write, Description("Tenant ID for authentication")] String TenantId;
+    [Write, Description("Thumbprint of the certificate used for authentication")] String CertificateThumbprint;
+    [Write, Description("Managed Identity flag, indicating if a managed identity is being used")] Boolean ManagedIdentity;
+    [Write, Description("Access tokens for authentication purposes")] String AccessTokens[];
+};
