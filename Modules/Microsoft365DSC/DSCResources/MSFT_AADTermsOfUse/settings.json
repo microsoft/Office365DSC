@@ -1,0 +1,21 @@
+﻿{
+    "resourceName": "AADTermsOfUse",
+    "description": "This resource represents a tenant's customizable terms of use agreement that is created and managed with Azure Active Directory (Azure AD).",
+    "permissions": [
+        {
+            "read": [
+                {
+                    "name": "Agreement.Read.All"
+                },
+                {
+                    "name": "AgreementAcceptance.Read"
+                }
+            ],
+            "update": [
+                {
+                    "name": "Agreement.ReadWrite.All"
+                }
+            ]
+        }
+    ]
+}
