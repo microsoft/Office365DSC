@@ -1,0 +1,14 @@
+[ClassVersion("1.0.0.0"), FriendlyName("SCDeviceTenantPolicy")]
+class MSFT_SCDeviceTenantPolicy : OMI_BaseResource
+{
+    [Key, Description("Defines the Guid for the policy")] String Guid;
+    [Write, Description("Specify if this policy should be enabled or not.")] Boolean Enabled;
+    [Write, Description("Present ensures the instance exists, absent ensures it is removed."), ValueMap{"Absent", "Present"}, Values{"Absent", "Present"}] string Ensure;
+    [Write, Description("Credentials of Security and Compliance Center Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.")] String CertificateThumbprint;
+    [Write, Description("Username can be made up to anything but password will be used for CertificatePassword"), EmbeddedInstance("MSFT_Credential")] String CertificatePassword;
+    [Write, Description("Path to certificate used in service principal usually a PFX file.")] String CertificatePath;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

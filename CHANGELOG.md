@@ -498,6 +498,8 @@
   * Initial release.
 * SentinelThreatIntelligenceIndicator
   * Initial release.
+* SCDeviceTenantPolicy
+  * Initial Release.
 * SPOSharingSettings
   * Deprecated property RequireAcceptingAccountMatchInvitedAccount.
     FIXES [#4979](https://github.com/microsoft/Microsoft365DSC/issues/4979)
