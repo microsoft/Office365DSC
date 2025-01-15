@@ -215,7 +215,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name 'The app exists and values are already in the desired state' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    AppId                     = 'App1'
+                    AppId                     = 'b4f08c68-7276-4cb8-b9ae-e75fca5ff834'
                     DisplayName               = 'App1'
                     AlternativeNames          = 'AlternativeName1', 'AlternativeName2'
                     AccountEnabled            = $true

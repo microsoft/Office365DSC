@@ -46,6 +46,8 @@
   * Initial release
 * TeamsGroupPolicyAssignment
   * FIXES [[#5527](https://github.com/microsoft/Microsoft365DSC/issues/5527)]
+* AADServicePrincipal
+  * FIXES [#5549](https://github.com/microsoft/Microsoft365DSC/issues/5549)
 
 # 1.25.108.1
 
