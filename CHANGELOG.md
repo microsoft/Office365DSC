@@ -1,6 +1,8 @@
 # Change log for Microsoft365DSC
 
 # UNRELEASED
+* IntuneAppProtectionPolicyiOS
+  * Fixes [#5589] https://github.com/microsoft/Microsoft365DSC/issues/5589
 
 * AADAuthenticationRequirement
   * Filtered guests from the export, to prevent errors during export
@@ -29,6 +31,8 @@
 * IntuneTrustedRootCertificateAndroidWork
   * Initial Release
 * MISC
+  * DEFENDER
+    * Added support for the UseBasicParsing paramter for REST calls.
   * Added check to `New-M365DSCReportFromConfiguration` to make sure Windows
     Remoting is enabled, which is required to convert the DSC config.
   * Defender
@@ -55,6 +59,8 @@
 * DEPENDENCIES
   * Updated Microsoft.PowerApps.Administration.PowerShell to version 2.0.202.
   * Updated MSCloudLoginAssistant to version 1.1.31.
+* IntuneAppProtectionPolicyiOS
+  * Fixes [#5589] https://github.com/microsoft/Microsoft365DSC/issues/5589
 
 # 1.24.1211.1
 

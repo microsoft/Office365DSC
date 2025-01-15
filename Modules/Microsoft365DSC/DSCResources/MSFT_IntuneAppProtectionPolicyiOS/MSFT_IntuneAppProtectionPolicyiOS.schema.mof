@@ -4,6 +4,32 @@ class MSFT_IntuneAppProtectionPolicyiOS : OMI_BaseResource
     [Key, Description("Display name of the iOS App Protection Policy.")] String DisplayName;
     [Write, Description("Identity of the iOS App Protection Policy.")] String Identity;
     [Write, Description("Description of the iOS App Protection Policy.")] String Description;
+
+    [Write, Description("Data storage locations where a user may store managed data. Inherited from managedAppProtection.")] String AllowedDataIngestionLocations[];
+    [Write, Description("Indicates if content sync for widgets is allowed for iOS on App Protection Policies.")] Boolean AllowWidgetContentSync;
+    [Write, Description("Defines a managed app behavior, either block or warn, if the user is clocked out (non-working time)."), ValueMap{"block","wipe","warn","blockWhenSettingIsSupported"}, Values{"block","wipe","warn","blockWhenSettingIsSupported"}] String appActionIfAccountIsClockedOut;
+    [Write, Description("If set, it will specify what action to take in the case where the user is unable to checkin because their authentication token is invalid. This happens when the user is deleted or disabled in AAD. ."), ValueMap{"block","wipe","warn","blockWhenSettingIsSupported"}, Values{"block","wipe","warn","blockWhenSettingIsSupported"}] String appActionIfUnableToAuthenticateUser;
+    [Write, Description("Public Apps selection: group or individual Inherited from targetedManagedAppProtection."), ValueMap{"selectedPublicApps","allCoreMicrosoftApps","allMicrosoftApps","allApps"}, Values{"selectedPublicApps","allCoreMicrosoftApps","allMicrosoftApps","allApps"}] String appGroupType;
+    [Write, Description("Indicates whether a user can bring data into org documents.")] boolean blockDataIngestionIntoOrganizationDocuments;
+    [Write, Description("Protocol of a custom dialer app to click-to-open a phone number on iOS, for example, skype:.")] String customDialerAppProtocol;
+    [Write, Description("Count of apps to which the current policy is deployed.")] UInt32 deployedAppCount;
+    [Write, Description("The classes of dialer apps that are allowed to click-to-open a phone number."), ValueMap{"allApps","managedApps","customApp","blocked"}, Values{"allApps","managedApps","customApp","blocked"}] String dialerRestrictionLevel;
+    [Write, Description("A list of custom urls that are allowed to invocate an unmanaged app.")] String ExemptedUniversalLinks[]; 
+    [Write, Description("A grace period before blocking app access during off clock hours.")] String gracePeriodToBlockAppsDuringOffClockHours; 
+    [Write, Description("Indicates if the policy is deployed to any inclusion groups or not.")] Boolean isAssigned;
+    [Write, Description("A list of custom urls that are allowed to invocate a managed app.")] String managedUniversalLinks[];
+    [Write, Description("Maximum allowed device threat level, as reported by the MTD app Inherited from managedAppProtection."), ValueMap{"notConfigured","secured","low","medium","high"}, Values{"notConfigured","secured","low","medium","high"}] String maximumAllowedDeviceThreatLevel;
+    [Write, Description("Versions bigger than the specified version will block the managed app from accessing company data. Inherited from managedAppProtection.")] String maximumRequiredOsVersion;
+    [Write, Description("Versions bigger than the specified version will block the managed app from accessing company data. Inherited from managedAppProtection.")] String maximumWarningOsVersion;
+    [Write, Description("Versions bigger than the specified version will block the managed app from accessing company data. Inherited from managedAppProtection.")] String maximumWipeOsVersion;
+    [Write, Description("When a specific app redirection is enforced by protectedMessagingRedirectAppType in an App Protection Policy, this value defines the app url redirect schemes which are allowed to be used.")] String messagingRedirectAppUrlScheme;
+    [Write, Description("Versions less than the specified version will result in warning message on the managed app from accessing company data.")] String minimumWarningSdkVersion;
+    [Write, Description("Indicates how to prioritize which Mobile Threat Defense (MTD) partner is enabled for a given platform, when more than one is enabled. An app can only be actively using a single Mobile Threat Defense partner. When NULL, Microsoft Defender will be given preference. Otherwise setting the value to defenderOverThirdPartyPartner or thirdPartyPartnerOverDefender will make explicit which partner to prioritize."), ValueMap{"defenderOverThirdPartyPartner","thirdPartyPartnerOverDefender","unknownFutureValue"}, Values{"defenderOverThirdPartyPartner","thirdPartyPartnerOverDefender","unknownFutureValue"}] String mobileThreatDefensePartnerPriority;
+    [Write, Description("Determines what action to take if the mobile threat defense threat threshold isn't met. Warn isn't a supported value for this property Inherited from managedAppProtection."), ValueMap{"block","wipe","warn","blockWhenSettingIsSupported"}, Values{"block","wipe","warn","blockWhenSettingIsSupported"}] String mobileThreatDefenseRemediationAction;
+    [Write, Description("Requires a pin to be unique from the number specified in this property. Inherited from managedAppProtection.")] UInt32 previousPinBlockCount;
+    [Write, Description("Defines how app messaging redirection is protected by an App Protection Policy. Default is anyApp. Inherited from managedAppProtection."), ValueMap{"anyApp","anyManagedApp","specificApps","blocked"}, Values{"anyApp","anyManagedApp","specificApps","blocked"}] String protectedMessagingRedirectAppType;
+    [Write, Description("Defines if third party keyboards are allowed while accessing a managed app.")] Boolean thirdPartyKeyboardsBlocked;
+
     [Write, Description("The period after which access is checked when the device is not connected to the internet.")] String PeriodOfflineBeforeAccessCheck;
     [Write, Description("The period after which access is checked when the device is connected to the internet.")] String PeriodOnlineBeforeAccessCheck;
     [Write, Description("Sources from which data is allowed to be transferred. Possible values are: allApps, managedApps, none."), ValueMap{"allApps","managedApps", "none"}, Values{"allApps","managedApps", "none"}] String AllowedInboundDataTransferSources;
@@ -41,7 +67,7 @@ class MSFT_IntuneAppProtectionPolicyiOS : OMI_BaseResource
     [Write, Description("Specify the number of characters that may be cut or copied from Org data and accounts to any application. This setting overrides the AllowedOutboundClipboardSharingLevel restriction. Default value of '0' means no exception is allowed.")] Uint32 AllowedOutboundClipboardSharingExceptionLength;
     [Write, Description("Specify app notification restriction."), ValueMap{"allow","blockOrganizationalData","block"}, Values{"allow","blockOrganizationalData","block"}] String NotificationRestriction;
     [Write, Description("The intended app management levels for this policy."), ValueMap{"unspecified","unmanaged","mdm","androidEnterprise"}, Values{"unspecified","unmanaged","mdm","androidEnterprise"}] String TargetedAppManagementLevels[];
-    [Write, Description("Require app data to be encrypted."), Values{"useDeviceSettings","afterDeviceRestart","whenDeviceLockedExceptOpenFiles","whenDeviceLocked"}, ValueMap{"useDeviceSettings","afterDeviceRestart","whenDeviceLockedExceptOpenFiles","whenDeviceLocked"}] String AppDataEncryptionType;
+    [Write, Description("Require app data to be encrypted."), Values{"useDeviceSettings","afterDeviceRestart","whenDeviceLockedExceptOpenFiles","whenDeviceLocked"}, ValueMap{"useDeviceSettings","afterDeviceRestart","whenDeviceLockedExceptOpenFiles","whenDeviceLocked"}] String AppDataEncryptionType;  
     [Write, Description("Apps in this list will be exempt from the policy and will be able to receive data from managed apps.")] String ExemptedAppProtocols[];
     [Write, Description("Versions less than the specified version will block the managed app from accessing company data.")] String MinimumWipeSdkVersion;
     [Write, Description("Semicolon seperated list of device models allowed, as a string, for the managed app to work.")] String AllowedIosDeviceModels[];
