@@ -57,41 +57,47 @@ function Get-TargetResource
 
     try
     {
-        $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-            -InboundParameters $PSBoundParameters
-
-        #Ensure the proper dependencies are installed in the current environment.
-        Confirm-M365DSCDependencies
-
-        #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
-        #endregion
-
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
-
-        $getValue = $null
-
-        if (-not [System.String]::IsNullOrEmpty($Id))
+        if (-not $Script:exportedInstance)
         {
-            $getValue = Get-MgBetaPolicyAuthenticationStrengthPolicy -AuthenticationStrengthPolicyId $Id -ErrorAction 'SilentlyContinue'
-        }
+            $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
+                -InboundParameters $PSBoundParameters
 
-        if ($null -eq $getValue)
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullResult = $PSBoundParameters
+            $nullResult.Ensure = 'Absent'
+
+            $getValue = $null
+
+            if (-not [System.String]::IsNullOrEmpty($Id))
+            {
+                $getValue = Get-MgBetaPolicyAuthenticationStrengthPolicy -AuthenticationStrengthPolicyId $Id -ErrorAction 'SilentlyContinue'
+            }
+
+            if ($null -eq $getValue)
+            {
+                $getValue = Get-MgBetaPolicyAuthenticationStrengthPolicy | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName } -ErrorAction SilentlyContinue
+            }
+
+            if ($null -eq $getValue)
+            {
+                return $nullResult
+            }
+        }
+        else
         {
-            $getValue = Get-MgBetaPolicyAuthenticationStrengthPolicy | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName } -ErrorAction SilentlyContinue
+            $getValue = $Script:exportedInstance
         }
-
-        if ($null -eq $getValue)
-        {
-            return $nullResult
-        }
-
         $results = @{
             Description           = $getValue.Description
             DisplayName           = $getValue.DisplayName
@@ -409,6 +415,7 @@ function Export-TargetResource
                 AccessTokens          = $AccessTokens
             }
 
+            $Script:exportedInstance = $config
             $Results = Get-TargetResource @Params
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

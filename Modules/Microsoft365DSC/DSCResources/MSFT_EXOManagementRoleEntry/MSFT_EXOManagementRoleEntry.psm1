@@ -50,66 +50,54 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting Management Role Entry configuration for {$Identity}"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
     try
     {
-        $IdentityParts = $Identity.Split('\')
-        if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+        if (-not $Script:exportedInstance)
         {
-            $roleEntry = $Script:exportedInstances | Where-Object -FilterScript { $_.Identity -eq $IdentityParts[0] -and $_.Name -eq $IdentityParts[1] }
-        }
-        else
-        {
+            Write-Verbose -Message "Getting Management Role Entry configuration for {$Identity}"
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
             $roleEntry = Get-ManagementRoleEntry -Identity $Identity -ResultSize 'Unlimited' -ErrorAction Stop
-        }
 
-        if ($null -eq $roleEntry)
-        {
-            throw "Management Role Entry {$Identity} does not exist."
+            if ($null -eq $roleEntry)
+            {
+                throw "Management Role Entry {$Identity} does not exist."
+            }
         }
         else
         {
-            $result = @{
-                Identity              = $Identity
-                Parameters            = $roleEntry.Parameters
-                Type                  = $roleEntry.Type
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity
-                AccessTokens          = $AccessTokens
-            }
-
-            Write-Verbose -Message "Found Management Role Entry {$Identity}."
-            return $result
+            $roleEntry = $Script:exportedInstance
         }
+
+        $result = @{
+            Identity              = $Identity
+            Parameters            = $roleEntry.Parameters
+            Type                  = $roleEntry.Type
+            Credential            = $Credential
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
+            CertificatePath       = $CertificatePath
+            CertificatePassword   = $CertificatePassword
+            ManagedIdentity       = $ManagedIdentity
+            AccessTokens          = $AccessTokens
+        }
+
+        Write-Verbose -Message "Found Management Role Entry {$Identity}."
+        return $result
     }
     catch
     {
@@ -391,6 +379,7 @@ function Export-TargetResource
                 CertificatePath       = $CertificatePath
                 AccessTokens          = $AccessTokens
             }
+            $Script:exportedInstance = $roleEntry
             $Results = Get-TargetResource @Params
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

@@ -59,66 +59,64 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting Role Group configuration for $Name"
-    $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+        if (-not $Script:exportedInstance)
         {
-            $RoleGroup = $Script:exportedInstances | Where-Object -FilterScript { $_.Name -eq $Name }
-        }
-        else
-        {
+            Write-Verbose -Message "Getting Role Group configuration for $Name"
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
             $AllRoleGroups = Get-RoleGroup -ErrorAction Stop
             $RoleGroup = $AllRoleGroups | Where-Object -FilterScript { $_.Name -eq $Name }
-        }
 
-        if ($null -eq $RoleGroup)
-        {
-            Write-Verbose -Message "Role Group $($Name) does not exist."
-            return $nullReturn
+            if ($null -eq $RoleGroup)
+            {
+                Write-Verbose -Message "Role Group $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            # Get RoleGroup Members DN if RoleGroup exists. This is required especially when adding Members like "Exchange Administrator" or "Global Administrator" that have different Names across Tenants
-            $roleGroupMember = Get-RoleGroupMember -Identity $Name | Select-Object DisplayName
-
-            $result = @{
-                Name                  = $RoleGroup.Name
-                Description           = $RoleGroup.Description
-                Members               = $roleGroupMember.DisplayName
-                Roles                 = $RoleGroup.Roles
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                Managedidentity       = $ManagedIdentity.IsPresent
-                TenantId              = $TenantId
-                AccessTokens          = $AccessTokens
-            }
-
-            Write-Verbose -Message "Found Role Group $($Name)"
-            return $result
+            $RoleGroup = $Script:exportedInstance
         }
+
+        # Get RoleGroup Members DN if RoleGroup exists. This is required especially when adding Members like "Exchange Administrator" or "Global Administrator" that have different Names across Tenants
+        $roleGroupMember = Get-RoleGroupMember -Identity $Name | Select-Object DisplayName
+
+        $result = @{
+            Name                  = $RoleGroup.Name
+            Description           = $RoleGroup.Description
+            Members               = $roleGroupMember.DisplayName
+            Roles                 = $RoleGroup.Roles
+            Ensure                = 'Present'
+            Credential            = $Credential
+            ApplicationId         = $ApplicationId
+            CertificateThumbprint = $CertificateThumbprint
+            CertificatePath       = $CertificatePath
+            CertificatePassword   = $CertificatePassword
+            Managedidentity       = $ManagedIdentity.IsPresent
+            TenantId              = $TenantId
+            AccessTokens          = $AccessTokens
+        }
+
+        Write-Verbose -Message "Found Role Group $($Name)"
+        return $result
     }
     catch
     {
@@ -458,6 +456,7 @@ function Export-TargetResource
                 CertificatePath       = $CertificatePath
                 AccessTokens          = $AccessTokens
             }
+            $Script:exportedInstance = $RoleGroup
             $Results = Get-TargetResource @Params
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

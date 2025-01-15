@@ -210,47 +210,47 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of Role: $DisplayName"
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    Write-Verbose -Message 'Getting configuration of Role'
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-
-    $RoleDefintion = $null
-    if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+    if (-not $Script:exportedInstance)
     {
-        $RoleDefinition = $Script:exportedInstances | Where-Object -FilterScript { $_.Id -eq $Id }
-    }
-    elseif (-not [System.String]::IsNullOrEmpty($Id))
-    {
-        $RoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $Id `
-            -ErrorAction SilentlyContinue
-    }
+        Write-Verbose -Message "Getting configuration of Role: $DisplayName"
+        $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
+            -InboundParameters $PSBoundParameters
 
-    if ($null -eq $RoleDefinition -and -not [System.String]::IsNullOrEmpty($DisplayName))
-    {
-        if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+        Write-Verbose -Message 'Getting configuration of Role'
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+        $CommandName = $MyInvocation.MyCommand
+        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+            -CommandName $CommandName `
+            -Parameters $PSBoundParameters
+        Add-M365DSCTelemetryEvent -Data $data
+        #endregion
+
+        $RoleDefinition = $null
+        if (-not [System.String]::IsNullOrEmpty($Id))
         {
-            $RoleDefinition = $Script:exportedInstances | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName }
+            $RoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $Id `
+                -ErrorAction SilentlyContinue
         }
-        else
+
+        if ($null -eq $RoleDefinition -and -not [System.String]::IsNullOrEmpty($DisplayName))
         {
             $RoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter "displayName eq '$DisplayName'"
         }
+    }
+    else
+    {
+        $RoleDefinition = $Script:exportedInstance
+    }
+
+    $nullReturn = $PSBoundParameters
+    if ($null -eq $RoleDefinition)
+    {
+        return $nullReturn
     }
 
     try
@@ -1492,6 +1492,7 @@ function Export-TargetResource
                 AccessTokens          = $AccessTokens
             }
 
+            $Script:exportedInstance = $role
             $Results = Get-TargetResource @Params
 
             if ($Results.Ensure -eq 'Present')

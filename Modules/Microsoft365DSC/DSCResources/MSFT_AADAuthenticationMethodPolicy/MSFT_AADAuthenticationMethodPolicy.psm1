@@ -79,50 +79,57 @@ function Get-TargetResource
 
     try
     {
-        $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-            -InboundParameters $PSBoundParameters
-
-        #Ensure the proper dependencies are installed in the current environment.
-        Confirm-M365DSCDependencies
-
-        #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
-        #endregion
-
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
-
-        $getValue = $null
-        #region resource generator code
-        if (-not [System.String]::IsNullOrEmpty($Id))
+        if (-not $Script:exportedInstance)
         {
-            $getValue = Get-MgBetaPolicyAuthenticationMethodPolicy -ErrorAction SilentlyContinue
-        }
+            $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
+                -InboundParameters $PSBoundParameters
 
-        if ($null -eq $getValue)
-        {
-            Write-Verbose -Message "Could not find an Azure AD Authentication Method Policy with Id {$Id}"
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
 
-            if (-Not [string]::IsNullOrEmpty($DisplayName))
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullResult = $PSBoundParameters
+            $nullResult.Ensure = 'Absent'
+
+            $getValue = $null
+            #region resource generator code
+            if (-not [System.String]::IsNullOrEmpty($Id))
             {
-                $getValue = Get-MgBetaPolicyAuthenticationMethodPolicy `
-                    -ErrorAction SilentlyContinue | Where-Object `
-                    -FilterScript { `
-                        $_.DisplayName -eq "$($DisplayName)" `
-                        -and $_.AdditionalProperties.'@odata.type' -eq '#microsoft.graph.AuthenticationMethodsPolicy' `
+                $getValue = Get-MgBetaPolicyAuthenticationMethodPolicy -ErrorAction SilentlyContinue
+            }
+
+            if ($null -eq $getValue)
+            {
+                Write-Verbose -Message "Could not find an Azure AD Authentication Method Policy with Id {$Id}"
+
+                if (-Not [string]::IsNullOrEmpty($DisplayName))
+                {
+                    $getValue = Get-MgBetaPolicyAuthenticationMethodPolicy `
+                        -ErrorAction SilentlyContinue | Where-Object `
+                        -FilterScript { `
+                            $_.DisplayName -eq "$($DisplayName)" `
+                            -and $_.AdditionalProperties.'@odata.type' -eq '#microsoft.graph.AuthenticationMethodsPolicy' `
+                    }
                 }
             }
+            #endregion
+            if ($null -eq $getValue)
+            {
+                Write-Verbose -Message "Could not find an Azure AD Authentication Method Policy with DisplayName {$DisplayName}"
+                return $nullResult
+            }
         }
-        #endregion
-        if ($null -eq $getValue)
+        else
         {
-            Write-Verbose -Message "Could not find an Azure AD Authentication Method Policy with DisplayName {$DisplayName}"
-            return $nullResult
+            $getValue = $Script:exportedInstance
         }
         $Id = $getValue.Id
         Write-Verbose -Message "An Azure AD Authentication Method Policy with Id {$Id} and DisplayName {$DisplayName} was found."
@@ -642,6 +649,7 @@ function Export-TargetResource
                     AccessTokens          = $AccessTokens
                 }
 
+                $Script:exportedInstance = $config
                 $Results = Get-TargetResource @Params
                 $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                     -Results $Results

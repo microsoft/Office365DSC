@@ -79,49 +79,47 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting Message Classification Configuration for $($Identity)"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        $MessageClassification = Get-MessageClassification -Identity $Identity -ErrorAction Stop
-
-        if ($null -eq $MessageClassification)
+        if (-not $Script:exportedInstance)
         {
-            if (-not [System.String]::IsNullOrEmpty($DisplayName))
-            {
-                Write-Verbose -Message "Couldn't retrieve Message Classification policy by Id {$($Identity)}. Trying by DisplayName."
-                $MessageClassification = Get-MessageClassification -Identity $DisplayName
-            }
+            Write-Verbose -Message "Getting Message Classification Configuration for $($Identity)"
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            $MessageClassification = Get-MessageClassification -Identity $Identity -ErrorAction Stop
+
             if ($null -eq $MessageClassification)
             {
-                return $nullReturn
+                if (-not [System.String]::IsNullOrEmpty($DisplayName))
+                {
+                    Write-Verbose -Message "Couldn't retrieve Message Classification policy by Id {$($Identity)}. Trying by DisplayName."
+                    $MessageClassification = Get-MessageClassification -Identity $DisplayName
+                }
+                if ($null -eq $MessageClassification)
+                {
+                    return $nullReturn
+                }
             }
+        }
+        else
+        {
+            $MessageClassification = $Script:exportedInstance
         }
 
         $result = @{
@@ -526,6 +524,7 @@ function Export-TargetResource
                 AccessTokens          = $AccessTokens
             }
 
+            $Script:exportedInstance = $MessageClassification
             $Results = Get-TargetResource @Params
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

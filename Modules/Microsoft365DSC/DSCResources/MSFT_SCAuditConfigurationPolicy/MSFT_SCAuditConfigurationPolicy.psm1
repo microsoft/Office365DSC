@@ -43,72 +43,69 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of SCAuditConfigurationPolicy for Workload {$Workload}"
-    Write-Verbose -Message 'Connecting to Security and Compliance Center'
-
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters
-    }
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        $PolicyObject = $null
-        Write-Verbose -Message "Current Workload = {$Workload}"
+        if (-not $Script:exportedInstance)
+        {
+            Write-Verbose -Message "Getting configuration of SCAuditConfigurationPolicy for Workload {$Workload}"
+            Write-Verbose -Message 'Connecting to Security and Compliance Center'
 
-        if ($Workload -eq 'OneDriveForBusiness')
-        {
-            $PolicyObject = Get-AuditConfigurationPolicy | Where-Object -FilterScript { $_.Name -eq 'a415dcce-19a0-4153-b137-eb6fd67995b5' }
-        }
-        else
-        {
-            $PolicyObject = Get-AuditConfigurationPolicy | Where-Object -FilterScript { $_.Workload -eq $Workload }
-        }
+            $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
+                -InboundParameters $PSBoundParameters
 
-        if ($null -eq $PolicyObject)
-        {
-            Write-Verbose -Message "SCAuditConfigurationPolicy $Workload does not exist."
-            return $nullReturn
-        }
-        else
-        {
-            Write-Verbose -Message "Found existing SCAuditConfigurationPolicy $Workload"
-            $result = @{
-                Ensure                = 'Present'
-                Workload              = $Workload
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                AccessTokens          = $AccessTokens
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            $PolicyObject = $null
+            Write-Verbose -Message "Current Workload = {$Workload}"
+
+            if ($Workload -eq 'OneDriveForBusiness')
+            {
+                $PolicyObject = Get-AuditConfigurationPolicy | Where-Object -FilterScript { $_.Name -eq 'a415dcce-19a0-4153-b137-eb6fd67995b5' }
+            }
+            else
+            {
+                $PolicyObject = Get-AuditConfigurationPolicy | Where-Object -FilterScript { $_.Workload -eq $Workload }
             }
 
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            if ($null -eq $PolicyObject)
+            {
+                Write-Verbose -Message "SCAuditConfigurationPolicy $Workload does not exist."
+                return $nullReturn
+            }
         }
+        else
+        {
+            $PolicyObject = $Script:exportedInstance
+        }
+
+        Write-Verbose -Message "Found existing SCAuditConfigurationPolicy $Workload"
+        $result = @{
+            Ensure                = 'Present'
+            Workload              = $Workload
+            Credential            = $Credential
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
+            CertificatePath       = $CertificatePath
+            CertificatePassword   = $CertificatePassword
+            AccessTokens          = $AccessTokens
+        }
+
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -366,6 +363,7 @@ function Export-TargetResource
 
             Write-Host "    |---[$i/$($policies.Length)] $($policy.Workload)" -NoNewline
 
+            $Script:exportedInstance = $policy
             $Results = Get-TargetResource @PSBoundParameters -Workload $policy.Workload
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

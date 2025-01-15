@@ -2,6 +2,8 @@
 
 # UNRELEASED
 
+* Export Performance Improvements
+  * Implements the changes described in [#5615](https://github.com/microsoft/Microsoft365DSC/issues/5615)
 * AADAuthenticationRequirement
   * Filtered guests from the export, to prevent errors during export
     FIXES [#5625](https://github.com/microsoft/Microsoft365DSC/issues/5625)

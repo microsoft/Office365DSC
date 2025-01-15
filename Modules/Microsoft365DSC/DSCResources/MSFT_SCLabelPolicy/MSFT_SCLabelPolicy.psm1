@@ -110,96 +110,93 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of Sensitivity Label Policy for $Name"
-
-    if ($PSBoundParameters.ContainsKey('Labels') -and `
-        ($PSBoundParameters.ContainsKey('AddLabels') -or $PSBoundParameters.ContainsKey('RemoveLabels')))
-    {
-        throw 'You cannot use the Labels parameter and the AddLabels or RemoveLabels parameters at the same time.'
-    }
-
-    if ($PSBoundParameters.ContainsKey('AddLabels') -and $PSBoundParameters.ContainsKey('RemoveLabels'))
-    {
-        # Check if AddLabels and RemoveLabels contain the same labels
-        [array]$diff = Compare-Object -ReferenceObject $AddLabels -DifferenceObject $RemoveLabels -ExcludeDifferent -IncludeEqual
-        if ($diff.Count -gt 0)
-        {
-            throw 'Parameters AddLabels and RemoveLabels cannot contain the same labels. Make sure labels are not present in both parameters.'
-        }
-    }
-
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
     try
     {
-        try
+        if (-not $Script:exportedInstance)
         {
-            $policy = Get-LabelPolicy -Identity $Name -ErrorAction SilentlyContinue -WarningAction Ignore
-        }
-        catch
-        {
-            throw $_
-        }
+            Write-Verbose -Message "Getting configuration of Sensitivity Label Policy for $Name"
 
-        if ($null -eq $policy)
-        {
-            Write-Verbose -Message "Sensitivity label policy $($Name) does not exist."
-            return $nullReturn
+            if ($PSBoundParameters.ContainsKey('Labels') -and `
+                ($PSBoundParameters.ContainsKey('AddLabels') -or $PSBoundParameters.ContainsKey('RemoveLabels')))
+            {
+                throw 'You cannot use the Labels parameter and the AddLabels or RemoveLabels parameters at the same time.'
+            }
+
+            if ($PSBoundParameters.ContainsKey('AddLabels') -and $PSBoundParameters.ContainsKey('RemoveLabels'))
+            {
+                # Check if AddLabels and RemoveLabels contain the same labels
+                [array]$diff = Compare-Object -ReferenceObject $AddLabels -DifferenceObject $RemoveLabels -ExcludeDifferent -IncludeEqual
+                if ($diff.Count -gt 0)
+                {
+                    throw 'Parameters AddLabels and RemoveLabels cannot contain the same labels. Make sure labels are not present in both parameters.'
+                }
+            }
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            try
+            {
+                $policy = Get-LabelPolicy -Identity $Name -ErrorAction SilentlyContinue -WarningAction Ignore
+            }
+            catch
+            {
+                throw $_
+            }
+
+            if ($null -eq $policy)
+            {
+                Write-Verbose -Message "Sensitivity label policy $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            if ($null -ne $policy.Settings)
-            {
-                $advancedSettingsValue = Convert-StringToAdvancedSettings -AdvancedSettings $policy.Settings
-            }
-
-            Write-Verbose "Found existing Sensitivity Label policy $($Name)"
-            $result = @{
-                Name                         = $policy.Name
-                Comment                      = $policy.Comment
-                AdvancedSettings             = $advancedSettingsValue
-                Credential                   = $Credential
-                ApplicationId                = $ApplicationId
-                TenantId                     = $TenantId
-                CertificateThumbprint        = $CertificateThumbprint
-                CertificatePath              = $CertificatePath
-                CertificatePassword          = $CertificatePassword
-                Ensure                       = 'Present'
-                Labels                       = $policy.Labels
-                ExchangeLocation             = Convert-ArrayList -CurrentProperty $policy.ExchangeLocation
-                ExchangeLocationException    = Convert-ArrayList -CurrentProperty $policy.ExchangeLocationException
-                ModernGroupLocation          = Convert-ArrayList -CurrentProperty $policy.ModernGroupLocation
-                ModernGroupLocationException = Convert-ArrayList -CurrentProperty $policy.ModernGroupLocationException
-                AccessTokens                 = $AccessTokens
-            }
-
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            $policy = $Script:exportedInstance
         }
+
+        if ($null -ne $policy.Settings)
+        {
+            $advancedSettingsValue = Convert-StringToAdvancedSettings -AdvancedSettings $policy.Settings
+        }
+
+        Write-Verbose "Found existing Sensitivity Label policy $($Name)"
+        $result = @{
+            Name                         = $policy.Name
+            Comment                      = $policy.Comment
+            AdvancedSettings             = $advancedSettingsValue
+            Credential                   = $Credential
+            ApplicationId                = $ApplicationId
+            TenantId                     = $TenantId
+            CertificateThumbprint        = $CertificateThumbprint
+            CertificatePath              = $CertificatePath
+            CertificatePassword          = $CertificatePassword
+            Ensure                       = 'Present'
+            Labels                       = $policy.Labels
+            ExchangeLocation             = Convert-ArrayList -CurrentProperty $policy.ExchangeLocation
+            ExchangeLocationException    = Convert-ArrayList -CurrentProperty $policy.ExchangeLocationException
+            ModernGroupLocation          = Convert-ArrayList -CurrentProperty $policy.ModernGroupLocation
+            ModernGroupLocationException = Convert-ArrayList -CurrentProperty $policy.ModernGroupLocationException
+            AccessTokens                 = $AccessTokens
+        }
+
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -854,6 +851,7 @@ function Export-TargetResource
 
             Write-Host "    |---[$i/$($policies.Count)] $($policy.Name)" -NoNewline
 
+            $Script:exportedInstance = $policy
             $Results = Get-TargetResource @PSBoundParameters -Name $policy.Name
 
             if ($null -ne $Results.AdvancedSettings)

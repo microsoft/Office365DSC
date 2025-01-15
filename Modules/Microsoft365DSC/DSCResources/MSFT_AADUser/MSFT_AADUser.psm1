@@ -134,46 +134,46 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
-    Write-Verbose -Message "Getting configuration of Office 365 User $UserPrincipalName"
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = @{
-        UserPrincipalName     = $null
-        DisplayName           = $null
-        FirstName             = $null
-        LastName              = $null
-        UsageLocation         = $null
-        LicenseAssignment     = $null
-        MemberOf              = $null
-        Password              = $null
-        Credential            = $Credential
-        ApplicationId         = $ApplicationId
-        TenantId              = $TenantId
-        CertificateThumbprint = $CertificateThumbprint
-        Managedidentity       = $ManagedIdentity.IsPresent
-        ApplicationSecret     = $ApplicationSecret
-        Ensure                = 'Absent'
-        AccessTokens          = $AccessTokens
-    }
-
     try
     {
-        if (-not $Script:ExportMode)
+        if (-not $Script:exportedInstance)
         {
+            Write-Verbose -Message "Getting configuration of Office 365 User $UserPrincipalName"
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = @{
+                UserPrincipalName     = $null
+                DisplayName           = $null
+                FirstName             = $null
+                LastName              = $null
+                UsageLocation         = $null
+                LicenseAssignment     = $null
+                MemberOf              = $null
+                Password              = $null
+                Credential            = $Credential
+                ApplicationId         = $ApplicationId
+                TenantId              = $TenantId
+                CertificateThumbprint = $CertificateThumbprint
+                Managedidentity       = $ManagedIdentity.IsPresent
+                ApplicationSecret     = $ApplicationSecret
+                Ensure                = 'Absent'
+                AccessTokens          = $AccessTokens
+            }
+
             Write-Verbose -Message "Getting Office 365 User $UserPrincipalName"
             $propertiesToRetrieve = @('Id', 'UserPrincipalName', 'DisplayName', 'GivenName', 'Surname', 'UsageLocation', 'City', 'Country', 'Department', 'FacsimileTelephoneNumber', 'Mobile', 'OfficeLocation', 'TelephoneNumber', 'PostalCode', 'PreferredLanguage', 'State', 'StreetAddress', 'JobTitle', 'UserType', 'PasswordPolicies')
             $user = Get-MgUser -UserId $UserPrincipalName -Property $propertiesToRetrieve -ErrorAction SilentlyContinue
@@ -186,7 +186,7 @@ function Get-TargetResource
         else
         {
             Write-Verbose -Message 'Retrieving user from the exported instances'
-            $user = $Script:M365DSCExportInstances | Where-Object -FilterScript { $_.UserPrincipalName -eq $UserPrincipalName }
+            $user = $Script:exportedInstance
         }
 
         Write-Verbose -Message "Found User $($UserPrincipalName)"
@@ -1091,6 +1091,7 @@ function Export-TargetResource
                     AccessTokens          = $AccessTokens
                 }
 
+                $Script:exportedInstance = $user
                 $Results = Get-TargetResource @Params
                 $Results.Password = "New-Object System.Management.Automation.PSCredential('Password', (ConvertTo-SecureString ((New-Guid).ToString()) -AsPlainText -Force));"
                 if ($null -ne $Results.UserPrincipalName)

@@ -207,6 +207,68 @@ function New-MGServicePrincipal
     )
 }
 
+function Get-MgServicePrincipalOwner
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [String]
+        $ServicePrincipalId,
+
+   	    [Parameter()]
+		[String[]]
+		$ExpandProperty,
+
+   	    [Parameter()]
+		[String]
+		$Filter,
+
+   	    [Parameter()]
+		[String[]]
+		$Property,
+
+   	    [Parameter()]
+		[String]
+		$Search,
+
+   	    [Parameter()]
+		[Int32]
+		$Skip,
+
+   	    [Parameter()]
+		[String[]]
+		$Sort,
+
+   	    [Parameter()]
+		[Int32]
+		$Top,
+
+   	    [Parameter()]
+		[String]
+		$ConsistencyLevel,
+
+   	    [Parameter()]
+		[String]
+		$ResponseHeadersVariable,
+
+   	    [Parameter()]
+		[hashtable]
+		$Headers,
+
+   	    [Parameter()]
+		[Int32]
+		$PageSize,
+
+        [Parameter()]
+        [switch]
+        $All,
+
+        [Parameter()]
+		[String]
+		$CountVariable
+    )
+}
+
 function New-MgBetaRoleManagementDirectoryRoleDefinition
 {
     [CmdletBinding()]
@@ -737,7 +799,9 @@ function Get-GlobalAddressList
     [OutputType([System.Collections.Hashtable])]
     param
     (
-
+        [Parameter()]
+        [System.String]
+        $Identity
     )
 }
 

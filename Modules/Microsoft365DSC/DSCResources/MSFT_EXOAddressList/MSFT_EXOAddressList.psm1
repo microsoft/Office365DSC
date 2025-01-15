@@ -130,106 +130,95 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
-
-    Write-Verbose -Message "Getting configuration of AddressList for $Name"
-
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        if ($null -eq (Get-Command 'Get-AddressList' -ErrorAction SilentlyContinue))
+        if (-not $Script:exportedInstance)
         {
-            return $nullReturn
-        }
-        if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
-        {
-            $AddressLists = $Script:exportedInstances | Where-Object -FilterScript { $_.Name -eq $Name }
-        }
-        else
-        {
+            Write-Verbose -Message "Getting configuration of AddressList for $Name"
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            if ($null -eq (Get-Command 'Get-AddressList' -ErrorAction SilentlyContinue))
+            {
+                return $nullReturn
+            }
+
             $AddressLists = Get-AddressList -ErrorAction Stop
             $AddressList = $AddressLists | Where-Object -FilterScript { $_.Name -eq $Name }
-        }
 
-        if ($null -eq $AddressList)
-        {
-            Write-Verbose -Message "Address List $($Name) does not exist."
-            return $nullReturn
+            if ($null -eq $AddressList)
+            {
+                Write-Verbose -Message "Address List $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            if ($null -eq $AddressList.IncludedRecipients)
-            {
-                $IncludedRecipients = @()
-            }
-            else
-            {
-                $IncludedRecipients = $AddressList.IncludedRecipients
-            }
-
-            $result = @{
-                Name                         = $Name
-                ConditionalCompany           = $AddressList.ConditionalCompany
-                ConditionalCustomAttribute1  = $AddressList.ConditionalCustomAttribute1
-                ConditionalCustomAttribute10 = $AddressList.ConditionalCustomAttribute10
-                ConditionalCustomAttribute11 = $AddressList.ConditionalCustomAttribute11
-                ConditionalCustomAttribute12 = $AddressList.ConditionalCustomAttribute12
-                ConditionalCustomAttribute13 = $AddressList.ConditionalCustomAttribute13
-                ConditionalCustomAttribute14 = $AddressList.ConditionalCustomAttribute14
-                ConditionalCustomAttribute15 = $AddressList.ConditionalCustomAttribute15
-                ConditionalCustomAttribute2  = $AddressList.ConditionalCustomAttribute2
-                ConditionalCustomAttribute3  = $AddressList.ConditionalCustomAttribute3
-                ConditionalCustomAttribute4  = $AddressList.ConditionalCustomAttribute4
-                ConditionalCustomAttribute5  = $AddressList.ConditionalCustomAttribute5
-                ConditionalCustomAttribute6  = $AddressList.ConditionalCustomAttribute6
-                ConditionalCustomAttribute7  = $AddressList.ConditionalCustomAttribute7
-                ConditionalCustomAttribute8  = $AddressList.ConditionalCustomAttribute8
-                ConditionalCustomAttribute9  = $AddressList.ConditionalCustomAttribute9
-                ConditionalDepartment        = $AddressList.ConditionalDepartment
-                ConditionalStateOrProvince   = $AddressList.ConditionalStateOrProvince
-                DisplayName                  = $AddressList.DisplayName
-                IncludedRecipients           = $IncludedRecipients
-                RecipientFilter              = $AddressList.RecipientFilter
-                Ensure                       = 'Present'
-                Credential                   = $Credential
-                ApplicationId                = $ApplicationId
-                CertificateThumbprint        = $CertificateThumbprint
-                CertificatePath              = $CertificatePath
-                CertificatePassword          = $CertificatePassword
-                Managedidentity              = $ManagedIdentity.IsPresent
-                TenantId                     = $TenantId
-                AccessTokens                 = $AccessTokens
-            }
-
-            Write-Verbose -Message "Found AddressList $($Name)"
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            $AddressList = $Script:exportedInstance
         }
+
+        if ($null -eq $AddressList.IncludedRecipients)
+        {
+            $IncludedRecipients = @()
+        }
+        else
+        {
+            $IncludedRecipients = $AddressList.IncludedRecipients
+        }
+
+        $result = @{
+            Name                         = $Name
+            ConditionalCompany           = $AddressList.ConditionalCompany
+            ConditionalCustomAttribute1  = $AddressList.ConditionalCustomAttribute1
+            ConditionalCustomAttribute10 = $AddressList.ConditionalCustomAttribute10
+            ConditionalCustomAttribute11 = $AddressList.ConditionalCustomAttribute11
+            ConditionalCustomAttribute12 = $AddressList.ConditionalCustomAttribute12
+            ConditionalCustomAttribute13 = $AddressList.ConditionalCustomAttribute13
+            ConditionalCustomAttribute14 = $AddressList.ConditionalCustomAttribute14
+            ConditionalCustomAttribute15 = $AddressList.ConditionalCustomAttribute15
+            ConditionalCustomAttribute2  = $AddressList.ConditionalCustomAttribute2
+            ConditionalCustomAttribute3  = $AddressList.ConditionalCustomAttribute3
+            ConditionalCustomAttribute4  = $AddressList.ConditionalCustomAttribute4
+            ConditionalCustomAttribute5  = $AddressList.ConditionalCustomAttribute5
+            ConditionalCustomAttribute6  = $AddressList.ConditionalCustomAttribute6
+            ConditionalCustomAttribute7  = $AddressList.ConditionalCustomAttribute7
+            ConditionalCustomAttribute8  = $AddressList.ConditionalCustomAttribute8
+            ConditionalCustomAttribute9  = $AddressList.ConditionalCustomAttribute9
+            ConditionalDepartment        = $AddressList.ConditionalDepartment
+            ConditionalStateOrProvince   = $AddressList.ConditionalStateOrProvince
+            DisplayName                  = $AddressList.DisplayName
+            IncludedRecipients           = $IncludedRecipients
+            RecipientFilter              = $AddressList.RecipientFilter
+            Ensure                       = 'Present'
+            Credential                   = $Credential
+            ApplicationId                = $ApplicationId
+            CertificateThumbprint        = $CertificateThumbprint
+            CertificatePath              = $CertificatePath
+            CertificatePassword          = $CertificatePassword
+            Managedidentity              = $ManagedIdentity.IsPresent
+            TenantId                     = $TenantId
+            AccessTokens                 = $AccessTokens
+        }
+
+        Write-Verbose -Message "Found AddressList $($Name)"
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -765,6 +754,7 @@ function Export-TargetResource
                 CertificatePath       = $CertificatePath
                 AccessTokens          = $AccessTokens
             }
+            $Script:exportedInstance = $addressList
             $Results = Get-TargetResource @Params
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

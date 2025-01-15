@@ -128,97 +128,91 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting Global Address List configuration for $Name"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
-    if ($null -eq (Get-Command 'Get-GlobalAddressList' -ErrorAction SilentlyContinue))
-    {
-        return $nullReturn
-    }
-
     try
     {
-        $AllGlobalAddressLists = Get-GlobalAddressList -ErrorAction Stop
-
-        $GlobalAddressList = $AllGlobalAddressLists | Where-Object -FilterScript { $_.Name -eq $Name }
-
-        if ($null -eq $GlobalAddressList)
+        if (-not $Script:exportedInstance)
         {
-            Write-Verbose -Message "Global Address List $($Name) does not exist."
-            return $nullReturn
+            Write-Verbose -Message "Getting Global Address List configuration for $Name"
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            if ($null -eq (Get-Command 'Get-GlobalAddressList' -ErrorAction SilentlyContinue))
+            {
+                return $nullReturn
+            }
+
+            $GlobalAddressList = Get-GlobalAddressList -Identity $Name -ErrorAction Stop
+
+            if ($null -eq $GlobalAddressList)
+            {
+                Write-Verbose -Message "Global Address List $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            if ($null -eq $GlobalAddressList.IncludedRecipients)
-            {
-                $IncludedRecipients = ''.ToString()
-            }
-            else
-            {
-                $IncludedRecipients = $GlobalAddressList.IncludedRecipients
-            }
-
-            $result = @{
-                Name                         = $GlobalAddressList.Name
-                ConditionalCompany           = $GlobalAddressList.ConditionalCompany
-                ConditionalCustomAttribute1  = $GlobalAddressList.ConditionalCustomAttribute1
-                ConditionalCustomAttribute10 = $GlobalAddressList.ConditionalCustomAttribute10
-                ConditionalCustomAttribute11 = $GlobalAddressList.ConditionalCustomAttribute11
-                ConditionalCustomAttribute12 = $GlobalAddressList.ConditionalCustomAttribute12
-                ConditionalCustomAttribute13 = $GlobalAddressList.ConditionalCustomAttribute13
-                ConditionalCustomAttribute14 = $GlobalAddressList.ConditionalCustomAttribute14
-                ConditionalCustomAttribute15 = $GlobalAddressList.ConditionalCustomAttribute15
-                ConditionalCustomAttribute2  = $GlobalAddressList.ConditionalCustomAttribute2
-                ConditionalCustomAttribute3  = $GlobalAddressList.ConditionalCustomAttribute3
-                ConditionalCustomAttribute4  = $GlobalAddressList.ConditionalCustomAttribute4
-                ConditionalCustomAttribute5  = $GlobalAddressList.ConditionalCustomAttribute5
-                ConditionalCustomAttribute6  = $GlobalAddressList.ConditionalCustomAttribute6
-                ConditionalCustomAttribute7  = $GlobalAddressList.ConditionalCustomAttribute7
-                ConditionalCustomAttribute8  = $GlobalAddressList.ConditionalCustomAttribute8
-                ConditionalCustomAttribute9  = $GlobalAddressList.ConditionalCustomAttribute9
-                ConditionalDepartment        = $GlobalAddressList.ConditionalDepartment
-                ConditionalStateOrProvince   = $GlobalAddressList.ConditionalStateOrProvince
-                IncludedRecipients           = $IncludedRecipients
-                RecipientFilter              = $GlobalAddressList.RecipientFilter
-                Ensure                       = 'Present'
-                Credential                   = $Credential
-                ApplicationId                = $ApplicationId
-                CertificateThumbprint        = $CertificateThumbprint
-                CertificatePath              = $CertificatePath
-                CertificatePassword          = $CertificatePassword
-                Managedidentity              = $ManagedIdentity.IsPresent
-                TenantId                     = $TenantId
-                AccessTokens                 = $AccessTokens
-            }
-
-            Write-Verbose -Message "Found Global Address List $($Name)"
-            return $result
+            $GlobalAddressList = $Script:exportedInstance
         }
+
+        if ($null -eq $GlobalAddressList.IncludedRecipients)
+        {
+            $IncludedRecipients = ''.ToString()
+        }
+        else
+        {
+            $IncludedRecipients = $GlobalAddressList.IncludedRecipients
+        }
+
+        $result = @{
+            Name                         = $GlobalAddressList.Name
+            ConditionalCompany           = $GlobalAddressList.ConditionalCompany
+            ConditionalCustomAttribute1  = $GlobalAddressList.ConditionalCustomAttribute1
+            ConditionalCustomAttribute10 = $GlobalAddressList.ConditionalCustomAttribute10
+            ConditionalCustomAttribute11 = $GlobalAddressList.ConditionalCustomAttribute11
+            ConditionalCustomAttribute12 = $GlobalAddressList.ConditionalCustomAttribute12
+            ConditionalCustomAttribute13 = $GlobalAddressList.ConditionalCustomAttribute13
+            ConditionalCustomAttribute14 = $GlobalAddressList.ConditionalCustomAttribute14
+            ConditionalCustomAttribute15 = $GlobalAddressList.ConditionalCustomAttribute15
+            ConditionalCustomAttribute2  = $GlobalAddressList.ConditionalCustomAttribute2
+            ConditionalCustomAttribute3  = $GlobalAddressList.ConditionalCustomAttribute3
+            ConditionalCustomAttribute4  = $GlobalAddressList.ConditionalCustomAttribute4
+            ConditionalCustomAttribute5  = $GlobalAddressList.ConditionalCustomAttribute5
+            ConditionalCustomAttribute6  = $GlobalAddressList.ConditionalCustomAttribute6
+            ConditionalCustomAttribute7  = $GlobalAddressList.ConditionalCustomAttribute7
+            ConditionalCustomAttribute8  = $GlobalAddressList.ConditionalCustomAttribute8
+            ConditionalCustomAttribute9  = $GlobalAddressList.ConditionalCustomAttribute9
+            ConditionalDepartment        = $GlobalAddressList.ConditionalDepartment
+            ConditionalStateOrProvince   = $GlobalAddressList.ConditionalStateOrProvince
+            IncludedRecipients           = $IncludedRecipients
+            RecipientFilter              = $GlobalAddressList.RecipientFilter
+            Ensure                       = 'Present'
+            Credential                   = $Credential
+            ApplicationId                = $ApplicationId
+            CertificateThumbprint        = $CertificateThumbprint
+            CertificatePath              = $CertificatePath
+            CertificatePassword          = $CertificatePassword
+            Managedidentity              = $ManagedIdentity.IsPresent
+            TenantId                     = $TenantId
+            AccessTokens                 = $AccessTokens
+        }
+
+        Write-Verbose -Message "Found Global Address List $($Name)"
+        return $result
     }
     catch
     {
@@ -740,6 +734,7 @@ function Export-TargetResource
                 CertificatePath       = $CertificatePath
                 AccessTokens          = $AccessTokens
             }
+            $Script:exportedInstance = $GlobalAddressList
             $Results = Get-TargetResource @Params
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

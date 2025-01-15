@@ -225,156 +225,152 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of DLPCompliancePolicy for $Name"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
     try
     {
-        $PolicyRule = Get-AutoSensitivityLabelRule -Identity $Name -ErrorAction SilentlyContinue
-
-        if ($null -eq $PolicyRule)
+        if (-not $Script:exportedInstance)
         {
-            Write-Verbose -Message "AutoSensitivityLabelRule $($Name) does not exist."
-            return $nullReturn
+            Write-Verbose -Message "Getting configuration of DLPCompliancePolicy for $Name"
+            $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
+                -InboundParameters $PSBoundParameters
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+            $PolicyRule = Get-AutoSensitivityLabelRule -Identity $Name -ErrorAction SilentlyContinue
+
+            if ($null -eq $PolicyRule)
+            {
+                Write-Verbose -Message "AutoSensitivityLabelRule $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            Write-Verbose "Found existing AutoSensitivityLabelRule $($Name)"
-
-            if ($null -ne $PolicyRule.AnyOfRecipientAddressContainsWords -and $PolicyRule.AnyOfRecipientAddressContainsWords.count -gt 0)
-            {
-                $AnyOfRecipientAddressContainsWords = $PolicyRule.AnyOfRecipientAddressContainsWords.Replace(' ', '').Split(',')
-            }
-
-            if ($null -ne $PolicyRule.AnyOfRecipientAddressMatchesPatterns -and $PolicyRule.AnyOfRecipientAddressMatchesPatterns -gt 0)
-            {
-                $AnyOfRecipientAddressMatchesPatterns = $PolicyRule.AnyOfRecipientAddressMatchesPatterns.Replace(' ', '').Split(',')
-            }
-
-            if ($null -ne $PolicyRule.ContentExtensionMatchesWords -and $PolicyRule.ContentExtensionMatchesWords.count -gt 0)
-            {
-                $ContentExtensionMatchesWords = $PolicyRule.ContentExtensionMatchesWords.Replace(' ', '').Split(',')
-            }
-
-            if ($null -ne $PolicyRule.ExceptIfContentExtensionMatchesWords -and $PolicyRule.ExceptIfContentExtensionMatchesWords.count -gt 0)
-            {
-                $ExceptIfContentExtensionMatchesWords = $PolicyRule.ExceptIfContentExtensionMatchesWords.Replace(' ', '').Split(',')
-            }
-            if ($null -ne $HeaderMatchesPatterns -and $null -ne $HeaderMatchesPatterns.Name)
-            {
-                $HeaderMatchesPatternsValue = @{}
-                foreach ($value in $HeaderMatchesPatterns[($HeaderMatchesPatterns.Name)])
-                {
-                    if ($HeaderMatchesPatternsValue.ContainsKey($HeaderMatchesPatterns.Name))
-                    {
-                        $HeaderMatchesPatternsValue[$HeaderMatchesPatterns.Name] += $value
-                    }
-                    else
-                    {
-                        $HeaderMatchesPatternsValue.Add($HeaderMatchesPatterns.Name, @($value))
-                    }
-                }
-            }
-            foreach ($pattern in $PolicyRule.HeaderMatchesPatterns.Keys)
-            {
-                $HeaderMatchesPatternsValue += @{
-                    Name  = $pattern
-                    Value = $PolicyRule.HeaderMatchesPatterns.$pattern
-                }
-            }
-
-            $result = @{
-                Name                                         = $PolicyRule.Name
-                Policy                                       = $PolicyRule.ParentPolicyName
-                Workload                                     = $Workload
-                AccessScope                                  = $PolicyRule.AccessScope
-                AnyOfRecipientAddressContainsWords           = $AnyOfRecipientAddressContainsWords
-                AnyOfRecipientAddressMatchesPatterns         = $AnyOfRecipientAddressMatchesPatterns
-                Comment                                      = $PolicyRule.Comment
-                ContentContainsSensitiveInformation          = $PolicyRule.ContentContainsSensitiveInformation
-                ContentExtensionMatchesWords                 = $ContentExtensionMatchesWords
-                Disabled                                     = $PolicyRule.Disabled
-                DocumentIsPasswordProtected                  = $PolicyRule.DocumentIsPasswordProtected
-                DocumentIsUnsupported                        = $PolicyRule.DocumentIsUnsupported
-                ExceptIfAccessScope                          = $PolicyRule.ExceptIfAccessScope
-                ExceptIfAnyOfRecipientAddressContainsWords   = $PolicyRule.ExceptIfAnyOfRecipientAddressContainsWords
-                ExceptIfAnyOfRecipientAddressMatchesPatterns = $PolicyRule.ExceptIfAnyOfRecipientAddressMatchesPatterns
-                ExceptIfContentContainsSensitiveInformation  = $PolicyRule.ExceptIfContentContainsSensitiveInformation
-                ExceptIfContentExtensionMatchesWords         = $ExceptIfContentExtensionMatchesWords
-                ExceptIfDocumentIsPasswordProtected          = $PolicyRule.ExceptIfDocumentIsPasswordProtected
-                ExceptIfDocumentIsUnsupported                = $PolicyRule.ExceptIfDocumentIsUnsupported
-                ExceptIfFrom                                 = $PolicyRule.ExceptIfFrom
-                ExceptIfFromAddressContainsWords             = $PolicyRule.ExceptIfFromAddressContainsWords
-                ExceptIfFromAddressMatchesPatterns           = $PolicyRule.ExceptIfFromAddressMatchesPatterns
-                ExceptIfFromMemberOf                         = $PolicyRule.ExceptIfFromMemberOf
-                ExceptIfHeaderMatchesPatterns                = $PolicyRule.ExceptIfHeaderMatchesPatterns
-                ExceptIfProcessingLimitExceeded              = $PolicyRule.ExceptIfProcessingLimitExceeded
-                ExceptIfRecipientDomainIs                    = $PolicyRule.ExceptIfRecipientDomainIs
-                ExceptIfSenderDomainIs                       = $PolicyRule.ExceptIfSenderDomainIs
-                ExceptIfSenderIPRanges                       = $PolicyRule.ExceptIfSenderIPRanges
-                ExceptIfSentTo                               = $PolicyRule.ExceptIfSentTo
-                ExceptIfSentToMemberOf                       = $PolicyRule.ExceptIfSentToMemberOf
-                ExceptIfSubjectMatchesPatterns               = $PolicyRule.ExceptIfSubjectMatchesPatterns
-                FromAddressContainsWords                     = $PolicyRule.FromAddressContainsWords
-                FromAddressMatchesPatterns                   = $PolicyRule.FromAddressMatchesPatterns
-                HeaderMatchesPatterns                        = $HeaderMatchesPatternsValue
-                ProcessingLimitExceeded                      = $PolicyRule.ProcessingLimitExceeded
-                RecipientDomainIs                            = $PolicyRule.RecipientDomainIs
-                ReportSeverityLevel                          = $PolicyRule.ReportSeverityLevel
-                RuleErrorAction                              = $PolicyRule.RuleErrorAction
-                SenderDomainIs                               = $PolicyRule.SenderDomainIs
-                SenderIPRanges                               = $PolicyRule.SenderIPRanges
-                SentTo                                       = $PolicyRule.SentTo
-                SentToMemberOf                               = $PolicyRule.SentToMemberOf
-                SubjectMatchesPatterns                       = $PolicyRule.SubjectMatchesPatterns
-                Ensure                                       = 'Present'
-                Credential                                   = $Credential
-                ApplicationId                                = $ApplicationId
-                TenantId                                     = $TenantId
-                CertificateThumbprint                        = $CertificateThumbprint
-                CertificatePath                              = $CertificatePath
-                CertificatePassword                          = $CertificatePassword
-                AccessTokens                                 = $AccessTokens
-            }
-
-            $paramsToRemove = @()
-            foreach ($paramName in $result.Keys)
-            {
-                if ($null -eq $result[$paramName] -or '' -eq $result[$paramName] -or @() -eq $result[$paramName])
-                {
-                    $paramsToRemove += $paramName
-                }
-            }
-
-            foreach ($paramName in $paramsToRemove)
-            {
-                $result.Remove($paramName)
-            }
-
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            $PolicyRule = $Script:exportedInstance
         }
+
+        Write-Verbose "Found existing AutoSensitivityLabelRule $($Name)"
+
+        if ($null -ne $PolicyRule.AnyOfRecipientAddressContainsWords -and $PolicyRule.AnyOfRecipientAddressContainsWords.count -gt 0)
+        {
+            $AnyOfRecipientAddressContainsWords = $PolicyRule.AnyOfRecipientAddressContainsWords.Replace(' ', '').Split(',')
+        }
+
+        if ($null -ne $PolicyRule.AnyOfRecipientAddressMatchesPatterns -and $PolicyRule.AnyOfRecipientAddressMatchesPatterns -gt 0)
+        {
+            $AnyOfRecipientAddressMatchesPatterns = $PolicyRule.AnyOfRecipientAddressMatchesPatterns.Replace(' ', '').Split(',')
+        }
+
+        if ($null -ne $PolicyRule.ContentExtensionMatchesWords -and $PolicyRule.ContentExtensionMatchesWords.count -gt 0)
+        {
+            $ContentExtensionMatchesWords = $PolicyRule.ContentExtensionMatchesWords.Replace(' ', '').Split(',')
+        }
+
+        if ($null -ne $PolicyRule.ExceptIfContentExtensionMatchesWords -and $PolicyRule.ExceptIfContentExtensionMatchesWords.count -gt 0)
+        {
+            $ExceptIfContentExtensionMatchesWords = $PolicyRule.ExceptIfContentExtensionMatchesWords.Replace(' ', '').Split(',')
+        }
+        if ($null -ne $HeaderMatchesPatterns -and $null -ne $HeaderMatchesPatterns.Name)
+        {
+            $HeaderMatchesPatternsValue = @{}
+            foreach ($value in $HeaderMatchesPatterns[($HeaderMatchesPatterns.Name)])
+            {
+                if ($HeaderMatchesPatternsValue.ContainsKey($HeaderMatchesPatterns.Name))
+                {
+                    $HeaderMatchesPatternsValue[$HeaderMatchesPatterns.Name] += $value
+                }
+                else
+                {
+                    $HeaderMatchesPatternsValue.Add($HeaderMatchesPatterns.Name, @($value))
+                }
+            }
+        }
+        foreach ($pattern in $PolicyRule.HeaderMatchesPatterns.Keys)
+        {
+            $HeaderMatchesPatternsValue += @{
+                Name  = $pattern
+                Value = $PolicyRule.HeaderMatchesPatterns.$pattern
+            }
+        }
+
+        $result = @{
+            Name                                         = $PolicyRule.Name
+            Policy                                       = $PolicyRule.ParentPolicyName
+            Workload                                     = $Workload
+            AccessScope                                  = $PolicyRule.AccessScope
+            AnyOfRecipientAddressContainsWords           = $AnyOfRecipientAddressContainsWords
+            AnyOfRecipientAddressMatchesPatterns         = $AnyOfRecipientAddressMatchesPatterns
+            Comment                                      = $PolicyRule.Comment
+            ContentContainsSensitiveInformation          = $PolicyRule.ContentContainsSensitiveInformation
+            ContentExtensionMatchesWords                 = $ContentExtensionMatchesWords
+            Disabled                                     = $PolicyRule.Disabled
+            DocumentIsPasswordProtected                  = $PolicyRule.DocumentIsPasswordProtected
+            DocumentIsUnsupported                        = $PolicyRule.DocumentIsUnsupported
+            ExceptIfAccessScope                          = $PolicyRule.ExceptIfAccessScope
+            ExceptIfAnyOfRecipientAddressContainsWords   = $PolicyRule.ExceptIfAnyOfRecipientAddressContainsWords
+            ExceptIfAnyOfRecipientAddressMatchesPatterns = $PolicyRule.ExceptIfAnyOfRecipientAddressMatchesPatterns
+            ExceptIfContentContainsSensitiveInformation  = $PolicyRule.ExceptIfContentContainsSensitiveInformation
+            ExceptIfContentExtensionMatchesWords         = $ExceptIfContentExtensionMatchesWords
+            ExceptIfDocumentIsPasswordProtected          = $PolicyRule.ExceptIfDocumentIsPasswordProtected
+            ExceptIfDocumentIsUnsupported                = $PolicyRule.ExceptIfDocumentIsUnsupported
+            ExceptIfFrom                                 = $PolicyRule.ExceptIfFrom
+            ExceptIfFromAddressContainsWords             = $PolicyRule.ExceptIfFromAddressContainsWords
+            ExceptIfFromAddressMatchesPatterns           = $PolicyRule.ExceptIfFromAddressMatchesPatterns
+            ExceptIfFromMemberOf                         = $PolicyRule.ExceptIfFromMemberOf
+            ExceptIfHeaderMatchesPatterns                = $PolicyRule.ExceptIfHeaderMatchesPatterns
+            ExceptIfProcessingLimitExceeded              = $PolicyRule.ExceptIfProcessingLimitExceeded
+            ExceptIfRecipientDomainIs                    = $PolicyRule.ExceptIfRecipientDomainIs
+            ExceptIfSenderDomainIs                       = $PolicyRule.ExceptIfSenderDomainIs
+            ExceptIfSenderIPRanges                       = $PolicyRule.ExceptIfSenderIPRanges
+            ExceptIfSentTo                               = $PolicyRule.ExceptIfSentTo
+            ExceptIfSentToMemberOf                       = $PolicyRule.ExceptIfSentToMemberOf
+            ExceptIfSubjectMatchesPatterns               = $PolicyRule.ExceptIfSubjectMatchesPatterns
+            FromAddressContainsWords                     = $PolicyRule.FromAddressContainsWords
+            FromAddressMatchesPatterns                   = $PolicyRule.FromAddressMatchesPatterns
+            HeaderMatchesPatterns                        = $HeaderMatchesPatternsValue
+            ProcessingLimitExceeded                      = $PolicyRule.ProcessingLimitExceeded
+            RecipientDomainIs                            = $PolicyRule.RecipientDomainIs
+            ReportSeverityLevel                          = $PolicyRule.ReportSeverityLevel
+            RuleErrorAction                              = $PolicyRule.RuleErrorAction
+            SenderDomainIs                               = $PolicyRule.SenderDomainIs
+            SenderIPRanges                               = $PolicyRule.SenderIPRanges
+            SentTo                                       = $PolicyRule.SentTo
+            SentToMemberOf                               = $PolicyRule.SentToMemberOf
+            SubjectMatchesPatterns                       = $PolicyRule.SubjectMatchesPatterns
+            Ensure                                       = 'Present'
+            Credential                                   = $Credential
+            ApplicationId                                = $ApplicationId
+            TenantId                                     = $TenantId
+            CertificateThumbprint                        = $CertificateThumbprint
+            CertificatePath                              = $CertificatePath
+            CertificatePassword                          = $CertificatePassword
+            AccessTokens                                 = $AccessTokens
+        }
+
+        $paramsToRemove = @()
+        foreach ($paramName in $result.Keys)
+        {
+            if ($null -eq $result[$paramName] -or '' -eq $result[$paramName] -or @() -eq $result[$paramName])
+            {
+                $paramsToRemove += $paramName
+            }
+        }
+
+        foreach ($paramName in $paramsToRemove)
+        {
+            $result.Remove($paramName)
+        }
+
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -1149,6 +1145,7 @@ function Export-TargetResource
             }
 
             Write-Host "    |---[$i/$($rules.Length)] $($rule.Name)" -NoNewline
+            $Script:exportedInstance = $rule
             $Results = Get-TargetResource @PSBoundParameters `
                 -Name $rule.name `
                 -Policy $rule.ParentPolicyName `

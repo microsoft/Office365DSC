@@ -68,55 +68,53 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting permissions for Mailbox {$Identity}"
-
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullResult = @{
-        Identity = $Identity
-        Ensure   = 'Absent'
-    }
-
     try
     {
-        [Array]$permission = Get-MailboxPermission -Identity $Identity -ErrorAction Stop
-
-        if ($permission.Length -gt 1)
+        if (-not $Script:exportedInstance)
         {
-            $permission = $permission | Where-Object -FilterScript { $_.User -eq $User -and (Compare-Object -ReferenceObject $_.AccessRights.Replace(' ', '').Split(',') -DifferenceObject $AccessRights).Count -eq 0 }
+            Write-Verbose -Message "Getting permissions for Mailbox {$Identity}"
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullResult = @{
+                Identity = $Identity
+                Ensure   = 'Absent'
+            }
+
+            [Array]$permission = Get-MailboxPermission -Identity $Identity -ErrorAction Stop
+
+            if ($permission.Length -gt 1)
+            {
+                $permission = $permission | Where-Object -FilterScript { $_.User -eq $User -and (Compare-Object -ReferenceObject $_.AccessRights.Replace(' ', '').Split(',') -DifferenceObject $AccessRights).Count -eq 0 }
+            }
+
+            if ($permission.Length -gt 1)
+            {
+                $permission = $permission[0]
+            }
+
+            if ($null -eq $permission)
+            {
+                Write-Verbose -Message "Permission for mailbox {$($Identity)} do not exist."
+                return $nullResult
+            }
         }
-
-        if ($permission.Length -gt 1)
+        else
         {
-            $permission = $permission[0]
-        }
-
-        if ($null -eq $permission)
-        {
-            Write-Verbose -Message "Permission for mailbox {$($Identity)} do not exist."
-            return $nullResult
+            $permission = $Script:exportedInstance
         }
 
         $result = @{
@@ -461,6 +459,7 @@ function Export-TargetResource
                     AccessTokens          = $AccessTokens
                 }
 
+                $Script:exportedInstance = $permission
                 $Results = Get-TargetResource @Params
 
                 if ($Results -is [System.Collections.Hashtable] -and $Results.Count -gt 1)

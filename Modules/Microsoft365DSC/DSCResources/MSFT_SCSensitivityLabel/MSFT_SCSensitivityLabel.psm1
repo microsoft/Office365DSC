@@ -301,390 +301,387 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of Sensitivity Label for $Name"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        try
+        if (-not $Script:exportedInstance)
         {
-            $label = Get-Label -Identity $Name -ErrorAction SilentlyContinue `
-                -IncludeDetailedLabelActions
-        }
-        catch
-        {
-            throw $_
-        }
+            Write-Verbose -Message "Getting configuration of Sensitivity Label for $Name"
 
-        if ($null -eq $label)
-        {
-            Write-Verbose -Message "Sensitivity label $($Name) does not exist."
-            return $nullReturn
+            $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            try
+            {
+                $label = Get-Label -Identity $Name -ErrorAction SilentlyContinue `
+                    -IncludeDetailedLabelActions
+            }
+            catch
+            {
+                throw $_
+            }
+
+            if ($null -eq $label)
+            {
+                Write-Verbose -Message "Sensitivity label $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            $parentLabelID = $null
-            if ($null -ne $label.ParentId)
-            {
-                $parentLabel = Get-Label -Identity $label.ParentId -IncludeDetailedLabelActions -ErrorAction 'SilentlyContinue'
-                $parentLabelID = $parentLabel.Name
-            }
-            if ($null -ne $label.LocaleSettings)
-            {
-                $localeSettingsValue = Convert-JSONToLocaleSettings -JSONLocalSettings $label.LocaleSettings
-            }
-            if ($null -ne $label.Settings)
-            {
-                $advancedSettingsValue = Convert-StringToAdvancedSettings -AdvancedSettings $label.Settings
-            }
-            Write-Verbose "Found existing Sensitivity Label $($Name)"
+            $label = $Script:exportedInstance
+        }
 
-            [Array]$labelActions = $label.LabelActions
-            $actions = @()
-            foreach ($labelAction in $labelActions)
+        $parentLabelID = $null
+        if ($null -ne $label.ParentId)
+        {
+            $parentLabel = Get-Label -Identity $label.ParentId -IncludeDetailedLabelActions -ErrorAction 'SilentlyContinue'
+            $parentLabelID = $parentLabel.Name
+        }
+        if ($null -ne $label.LocaleSettings)
+        {
+            $localeSettingsValue = Convert-JSONToLocaleSettings -JSONLocalSettings $label.LocaleSettings
+        }
+        if ($null -ne $label.Settings)
+        {
+            $advancedSettingsValue = Convert-StringToAdvancedSettings -AdvancedSettings $label.Settings
+        }
+        Write-Verbose "Found existing Sensitivity Label $($Name)"
+
+        [Array]$labelActions = $label.LabelActions
+        $actions = @()
+        foreach ($labelAction in $labelActions)
+        {
+            $action = ConvertFrom-Json ($labelAction | Out-String)
+            $actions += $action
+        }
+
+        $encryption = ($actions | Where-Object -FilterScript { $_.Type -eq 'encrypt' }).Settings
+        $header = ($actions | Where-Object -FilterScript { $_.Type -eq 'applycontentmarking' -and $_.Subtype -eq 'header' }).Settings
+        $footer = ($actions | Where-Object -FilterScript { $_.Type -eq 'applycontentmarking' -and $_.Subtype -eq 'footer' }).Settings
+        $watermark = ($actions | Where-Object -FilterScript { $_.Type -eq 'applywatermarking' }).Settings
+        $protectgroup = ($actions | Where-Object -FilterScript { $_.Type -eq 'protectgroup' }).Settings
+        $protectsite = ($actions | Where-Object -FilterScript { $_.Type -eq 'protectsite' }).Settings
+
+        $ApplyContentMarkingFooterTextValue = $null
+        $footerText = ($footer | Where-Object -FilterScript { $_.Key -eq 'text' }).Value
+        if ([System.String]::IsNullOrEmpty($footerText) -eq $false)
+        {
+            $ApplyContentMarkingFooterTextValue = $footerText.Replace('$', '`$')
+        }
+
+        $ApplyContentMarkingHeaderTextValue = $null
+        $headerText = ($header | Where-Object -FilterScript { $_.Key -eq 'text' }).Value
+        if ([System.String]::IsNullOrEmpty($headerText) -eq $false)
+        {
+            $ApplyContentMarkingHeaderTextValue = $headerText.Replace('$', '`$')
+        }
+
+        $ApplyWaterMarkingTextValue = $null
+        $watermarkText = ($watermark | Where-Object -FilterScript { $_.Key -eq 'text' }).Value
+        if ([System.String]::IsNullOrEmpty($watermarkText) -eq $false)
+        {
+            $ApplyWaterMarkingTextValue = $watermarkText.Replace('$', '`$')
+        }
+
+        $currentContentType = @()
+        switch -Regex ($label.ContentType)
+        {
+            'File, Email'
             {
-                $action = ConvertFrom-Json ($labelAction | Out-String)
-                $actions += $action
+                $currentContentType += 'File, Email'
+            }
+            'Site, UnifiedGroup'
+            {
+                $currentContentType += 'Site, UnifiedGroup'
+            }
+            'PurviewAssets'
+            {
+                $currentContentType += 'PurviewAssets'
+            }
+            'Teamwork'
+            {
+                $currentContentType += 'Teamwork'
+            }
+            'SchematizedData'
+            {
+                $currentContentType += 'SchematizedData'
+            }
+        }
+
+        # Encryption
+        $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'disabled' }
+        if ($null -ne $entry)
+        {
+            $encryptionEnabledValue = -not [Boolean]::Parse($entry.Value)
+        }
+
+        $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'contentexpiredondateindaysornever' }
+        if ($null -ne $entry)
+        {
+            $contentExpiredOnDateValue = $entry.Value
+        }
+
+        $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'protectiontype' }
+        if ($null -ne $entry)
+        {
+            $protectionTypeValue = $entry.Value
+        }
+
+        $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'offlineaccessdays' }
+        if ($null -ne $entry)
+        {
+            $offlineAccessDaysValue = $entry.Value
+        }
+
+        $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'rightsdefinitions' }
+        if ($null -ne $entry)
+        {
+            $EncryptionRightsDefinitionsValue = Convert-EncryptionRightDefinition -RightsDefinition $entry.Value
+        }
+
+        $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'donotforward' }
+        if ($null -ne $entry)
+        {
+            $encryptionDoNotForwardValue = [Boolean]::Parse($entry.Value)
+        }
+
+        $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'encryptonly' }
+        if ($null -ne $entry)
+        {
+            $encryptionEncryptOnlyValue = [Boolean]::Parse($entry.Value)
+        }
+
+        $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'promptuser' }
+        if ($null -ne $entry)
+        {
+            $encryptionPromptUserValue = [Boolean]::Parse($entry.Value)
+        }
+
+        # Watermark
+        $entry = $watermark | Where-Object -FilterScript { $_.Key -eq 'disabled' }
+        if ($null -ne $entry)
+        {
+            $watermarkEnabledValue = -not [Boolean]::Parse($entry.Value)
+        }
+
+        # Watermark Footer
+        $entry = $footer | Where-Object -FilterScript { $_.Key -eq 'disabled' }
+        if ($null -ne $entry)
+        {
+            $footerEnabledValue = -not [Boolean]::Parse($entry.Value)
+        }
+
+        # Watermark Header
+        $entry = $header | Where-Object -FilterScript { $_.Key -eq 'disabled' }
+        if ($null -ne $entry)
+        {
+            $headerEnabledValue = -not [Boolean]::Parse($entry.Value)
+        }
+
+        # Site and Group
+        $entry = $protectgroup | Where-Object -FilterScript { $_.Key -eq 'disabled' }
+        if ($null -ne $entry)
+        {
+            $siteAndGroupEnabledValue = -not [Boolean]::Parse($entry.Value)
+        }
+
+        $entry = $protectgroup | Where-Object -FilterScript { $_.Key -eq 'allowaccesstoguestusers' }
+        if ($null -ne $entry)
+        {
+            $siteAndGroupAccessToGuestUsersValue = [Boolean]::Parse($entry.Value)
+        }
+
+        $entry = $protectgroup | Where-Object -FilterScript { $_.Key -eq 'allowemailfromguestusers' }
+        if ($null -ne $entry)
+        {
+            $siteAndGroupAllowEmailFromGuestUsers = [Boolean]::Parse($entry.Value)
+        }
+
+        $entry = $protectsite | Where-Object -FilterScript { $_.Key -eq 'allowfullaccess' }
+        if ($null -ne $entry)
+        {
+            $siteAndGroupAllowFullAccess = [Boolean]::Parse($entry.Value)
+        }
+
+        $entry = $protectsite | Where-Object -FilterScript { $_.Key -eq 'allowlimitedaccess' }
+        if ($null -ne $entry)
+        {
+            $siteAndGroupAllowLimitedAccess = [Boolean]::Parse($entry.Value)
+        }
+
+        $entry = $protectsite | Where-Object -FilterScript { $_.Key -eq 'blockaccess' }
+        if ($null -ne $entry)
+        {
+            $siteAndGroupBlockAccess = [Boolean]::Parse($entry.Value)
+        }
+
+        # Auto Labelling Conditions
+        $getConditions = $null
+        if ([System.String]::IsNullOrEmpty($label.Conditions) -eq $false)
+        {
+            $currConditions = $label.Conditions | ConvertFrom-Json
+
+            $getConditions = @{
+                Groups   = @()
+                Operator = ''
             }
 
-            $encryption = ($actions | Where-Object -FilterScript { $_.Type -eq 'encrypt' }).Settings
-            $header = ($actions | Where-Object -FilterScript { $_.Type -eq 'applycontentmarking' -and $_.Subtype -eq 'header' }).Settings
-            $footer = ($actions | Where-Object -FilterScript { $_.Type -eq 'applycontentmarking' -and $_.Subtype -eq 'footer' }).Settings
-            $watermark = ($actions | Where-Object -FilterScript { $_.Type -eq 'applywatermarking' }).Settings
-            $protectgroup = ($actions | Where-Object -FilterScript { $_.Type -eq 'protectgroup' }).Settings
-            $protectsite = ($actions | Where-Object -FilterScript { $_.Type -eq 'protectsite' }).Settings
+            $operator = $currConditions.PSObject.Properties.Name
+            $getConditions.Operator = $operator
 
-            $ApplyContentMarkingFooterTextValue = $null
-            $footerText = ($footer | Where-Object -FilterScript { $_.Key -eq 'text' }).Value
-            if ([System.String]::IsNullOrEmpty($footerText) -eq $false)
+            $autoApplyType = ''
+            $policyTip = ''
+            $groups = foreach ($group in $currConditions.$($operator))
             {
-                $ApplyContentMarkingFooterTextValue = $footerText.Replace('$', '`$')
-            }
-
-            $ApplyContentMarkingHeaderTextValue = $null
-            $headerText = ($header | Where-Object -FilterScript { $_.Key -eq 'text' }).Value
-            if ([System.String]::IsNullOrEmpty($headerText) -eq $false)
-            {
-                $ApplyContentMarkingHeaderTextValue = $headerText.Replace('$', '`$')
-            }
-
-            $ApplyWaterMarkingTextValue = $null
-            $watermarkText = ($watermark | Where-Object -FilterScript { $_.Key -eq 'text' }).Value
-            if ([System.String]::IsNullOrEmpty($watermarkText) -eq $false)
-            {
-                $ApplyWaterMarkingTextValue = $watermarkText.Replace('$', '`$')
-            }
-
-            $currentContentType = @()
-            switch -Regex ($label.ContentType)
-            {
-                'File, Email'
-                {
-                    $currentContentType += 'File, Email'
-                }
-                'Site, UnifiedGroup'
-                {
-                    $currentContentType += 'Site, UnifiedGroup'
-                }
-                'PurviewAssets'
-                {
-                    $currentContentType += 'PurviewAssets'
-                }
-                'Teamwork'
-                {
-                    $currentContentType += 'Teamwork'
-                }
-                'SchematizedData'
-                {
-                    $currentContentType += 'SchematizedData'
-                }
-            }
-
-            # Encryption
-            $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'disabled' }
-            if ($null -ne $entry)
-            {
-                $encryptionEnabledValue = -not [Boolean]::Parse($entry.Value)
-            }
-
-            $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'contentexpiredondateindaysornever' }
-            if ($null -ne $entry)
-            {
-                $contentExpiredOnDateValue = $entry.Value
-            }
-
-            $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'protectiontype' }
-            if ($null -ne $entry)
-            {
-                $protectionTypeValue = $entry.Value
-            }
-
-            $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'offlineaccessdays' }
-            if ($null -ne $entry)
-            {
-                $offlineAccessDaysValue = $entry.Value
-            }
-
-            $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'rightsdefinitions' }
-            if ($null -ne $entry)
-            {
-                $EncryptionRightsDefinitionsValue = Convert-EncryptionRightDefinition -RightsDefinition $entry.Value
-            }
-
-            $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'donotforward' }
-            if ($null -ne $entry)
-            {
-                $encryptionDoNotForwardValue = [Boolean]::Parse($entry.Value)
-            }
-
-            $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'encryptonly' }
-            if ($null -ne $entry)
-            {
-                $encryptionEncryptOnlyValue = [Boolean]::Parse($entry.Value)
-            }
-
-            $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'promptuser' }
-            if ($null -ne $entry)
-            {
-                $encryptionPromptUserValue = [Boolean]::Parse($entry.Value)
-            }
-
-            # Watermark
-            $entry = $watermark | Where-Object -FilterScript { $_.Key -eq 'disabled' }
-            if ($null -ne $entry)
-            {
-                $watermarkEnabledValue = -not [Boolean]::Parse($entry.Value)
-            }
-
-            # Watermark Footer
-            $entry = $footer | Where-Object -FilterScript { $_.Key -eq 'disabled' }
-            if ($null -ne $entry)
-            {
-                $footerEnabledValue = -not [Boolean]::Parse($entry.Value)
-            }
-
-            # Watermark Header
-            $entry = $header | Where-Object -FilterScript { $_.Key -eq 'disabled' }
-            if ($null -ne $entry)
-            {
-                $headerEnabledValue = -not [Boolean]::Parse($entry.Value)
-            }
-
-            # Site and Group
-            $entry = $protectgroup | Where-Object -FilterScript { $_.Key -eq 'disabled' }
-            if ($null -ne $entry)
-            {
-                $siteAndGroupEnabledValue = -not [Boolean]::Parse($entry.Value)
-            }
-
-            $entry = $protectgroup | Where-Object -FilterScript { $_.Key -eq 'allowaccesstoguestusers' }
-            if ($null -ne $entry)
-            {
-                $siteAndGroupAccessToGuestUsersValue = [Boolean]::Parse($entry.Value)
-            }
-
-            $entry = $protectgroup | Where-Object -FilterScript { $_.Key -eq 'allowemailfromguestusers' }
-            if ($null -ne $entry)
-            {
-                $siteAndGroupAllowEmailFromGuestUsers = [Boolean]::Parse($entry.Value)
-            }
-
-            $entry = $protectsite | Where-Object -FilterScript { $_.Key -eq 'allowfullaccess' }
-            if ($null -ne $entry)
-            {
-                $siteAndGroupAllowFullAccess = [Boolean]::Parse($entry.Value)
-            }
-
-            $entry = $protectsite | Where-Object -FilterScript { $_.Key -eq 'allowlimitedaccess' }
-            if ($null -ne $entry)
-            {
-                $siteAndGroupAllowLimitedAccess = [Boolean]::Parse($entry.Value)
-            }
-
-            $entry = $protectsite | Where-Object -FilterScript { $_.Key -eq 'blockaccess' }
-            if ($null -ne $entry)
-            {
-                $siteAndGroupBlockAccess = [Boolean]::Parse($entry.Value)
-            }
-
-            # Auto Labelling Conditions
-            $getConditions = $null
-            if ([System.String]::IsNullOrEmpty($label.Conditions) -eq $false)
-            {
-                $currConditions = $label.Conditions | ConvertFrom-Json
-
-                $getConditions = @{
-                    Groups   = @()
+                $grpObject = @{
+                    Name     = ''
                     Operator = ''
                 }
 
-                $operator = $currConditions.PSObject.Properties.Name
-                $getConditions.Operator = $operator
+                $grpOperator = $group.PSObject.Properties.Name
+                $grpObject.Operator = $grpOperator
 
-                $autoApplyType = ''
-                $policyTip = ''
-                $groups = foreach ($group in $currConditions.$($operator))
+                $grpName = ''
+                [array]$sensitiveInformationTypes = foreach ($item in $group.$grpOperator | Where-Object { $_.Key -eq 'CCSI' })
                 {
-                    $grpObject = @{
-                        Name     = ''
-                        Operator = ''
-                    }
-
-                    $grpOperator = $group.PSObject.Properties.Name
-                    $grpObject.Operator = $grpOperator
-
-                    $grpName = ''
-                    [array]$sensitiveInformationTypes = foreach ($item in $group.$grpOperator | Where-Object { $_.Key -eq 'CCSI' })
+                    if ([String]::IsNullOrEmpty($grpName))
                     {
-                        if ([String]::IsNullOrEmpty($grpName))
-                        {
-                            $grpName = ($item.Settings | Where-Object { $_.Key -eq 'groupname' }).Value
-                        }
-
-                        if ([String]::IsNullOrEmpty($policyTip))
-                        {
-                            $policyTip = ($item.Settings | Where-Object { $_.Key -eq 'policytip' }).Value
-                        }
-
-                        if ([String]::IsNullOrEmpty($autoApplyType))
-                        {
-                            $autoApplyType = ($item.Settings | Where-Object { $_.Key -eq 'autoapplytype' }).Value
-                        }
-
-                        $settingsObject = @{
-                            name            = ($item.Settings | Where-Object { $_.Key -eq 'name' }).Value
-                            confidencelevel = ($item.Settings | Where-Object { $_.Key -eq 'confidencelevel' }).Value
-                            mincount        = ($item.Settings | Where-Object { $_.Key -eq 'mincount' }).Value
-                            maxcount        = ($item.Settings | Where-Object { $_.Key -eq 'maxcount' }).Value
-                        }
-
-                        if ($null -ne ($item.Settings | Where-Object { $_.Key -eq 'classifiertype' }))
-                        {
-                            $settingsObject.classifiertype = ($item.Settings | Where-Object { $_.Key -eq 'classifiertype' }).Value
-                        }
-
-                        # return the settings object as output to the sensitiveInformationTypes array
-                        $settingsObject
+                        $grpName = ($item.Settings | Where-Object { $_.Key -eq 'groupname' }).Value
                     }
 
-                    [array]$trainableClassifiers = foreach ($item in $group.$grpOperator | Where-Object { $_.Key -eq 'ContentMatchesModule' })
+                    if ([String]::IsNullOrEmpty($policyTip))
                     {
-                        if ([String]::IsNullOrEmpty($grpName))
-                        {
-                            $grpName = ($item.Settings | Where-Object { $_.Key -eq 'groupname' }).Value
-                        }
-
-                        @{
-                            name = ($item.Settings | Where-Object { $_.Key -eq 'name' }).Value
-                            id   = $item.Value
-                        }
+                        $policyTip = ($item.Settings | Where-Object { $_.Key -eq 'policytip' }).Value
                     }
 
-                    $grpObject.Name = $grpName
-                    $grpObject.SensitiveInformationType = $sensitiveInformationTypes
-                    $grpObject.TrainableClassifier = $trainableClassifiers
+                    if ([String]::IsNullOrEmpty($autoApplyType))
+                    {
+                        $autoApplyType = ($item.Settings | Where-Object { $_.Key -eq 'autoapplytype' }).Value
+                    }
 
-                    # return the group object as output to the groups array
-                    $grpObject
+                    $settingsObject = @{
+                        name            = ($item.Settings | Where-Object { $_.Key -eq 'name' }).Value
+                        confidencelevel = ($item.Settings | Where-Object { $_.Key -eq 'confidencelevel' }).Value
+                        mincount        = ($item.Settings | Where-Object { $_.Key -eq 'mincount' }).Value
+                        maxcount        = ($item.Settings | Where-Object { $_.Key -eq 'maxcount' }).Value
+                    }
+
+                    if ($null -ne ($item.Settings | Where-Object { $_.Key -eq 'classifiertype' }))
+                    {
+                        $settingsObject.classifiertype = ($item.Settings | Where-Object { $_.Key -eq 'classifiertype' }).Value
+                    }
+
+                    # return the settings object as output to the sensitiveInformationTypes array
+                    $settingsObject
                 }
-                $getConditions.Groups = $groups
-                if ([System.String]::IsNullOrEmpty($policyTip) -eq $false)
+
+                [array]$trainableClassifiers = foreach ($item in $group.$grpOperator | Where-Object { $_.Key -eq 'ContentMatchesModule' })
                 {
-                    $getConditions.PolicyTip = $policyTip
+                    if ([String]::IsNullOrEmpty($grpName))
+                    {
+                        $grpName = ($item.Settings | Where-Object { $_.Key -eq 'groupname' }).Value
+                    }
+
+                    @{
+                        name = ($item.Settings | Where-Object { $_.Key -eq 'name' }).Value
+                        id   = $item.Value
+                    }
                 }
-                if ([System.String]::IsNullOrEmpty($autoApplyType) -eq $false)
-                {
-                    $getConditions.AutoApplyType = $autoApplyType
-                }
-                else
-                {
-                    $getConditions.AutoApplyType = 'Automatic'
-                }
+
+                $grpObject.Name = $grpName
+                $grpObject.SensitiveInformationType = $sensitiveInformationTypes
+                $grpObject.TrainableClassifier = $trainableClassifiers
+
+                # return the group object as output to the groups array
+                $grpObject
             }
-
-            $result = @{
-                Name                                           = $label.Name
-                Comment                                        = $label.Comment
-                ParentId                                       = $parentLabelID
-                AdvancedSettings                               = $advancedSettingsValue
-                DisplayName                                    = $label.DisplayName
-                LocaleSettings                                 = $localeSettingsValue
-                Priority                                       = $label.Priority
-                Tooltip                                        = $label.Tooltip
-                Credential                                     = $Credential
-                ApplicationId                                  = $ApplicationId
-                TenantId                                       = $TenantId
-                CertificateThumbprint                          = $CertificateThumbprint
-                CertificatePath                                = $CertificatePath
-                CertificatePassword                            = $CertificatePassword
-                Ensure                                         = 'Present'
-                ApplyContentMarkingFooterAlignment             = ($footer | Where-Object { $_.Key -eq 'alignment' }).Value
-                ApplyContentMarkingFooterEnabled               = $footerEnabledValue
-                ApplyContentMarkingFooterFontColor             = ($footer | Where-Object { $_.Key -eq 'fontcolor' }).Value
-                ApplyContentMarkingFooterFontSize              = ($footer | Where-Object { $_.Key -eq 'fontsize' }).Value
-                ApplyContentMarkingFooterMargin                = ($footer | Where-Object { $_.Key -eq 'margin' }).Value
-                ApplyContentMarkingFooterText                  = $ApplyContentMarkingFooterTextValue
-                ApplyContentMarkingHeaderAlignment             = ($header | Where-Object { $_.Key -eq 'alignment' }).Value
-                ApplyContentMarkingHeaderEnabled               = $headerEnabledValue
-                ApplyContentMarkingHeaderFontColor             = ($header | Where-Object { $_.Key -eq 'fontcolor' }).Value
-                ApplyContentMarkingHeaderFontSize              = ($header | Where-Object { $_.Key -eq 'fontsize' }).Value
-                ApplyContentMarkingHeaderMargin                = ($header | Where-Object { $_.Key -eq 'margin' }).Value
-                #TODO ADD HEADER PLACEMENT?
-                ApplyContentMarkingHeaderText                  = $ApplyContentMarkingHeaderTextValue
-                ApplyWaterMarkingEnabled                       = $watermarkEnabledValue
-                ApplyWaterMarkingFontColor                     = ($watermark | Where-Object { $_.Key -eq 'fontcolor' }).Value
-                ApplyWaterMarkingFontSize                      = ($watermark | Where-Object { $_.Key -eq 'fontsize' }).Value
-                ApplyWaterMarkingLayout                        = ($watermark | Where-Object { $_.Key -eq 'layout' }).Value
-                ApplyWaterMarkingText                          = $ApplyWaterMarkingTextValue
-                ContentType                                    = $currentContentType
-                EncryptionContentExpiredOnDateInDaysOrNever    = $contentExpiredOnDateValue
-                EncryptionDoNotForward                         = $encryptionDoNotForwardValue
-                EncryptionEncryptOnly                          = $encryptionEncryptOnlyValue
-                EncryptionEnabled                              = $encryptionEnabledValue
-                EncryptionOfflineAccessDays                    = $offlineAccessDaysValue
-                EncryptionPromptUser                           = $encryptionPromptUserValue
-                EncryptionProtectionType                       = $protectionTypeValue
-                EncryptionRightsDefinitions                    = $EncryptionRightsDefinitionsValue
-                EncryptionRightsUrl                            = ($encryption | Where-Object { $_.Key -eq 'doublekeyencryptionurl' }).Value
-                SiteAndGroupProtectionAllowAccessToGuestUsers  = $siteAndGroupAccessToGuestUsersValue
-                SiteAndGroupProtectionAllowEmailFromGuestUsers = $siteAndGroupAllowEmailFromGuestUsers
-                SiteAndGroupProtectionPrivacy                  = ($protectgroup | Where-Object { $_.Key -eq 'privacy' }).Value
-                SiteAndGroupProtectionAllowFullAccess          = $siteAndGroupAllowFullAccess
-                SiteAndGroupProtectionAllowLimitedAccess       = $siteAndGroupAllowLimitedAccess
-                SiteAndGroupProtectionBlockAccess              = $siteAndGroupBlockAccess
-                SiteAndGroupProtectionEnabled                  = $siteAndGroupEnabledValue
-                SiteAndGroupExternalSharingControlType         = ($protectsite | Where-Object { $_.Key -eq 'externalsharingcontroltype' }).Value
-                AccessTokens                                   = $AccessTokens
-                AutoLabelingSettings                           = $getConditions
+            $getConditions.Groups = $groups
+            if ([System.String]::IsNullOrEmpty($policyTip) -eq $false)
+            {
+                $getConditions.PolicyTip = $policyTip
             }
-
-            return $result
+            if ([System.String]::IsNullOrEmpty($autoApplyType) -eq $false)
+            {
+                $getConditions.AutoApplyType = $autoApplyType
+            }
+            else
+            {
+                $getConditions.AutoApplyType = 'Automatic'
+            }
         }
+
+        $result = @{
+            Name                                           = $label.Name
+            Comment                                        = $label.Comment
+            ParentId                                       = $parentLabelID
+            AdvancedSettings                               = $advancedSettingsValue
+            DisplayName                                    = $label.DisplayName
+            LocaleSettings                                 = $localeSettingsValue
+            Priority                                       = $label.Priority
+            Tooltip                                        = $label.Tooltip
+            Credential                                     = $Credential
+            ApplicationId                                  = $ApplicationId
+            TenantId                                       = $TenantId
+            CertificateThumbprint                          = $CertificateThumbprint
+            CertificatePath                                = $CertificatePath
+            CertificatePassword                            = $CertificatePassword
+            Ensure                                         = 'Present'
+            ApplyContentMarkingFooterAlignment             = ($footer | Where-Object { $_.Key -eq 'alignment' }).Value
+            ApplyContentMarkingFooterEnabled               = $footerEnabledValue
+            ApplyContentMarkingFooterFontColor             = ($footer | Where-Object { $_.Key -eq 'fontcolor' }).Value
+            ApplyContentMarkingFooterFontSize              = ($footer | Where-Object { $_.Key -eq 'fontsize' }).Value
+            ApplyContentMarkingFooterMargin                = ($footer | Where-Object { $_.Key -eq 'margin' }).Value
+            ApplyContentMarkingFooterText                  = $ApplyContentMarkingFooterTextValue
+            ApplyContentMarkingHeaderAlignment             = ($header | Where-Object { $_.Key -eq 'alignment' }).Value
+            ApplyContentMarkingHeaderEnabled               = $headerEnabledValue
+            ApplyContentMarkingHeaderFontColor             = ($header | Where-Object { $_.Key -eq 'fontcolor' }).Value
+            ApplyContentMarkingHeaderFontSize              = ($header | Where-Object { $_.Key -eq 'fontsize' }).Value
+            ApplyContentMarkingHeaderMargin                = ($header | Where-Object { $_.Key -eq 'margin' }).Value
+            #TODO ADD HEADER PLACEMENT?
+            ApplyContentMarkingHeaderText                  = $ApplyContentMarkingHeaderTextValue
+            ApplyWaterMarkingEnabled                       = $watermarkEnabledValue
+            ApplyWaterMarkingFontColor                     = ($watermark | Where-Object { $_.Key -eq 'fontcolor' }).Value
+            ApplyWaterMarkingFontSize                      = ($watermark | Where-Object { $_.Key -eq 'fontsize' }).Value
+            ApplyWaterMarkingLayout                        = ($watermark | Where-Object { $_.Key -eq 'layout' }).Value
+            ApplyWaterMarkingText                          = $ApplyWaterMarkingTextValue
+            ContentType                                    = $currentContentType
+            EncryptionContentExpiredOnDateInDaysOrNever    = $contentExpiredOnDateValue
+            EncryptionDoNotForward                         = $encryptionDoNotForwardValue
+            EncryptionEncryptOnly                          = $encryptionEncryptOnlyValue
+            EncryptionEnabled                              = $encryptionEnabledValue
+            EncryptionOfflineAccessDays                    = $offlineAccessDaysValue
+            EncryptionPromptUser                           = $encryptionPromptUserValue
+            EncryptionProtectionType                       = $protectionTypeValue
+            EncryptionRightsDefinitions                    = $EncryptionRightsDefinitionsValue
+            EncryptionRightsUrl                            = ($encryption | Where-Object { $_.Key -eq 'doublekeyencryptionurl' }).Value
+            SiteAndGroupProtectionAllowAccessToGuestUsers  = $siteAndGroupAccessToGuestUsersValue
+            SiteAndGroupProtectionAllowEmailFromGuestUsers = $siteAndGroupAllowEmailFromGuestUsers
+            SiteAndGroupProtectionPrivacy                  = ($protectgroup | Where-Object { $_.Key -eq 'privacy' }).Value
+            SiteAndGroupProtectionAllowFullAccess          = $siteAndGroupAllowFullAccess
+            SiteAndGroupProtectionAllowLimitedAccess       = $siteAndGroupAllowLimitedAccess
+            SiteAndGroupProtectionBlockAccess              = $siteAndGroupBlockAccess
+            SiteAndGroupProtectionEnabled                  = $siteAndGroupEnabledValue
+            SiteAndGroupExternalSharingControlType         = ($protectsite | Where-Object { $_.Key -eq 'externalsharingcontroltype' }).Value
+            AccessTokens                                   = $AccessTokens
+            AutoLabelingSettings                           = $getConditions
+        }
+
+        return $result
     }
     catch
     {
@@ -1596,6 +1593,7 @@ function Export-TargetResource
 
             Write-Host "    |---[$i/$($labels.Count)] $($label.Name)" -NoNewline
 
+            $Script:exportedInstance = $label
             $Results = Get-TargetResource @PSBoundParameters -Name $label.Name
 
             if ($null -ne $Results.AdvancedSettings)

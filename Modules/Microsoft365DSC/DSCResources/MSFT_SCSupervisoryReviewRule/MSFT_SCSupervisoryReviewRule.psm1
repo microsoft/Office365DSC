@@ -56,66 +56,64 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of SupervisoryReviewRule for $Name"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
     try
     {
-        $RuleObject = Get-SupervisoryReviewRule -Identity $Name -ErrorAction SilentlyContinue
-
-        if ($null -eq $RuleObject)
+        if (-not $Script:exportedInstance)
         {
-            Write-Verbose -Message "SupervisoryReviewRule $($Name) does not exist."
-            return $nullReturn
+            Write-Verbose -Message "Getting configuration of SupervisoryReviewRule for $Name"
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            $RuleObject = Get-SupervisoryReviewRule -Identity $Name -ErrorAction SilentlyContinue
+
+            if ($null -eq $RuleObject)
+            {
+                Write-Verbose -Message "SupervisoryReviewRule $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            Write-Verbose "Found existing SupervisoryReviewRule $($Name)"
-            $PolicyName = (Get-SupervisoryReviewPolicyV2 -Identity $RuleObject.Policy).Name
-
-            $result = @{
-                Name                  = $RuleObject.Name
-                Policy                = $PolicyName
-                Condition             = $RuleObject.Condition
-                SamplingRate          = $RuleObject.SamplingRate
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                AccessTokens          = $AccessTokens
-            }
-
-            Write-Verbose -Message "Found SupervisoryReviewRule $($Name)"
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            $RuleObject = $Script:exportedInstance
         }
+
+        Write-Verbose "Found existing SupervisoryReviewRule $($Name)"
+        $PolicyName = (Get-SupervisoryReviewPolicyV2 -Identity $RuleObject.Policy).Name
+
+        $result = @{
+            Name                  = $RuleObject.Name
+            Policy                = $PolicyName
+            Condition             = $RuleObject.Condition
+            SamplingRate          = $RuleObject.SamplingRate
+            Ensure                = 'Present'
+            Credential            = $Credential
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
+            CertificatePath       = $CertificatePath
+            CertificatePassword   = $CertificatePassword
+            AccessTokens          = $AccessTokens
+        }
+
+        Write-Verbose -Message "Found SupervisoryReviewRule $($Name)"
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -393,6 +391,7 @@ function Export-TargetResource
             }
 
             Write-Host "    |---[$i/$($rules.Length)] $($rule.Name)" -NoNewline
+            $Script:exportedInstance = $rule
             $Results = Get-TargetResource @PSBoundParameters `
                 -Name $rule.Name `
                 -Policy $rule.Policy

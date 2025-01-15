@@ -65,59 +65,51 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
-    Write-Verbose -Message "Getting Data classification policy for $($Identity)"
-
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+        if (-not $Script:exportedInstance)
         {
-            $DataClassification = $Script:exportedInstances | Where-Object -FilterScript { $_.Identity -eq $Identity }
+            Write-Verbose -Message "Getting Data classification policy for $($Identity)"
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            $DataClassification = Get-DataClassification -Identity $Identity -ErrorAction Stop
+            if ($null -eq $DataClassification)
+            {
+                if (-not [System.String]::IsNullOrEmpty($Name))
+                {
+                    Write-Verbose -Message "Couldn't retrieve data classification by Identity. Trying by Name {$Name}."
+                    $DataClassification = Get-DataClassification -Identity $Name
+                }
+
+                if ($null -eq $DataClassification)
+                {
+                    Write-Verbose -Message "Data classification $($Identity) does not exist."
+                    return $nullReturn
+                }
+            }
         }
         else
         {
-            $DataClassification = Get-DataClassification -Identity $Identity -ErrorAction Stop
+            $DataClassification = $Script:exportedInstance
         }
-        if ($null -eq $DataClassification)
-        {
-            if (-not [System.String]::IsNullOrEmpty($Name))
-            {
-                Write-Verbose -Message "Couldn't retrieve data classification by Identity. Trying by Name {$Name}."
-                $DataClassification = Get-DataClassification -Identity $Name
-            }
 
-            if ($null -eq $DataClassification)
-            {
-                Write-Verbose -Message "Data classification $($Identity) does not exist."
-                return $nullReturn
-            }
-        }
         $currentDefaultCultureName = ([system.globalization.cultureinfo]$DataClassification.DefaultCulture).Name
         $DataClassificationLocale = $currentDefaultCultureName
         $DataClassificationIsDefault = $false
@@ -475,6 +467,7 @@ function Export-TargetResource
                 AccessTokens          = $AccessTokens
             }
 
+            $Script:exportedInstance = $DataClassification
             $Results = Get-TargetResource @Params
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

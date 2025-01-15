@@ -51,67 +51,65 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of SCComplianceCase for $Name"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
     try
     {
-        $Case = Get-ComplianceCase -Identity $Name -ErrorAction SilentlyContinue
-
-        if ($null -eq $Case)
+        if (-not $Script:exportedInstance)
         {
-            Write-Verbose -Message "SCComplianceCase $($Name) does not exist."
-            return $nullReturn
+            Write-Verbose -Message "Getting configuration of SCComplianceCase for $Name"
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            $Case = Get-ComplianceCase -Identity $Name -ErrorAction SilentlyContinue
+
+            if ($null -eq $Case)
+            {
+                Write-Verbose -Message "SCComplianceCase $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            Write-Verbose "Found existing SCComplianceCase $($Name)"
-            $Status = $Case.Status
-            if ('Closing' -eq $Status)
-            {
-                $Status = 'Closed'
-            }
-            $result = @{
-                Name                  = $Case.Name
-                Description           = $Case.Description
-                Status                = $Status
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                Ensure                = 'Present'
-                AccessTokens          = $AccessTokens
-            }
-
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            $Case = $Script:exportedInstance
         }
+
+        Write-Verbose "Found existing SCComplianceCase $($Name)"
+        $Status = $Case.Status
+        if ('Closing' -eq $Status)
+        {
+            $Status = 'Closed'
+        }
+        $result = @{
+            Name                  = $Case.Name
+            Description           = $Case.Description
+            Status                = $Status
+            Credential            = $Credential
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
+            CertificatePath       = $CertificatePath
+            CertificatePassword   = $CertificatePassword
+            Ensure                = 'Present'
+            AccessTokens          = $AccessTokens
+        }
+
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -405,6 +403,7 @@ function Export-TargetResource
 
             Write-Host "    eDiscovery: [$i/$($Cases.Count)] $($Case.Name)" -NoNewline
 
+            $Script:exportedInstance = $Case
             $Results = Get-TargetResource @PSBoundParameters -Name $Case.Name
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

@@ -69,83 +69,73 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
-
-    Write-Verbose -Message 'Getting configuration of Azure AD role definition'
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
     try
     {
-        try
+        if (-not $Script:exportedInstance)
         {
-            if (($null -ne $Id) -and ($Id -ne ''))
+            Write-Verbose -Message 'Getting configuration of Azure AD role definition'
+            $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            try
             {
-                if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
-                {
-                    $AADRoleDefinition = $Script:exportedInstances | Where-Object -FilterScript { $_.Id -eq $Id }
-                }
-                else
+                if (($null -ne $Id) -and ($Id -ne ''))
                 {
                     $AADRoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter "Id eq '$($Id)'"
                 }
             }
-        }
-        catch
-        {
-            Write-Verbose -Message "Could not retrieve AAD roledefinition by Id: {$Id}"
-        }
-        if ($null -eq $AADRoleDefinition)
-        {
-            if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+            catch
             {
-                $AADRoleDefinition = $Script:exportedInstances | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName }
+                Write-Verbose -Message "Could not retrieve AAD roledefinition by Id: {$Id}"
             }
-            else
+            if ($null -eq $AADRoleDefinition)
             {
                 $AADRoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter "DisplayName eq '$($DisplayName)'"
             }
-        }
-        if ($null -eq $AADRoleDefinition)
-        {
-            return $nullReturn
+            if ($null -eq $AADRoleDefinition)
+            {
+                return $nullReturn
+            }
         }
         else
         {
-            $result = @{
-                Id                    = $AADRoleDefinition.Id
-                DisplayName           = $AADRoleDefinition.DisplayName
-                Description           = $AADRoleDefinition.Description
-                ResourceScopes        = $AADRoleDefinition.ResourceScopes
-                IsEnabled             = $AADRoleDefinition.IsEnabled
-                RolePermissions       = $AADRoleDefinition.RolePermissions.AllowedResourceActions
-                TemplateId            = $AADRoleDefinition.TemplateId
-                Version               = $AADRoleDefinition.Version
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                ApplicationSecret     = $ApplicationSecret
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                Managedidentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            $AADRoleDefinition = $Script:exportedInstance
         }
+        $result = @{
+            Id                    = $AADRoleDefinition.Id
+            DisplayName           = $AADRoleDefinition.DisplayName
+            Description           = $AADRoleDefinition.Description
+            ResourceScopes        = $AADRoleDefinition.ResourceScopes
+            IsEnabled             = $AADRoleDefinition.IsEnabled
+            RolePermissions       = $AADRoleDefinition.RolePermissions.AllowedResourceActions
+            TemplateId            = $AADRoleDefinition.TemplateId
+            Version               = $AADRoleDefinition.Version
+            Ensure                = 'Present'
+            Credential            = $Credential
+            ApplicationId         = $ApplicationId
+            ApplicationSecret     = $ApplicationSecret
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
+            Managedidentity       = $ManagedIdentity.IsPresent
+            AccessTokens          = $AccessTokens
+        }
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -480,6 +470,7 @@ function Export-TargetResource
                 RolePermissions       = @('temp')
                 AccessTokens          = $AccessTokens
             }
+            $Script:exportedInstance = $AADRoleDefinition
             $Results = Get-TargetResource @Params
 
             if ($Results.Ensure -eq 'Present' -and ([array]$results.RolePermissions).Length -gt 0)

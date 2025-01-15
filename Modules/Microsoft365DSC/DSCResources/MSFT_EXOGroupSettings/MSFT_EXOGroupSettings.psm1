@@ -247,44 +247,31 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of Office 365 Group Settings for $DisplayName"
-
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = @{
-        DisplayName = $DisplayName
-    }
-
     try
     {
-        if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+        if (-not $Script:exportedInstance)
         {
-            [Array]$group = $Script:exportedInstances | Where-Object -FilterScript { $_.Id -eq $Id }
-        }
-        else
-        {
+            Write-Verbose -Message "Getting configuration of Office 365 Group Settings for $DisplayName"
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = @{
+                DisplayName = $DisplayName
+            }
+
             Write-Verbose -Message "Retrieving group by id {$Id}"
             [Array]$group = Get-UnifiedGroup -Identity $Id -IncludeAllProperties -ErrorAction Stop
 
@@ -293,22 +280,25 @@ function Get-TargetResource
                 Write-Verbose -Message "Couldn't retrieve group by ID. Trying by DisplayName {$DisplayName}"
                 [Array]$group = Get-UnifiedGroup -Identity $DisplayName -IncludeAllProperties -ErrorAction Stop
             }
-        }
 
-        if ($group.Length -gt 1)
-        {
-            Write-Warning -Message "Multiple instances of a group named {$DisplayName} was discovered which could result in inconsistencies retrieving its values."
+            if ($group.Length -gt 1)
+            {
+                Write-Warning -Message "Multiple instances of a group named {$DisplayName} was discovered which could result in inconsistencies retrieving its values."
+            }
+            $group = $group[0]
+            if ($null -eq $group)
+            {
+                Write-Verbose -Message "The specified group {$DisplayName} doesn't already exist."
+                return $nullReturn
+            }
         }
-        $group = $group[0]
+        else
+        {
+            $group = $Script:exportedInstance
+        }
     }
     catch
     {
-        return $nullReturn
-    }
-
-    if ($null -eq $group)
-    {
-        Write-Verbose -Message "The specified group {$DisplayName} doesn't already exist."
         return $nullReturn
     }
 
@@ -1032,6 +1022,7 @@ function Export-TargetResource
                     CertificatePath       = $CertificatePath
                     AccessTokens          = $AccessTokens
                 }
+                $Script:exportedInstance = $group
                 $Results = Get-TargetResource @Params
 
                 if ($Results -is [System.Collections.Hashtable] -and $Results.Count -gt 1)

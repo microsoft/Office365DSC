@@ -58,12 +58,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
 
                 Mock -CommandName Get-GlobalAddressList -MockWith {
-                    return @{
+                    param($Identity)
+                    $return = @{
                         Name                       = 'Contoso Different GAL'
                         ConditionalCompany         = 'Contoso'
                         ConditionalDepartment      = 'Finance'
                         ConditionalStateOrProvince = 'DE'
                         IncludedRecipients         = 'AllRecipients'
+                    }
+                    if ($Identity -eq $return.Name) {
+                        return $return
+                    }
+                    else {
+                        return $null
                     }
                 }
 

@@ -157,35 +157,42 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration for site collection $Url"
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'PnP' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        Write-Verbose -Message "Getting site collection $Url"
-
-        $site = Get-PnPTenantSite -Identity $Url -ErrorAction 'SilentlyContinue'
-        if ($null -eq $site)
+        if (-not $Script:exportedInstance)
         {
-            Write-Verbose -Message "The specified Site Collection {$Url} doesn't exist."
-            return $nullReturn
+            Write-Verbose -Message "Getting configuration for site collection $Url"
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'PnP' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            Write-Verbose -Message "Getting site collection $Url"
+
+            $site = Get-PnPTenantSite -Identity $Url -ErrorAction 'SilentlyContinue'
+            if ($null -eq $site)
+            {
+                Write-Verbose -Message "The specified Site Collection {$Url} doesn't exist."
+                return $nullReturn
+            }
+        }
+        else
+        {
+            $site = $Script:exportedInstance
         }
 
         $web = Get-PnPWeb -Includes RegionalSettings.TimeZone
@@ -974,6 +981,7 @@ function Export-TargetResource
 
             try
             {
+                $Script:exportedInstance = $site
                 $Results = Get-TargetResource @Params
 
                 if ([System.String]::IsNullOrEmpty($Results.SharingDomainRestrictionMode))

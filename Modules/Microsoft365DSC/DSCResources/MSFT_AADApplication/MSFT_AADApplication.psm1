@@ -129,393 +129,383 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    Write-Verbose -Message 'Getting configuration of Azure AD Application'
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-    $AADApp = $null
     try
     {
-        try
+        if (-not $Script:exportedInstance)
         {
-            if (-not [System.String]::IsNullOrEmpty($AppId))
+            $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
+                -InboundParameters $PSBoundParameters
+
+            Write-Verbose -Message 'Getting configuration of Azure AD Application'
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+            $AADApp = $null
+
+            try
             {
-                if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
-                {
-                    $AADApp = $Script:exportedInstances | Where-Object -FilterScript { $_.Id -eq $AppId }
-                }
-                else
+                if (-not [System.String]::IsNullOrEmpty($AppId))
                 {
                     $AADApp = Get-MgBetaApplication -Filter "AppId eq '$AppId'"
                 }
             }
-        }
-        catch
-        {
-            Write-Verbose -Message "Could not retrieve AzureAD Application by Application ID {$AppId}"
-        }
-
-        if ($null -eq $AADApp)
-        {
-            Write-Verbose -Message "Attempting to retrieve Azure AD Application by DisplayName {$DisplayName}"
-
-            if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+            catch
             {
-                $AADApp = $Script:exportedInstances | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName }
+                Write-Verbose -Message "Could not retrieve AzureAD Application by Application ID {$AppId}"
             }
-            else
+
+            if ($null -eq $AADApp)
             {
+                Write-Verbose -Message "Attempting to retrieve Azure AD Application by DisplayName {$DisplayName}"
                 $AADApp = [Array](Get-MgBetaApplication -Filter "DisplayName eq '$($DisplayName)'")
             }
-        }
-        if ($null -ne $AADApp -and $AADApp.Count -gt 1)
-        {
-            Throw "Multiple AAD Apps with the Displayname $($DisplayName) exist in the tenant."
-        }
-        elseif ($null -eq $AADApp)
-        {
-            Write-Verbose -Message 'Could not retrieve and instance of the Azure AD App in the Get-TargetResource function.'
-            return $nullReturn
+            if ($null -ne $AADApp -and $AADApp.Count -gt 1)
+            {
+                Throw "Multiple AAD Apps with the Displayname $($DisplayName) exist in the tenant."
+            }
+            elseif ($null -eq $AADApp)
+            {
+                Write-Verbose -Message 'Could not retrieve and instance of the Azure AD App in the Get-TargetResource function.'
+                return $nullReturn
+            }
         }
         else
         {
-            Write-Verbose -Message 'An instance of Azure AD App was retrieved.'
-
-            $AADBetaApp = Get-MgBetaApplication -Property 'id,displayName,appId,authenticationBehaviors,additionalProperties' -ApplicationId $AADApp.Id -ErrorAction SilentlyContinue
-            $AADAppKeyCredentials = Get-MgBetaApplication -Property 'keyCredentials' -ApplicationId $AADApp.Id -ErrorAction SilentlyContinue
-
-            $complexAuthenticationBehaviors = @{}
-            if ($null -ne $AADBetaApp.authenticationBehaviors.blockAzureADGraphAccess)
-            {
-                $complexAuthenticationBehaviors.Add('BlockAzureADGraphAccess', $AADBetaApp.authenticationBehaviors.blockAzureADGraphAccess)
-            }
-            if ($null -ne $AADBetaApp.authenticationBehaviors.removeUnverifiedEmailClaim)
-            {
-                $complexAuthenticationBehaviors.Add('RemoveUnverifiedEmailClaim', $AADBetaApp.authenticationBehaviors.removeUnverifiedEmailClaim)
-            }
-            if ($null -ne $AADBetaApp.authenticationBehaviors.requireClientServicePrincipal)
-            {
-                $complexAuthenticationBehaviors.Add('RequireClientServicePrincipal', $AADBetaApp.authenticationBehaviors.requireClientServicePrincipal)
-            }
-            if ($complexAuthenticationBehaviors.values.Where({ $null -ne $_ }).Count -eq 0)
-            {
-                $complexAuthenticationBehaviors = $null
-            }
-
-            $complexOptionalClaims = @{}
-            $complexAccessToken = @()
-            foreach ($currentAccessToken in $AADApp.optionalClaims.accessToken)
-            {
-                $myAccessToken = @{}
-                $myAccessToken.Add('Essential', $currentAccessToken.essential)
-                $myAccessToken.Add('Name', $currentAccessToken.name)
-                $myAccessToken.Add('Source', $currentAccessToken.source)
-                if ($myAccessToken.values.Where({ $null -ne $_ }).Count -gt 0)
-                {
-                    $complexAccessToken += $myAccessToken
-                }
-            }
-            $complexOptionalClaims.Add('AccessToken', $complexAccessToken)
-            $complexIdToken = @()
-            foreach ($currentIdToken in $AADApp.optionalClaims.idToken)
-            {
-                $myIdToken = @{}
-                $myIdToken.Add('Essential', $currentIdToken.essential)
-                $myIdToken.Add('Name', $currentIdToken.name)
-                $myIdToken.Add('Source', $currentIdToken.source)
-                if ($myIdToken.values.Where({ $null -ne $_ }).Count -gt 0)
-                {
-                    $complexIdToken += $myIdToken
-                }
-            }
-            $complexOptionalClaims.Add('IdToken', $complexIdToken)
-            $complexSaml2Token = @()
-            foreach ($currentSaml2Token in $AADApp.optionalClaims.saml2Token)
-            {
-                $mySaml2Token = @{}
-                $mySaml2Token.Add('Essential', $currentSaml2Token.essential)
-                $mySaml2Token.Add('Name', $currentSaml2Token.name)
-                $mySaml2Token.Add('Source', $currentSaml2Token.source)
-                if ($mySaml2Token.values.Where({ $null -ne $_ }).Count -gt 0)
-                {
-                    $complexSaml2Token += $mySaml2Token
-                }
-            }
-            $complexOptionalClaims.Add('Saml2Token', $complexSaml2Token)
-            if ($complexOptionalClaims.values.Where({ $null -ne $_ }).Count -eq 0)
-            {
-                $complexOptionalClaims = $null
-            }
-
-
-            $complexApi = @{}
-            $complexPreAuthorizedApplications = @()
-            foreach ($currentPreAuthorizedApplications in $AADApp.api.preAuthorizedApplications)
-            {
-                $myPreAuthorizedApplications = @{}
-                $myPreAuthorizedApplications.Add('AppId', $currentPreAuthorizedApplications.appId)
-                $myPreAuthorizedApplications.Add('PermissionIds', $currentPreAuthorizedApplications.permissionIds)
-                if ($myPreAuthorizedApplications.values.Where({ $null -ne $_ }).Count -gt 0)
-                {
-                    $complexPreAuthorizedApplications += $myPreAuthorizedApplications
-                }
-            }
-
-            $complexOAuth2Scopes = @()
-            foreach ($currentOAuth2Scope in $AADApp.api.Oauth2PermissionScopes)
-            {
-                $complexOAuth2Scopes += @{
-                    adminConsentDescription = $currentOAuth2Scope.adminConsentDescription
-                    adminConsentDisplayName = $currentOAuth2Scope.adminConsentDisplayName
-                    id                      = $currentOAuth2Scope.id
-                    isEnabled               = $currentOAuth2Scope.isEnabled
-                    type                    = $currentOAuth2Scope.type
-                    userConsentDescription  = $currentOAuth2Scope.userConsentDescription
-                    userConsentDisplayName  = $currentOAuth2Scope.userConsentDisplayName
-                    value                   = $currentOAuth2Scope.value
-                }
-            }
-
-            $complexApi.Add('PreAuthorizedApplications', $complexPreAuthorizedApplications)
-            $complexApi.Add('Oauth2PermissionScopes', $complexOAuth2Scopes)
-            if ($complexApi.values.Where({ $null -ne $_ }).Count -eq 0)
-            {
-                $complexApi = $null
-            }
-
-            $complexKeyCredentials = @()
-            foreach ($currentkeyCredentials in $AADAppKeyCredentials.keyCredentials)
-            {
-                $mykeyCredentials = @{}
-                if ($null -ne $currentkeyCredentials.customKeyIdentifier)
-                {
-                    $mykeyCredentials.Add('CustomKeyIdentifier', [convert]::ToBase64String($currentkeyCredentials.customKeyIdentifier))
-                }
-                $mykeyCredentials.Add('DisplayName', $currentkeyCredentials.displayName)
-                if ($null -ne $currentkeyCredentials.endDateTime)
-                {
-                    $mykeyCredentials.Add('EndDateTime', ([DateTimeOffset]$currentkeyCredentials.endDateTime).ToString('o'))
-                }
-                $mykeyCredentials.Add('KeyId', $currentkeyCredentials.keyId)
-
-
-                if ($null -ne $currentkeyCredentials.Key)
-                {
-                    $mykeyCredentials.Add('Key', [convert]::ToBase64String($currentkeyCredentials.key))
-                }
-
-                if ($null -ne $currentkeyCredentials.startDateTime)
-                {
-                    $mykeyCredentials.Add('StartDateTime', ([DateTimeOffset]$currentkeyCredentials.startDateTime).ToString('o'))
-                }
-                $mykeyCredentials.Add('Type', $currentkeyCredentials.type)
-                $mykeyCredentials.Add('Usage', $currentkeyCredentials.usage)
-                if ($mykeyCredentials.values.Where({ $null -ne $_ }).Count -gt 0)
-                {
-                    $complexKeyCredentials += $mykeyCredentials
-                }
-            }
-
-            $complexPasswordCredentials = @()
-            foreach ($currentpasswordCredentials in $AADApp.passwordCredentials)
-            {
-                $mypasswordCredentials = @{}
-                $mypasswordCredentials.Add('DisplayName', $currentpasswordCredentials.displayName)
-                if ($null -ne $currentpasswordCredentials.endDateTime)
-                {
-                    $mypasswordCredentials.Add('EndDateTime', ([DateTimeOffset]$currentpasswordCredentials.endDateTime).ToString('o'))
-                }
-                $mypasswordCredentials.Add('Hint', $currentpasswordCredentials.hint)
-                $mypasswordCredentials.Add('KeyId', $currentpasswordCredentials.keyId)
-                if ($null -ne $currentpasswordCredentials.startDateTime)
-                {
-                    $mypasswordCredentials.Add('StartDateTime', ([DateTimeOffset]$currentpasswordCredentials.startDateTime).ToString('o'))
-                }
-                if ($mypasswordCredentials.values.Where({ $null -ne $_ }).Count -gt 0)
-                {
-                    $complexPasswordCredentials += $mypasswordCredentials
-                }
-            }
-
-            $complexAppRoles = @()
-            foreach ($currentappRoles in $AADApp.appRoles)
-            {
-                $myappRoles = @{}
-                $myappRoles.Add('AllowedMemberTypes', $currentappRoles.allowedMemberTypes)
-                $myappRoles.Add('Description', $currentappRoles.description)
-                $myappRoles.Add('DisplayName', $currentappRoles.displayName)
-                $myappRoles.Add('Id', $currentappRoles.id)
-                $myappRoles.Add('IsEnabled', $currentappRoles.isEnabled)
-                $myappRoles.Add('Origin', $currentappRoles.origin)
-                $myappRoles.Add('Value', $currentappRoles.value)
-                if ($myappRoles.values.Where({ $null -ne $_ }).Count -gt 0)
-                {
-                    $complexAppRoles += $myappRoles
-                }
-            }
-
-            $permissionsObj = Get-M365DSCAzureADAppPermissions -App $AADApp
-            $isPublicClient = $false
-            if (-not [System.String]::IsNullOrEmpty($AADApp.PublicClient) -and $AADApp.PublicClient -eq $true)
-            {
-                $isPublicClient = $true
-            }
-            $AvailableToOtherTenantsValue = $false
-            if ($AADApp.SignInAudience -ne 'AzureADMyOrg')
-            {
-                $AvailableToOtherTenantsValue = $true
-            }
-
-            [Array]$Owners = Get-MgApplicationOwner -ApplicationId $AADApp.Id -All:$true | `
-                    Where-Object { !$_.DeletedDateTime }
-            $OwnersValues = @()
-            foreach ($Owner in $Owners)
-            {
-                if ($Owner.AdditionalProperties.userPrincipalName)
-                {
-                    $OwnersValues += $Owner.AdditionalProperties.userPrincipalName
-                }
-                else
-                {
-                    $OwnersValues += $Owner.Id
-                }
-            }
-
-            $IsFallbackPublicClientValue = $false
-            if ($AADApp.IsFallbackPublicClient)
-            {
-                $IsFallbackPublicClientValue = $AADApp.IsFallbackPublicClient
-            }
-
-            #region OnPremisesPublishing
-            $onPremisesPublishingValue = @{}
-            $oppInfo = $null
-
-            try
-            {
-                $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/applications/$($AADBetaApp.Id)/onPremisesPublishing"
-                $oppInfo = Invoke-MgGraphRequest -Method GET `
-                    -Uri $Uri `
-                    -ErrorAction SilentlyContinue
-            }
-            catch
-            {
-                Write-Verbose -Message "On-premises publishing is not enabled for App {$($AADBetaApp.DisplayName)}"
-            }
-
-            if ($null -ne $oppInfo)
-            {
-                $onPremisesPublishingValue = @{
-                    alternateUrl                          = $oppInfo.alternateUrl
-                    applicationServerTimeout              = $oppInfo.applicationServerTimeout
-                    externalAuthenticationType            = $oppInfo.externalAuthenticationType
-                    externalUrl                           = $oppInfo.externalUrl
-                    internalUrl                           = $oppInfo.internalUrl
-                    isBackendCertificateValidationEnabled = $oppInfo.isBackendCertificateValidationEnabled
-                    isHttpOnlyCookieEnabled               = $oppInfo.isHttpOnlyCookieEnabled
-                    isPersistentCookieEnabled             = $oppInfo.isPersistentCookieEnabled
-                    isSecureCookieEnabled                 = $oppInfo.isSecureCookieEnabled
-                    isStateSessionEnabled                 = $oppInfo.isStateSessionEnabled
-                    isTranslateHostHeaderEnabled          = $oppInfo.isTranslateHostHeaderEnabled
-                    isTranslateLinksInBodyEnabled         = $oppInfo.isTranslateLinksInBodyEnabled
-                }
-
-                # onPremisesApplicationSegments
-                $segmentValues = @()
-                foreach ($segment in $oppInfo.onPremisesApplicationSegments)
-                {
-                    $entry = @{
-                        alternateUrl = $segment.AlternateUrl
-                        externalUrl  = $segment.externalUrl
-                        internalUrl  = $segment.internalUrl
-                    }
-
-                    $corsConfigurationValues = @()
-                    foreach ($cors in $segment.corsConfigurations)
-                    {
-                        $corsEntry = @{
-                            allowedHeaders  = [Array]($cors.allowedHeaders)
-                            allowedMethods  = [Array]($cors.allowedMethods)
-                            allowedOrigins  = [Array]($cors.allowedOrigins)
-                            maxAgeInSeconds = $cors.maxAgeInSeconds
-                            resource        = $cors.resource
-                        }
-                        $corsConfigurationValues += $corsEntry
-                    }
-                    $entry.Add('corsConfigurations', $corsConfigurationValues)
-                    $segmentValues += $entry
-                }
-                $onPremisesPublishingValue.Add('onPremisesApplicationSegments', $segmentValues)
-
-                # singleSignOnSettings
-                $singleSignOnValues = @{
-                    kerberosSignOnSettings = @{
-                        kerberosServicePrincipalName       = $oppInfo.singleSignOnSettings.kerberosSignOnSettings.kerberosServicePrincipalName
-                        kerberosSignOnMappingAttributeType = $oppInfo.singleSignOnSettings.kerberosSignOnSettings.kerberosSignOnMappingAttributeType
-                    }
-                    singleSignOnMode       = $oppInfo.singleSignOnSettings.singleSignOnMode
-                }
-                $onPremisesPublishingValue.Add('singleSignOnSettings', $singleSignOnValues)
-            }
-            #endregion
-
-            $IdentifierUrisValue = @()
-            if ($null -ne $AADApp.IdentifierUris)
-            {
-                $IdentifierUrisValue = $AADApp.IdentifierUris
-            }
-
-            $result = @{
-                DisplayName             = $AADApp.DisplayName
-                AvailableToOtherTenants = $AvailableToOtherTenantsValue
-                Description             = $AADApp.Description
-                GroupMembershipClaims   = $AADApp.GroupMembershipClaims
-                Homepage                = $AADApp.web.HomepageUrl
-                IdentifierUris          = $IdentifierUrisValue
-                IsFallbackPublicClient  = $IsFallbackPublicClientValue
-                KnownClientApplications = $AADApp.Api.KnownClientApplications
-                LogoutURL               = $AADApp.web.LogoutURL
-                PublicClient            = $isPublicClient
-                ReplyURLs               = $AADApp.web.RedirectUris
-                Owners                  = $OwnersValues
-                ObjectId                = $AADApp.Id
-                AppId                   = $AADApp.AppId
-                OptionalClaims          = $complexOptionalClaims
-                Api                     = $complexApi
-                AuthenticationBehaviors = $complexAuthenticationBehaviors
-                KeyCredentials          = $complexKeyCredentials
-                PasswordCredentials     = $complexPasswordCredentials
-                AppRoles                = $complexAppRoles
-                Permissions             = $permissionsObj
-                OnPremisesPublishing    = $onPremisesPublishingValue
-                ApplicationTemplateId   = $AADApp.AdditionalProperties.applicationTemplateId
-                Ensure                  = 'Present'
-                Credential              = $Credential
-                ApplicationId           = $ApplicationId
-                TenantId                = $TenantId
-                ApplicationSecret       = $ApplicationSecret
-                CertificateThumbprint   = $CertificateThumbprint
-                ManagedIdentity         = $ManagedIdentity.IsPresent
-                AccessTokens            = $AccessTokens
-            }
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            $AADApp = $Script:exportedInstance
         }
+        Write-Verbose -Message 'An instance of Azure AD App was retrieved.'
+
+        $AADBetaApp = Get-MgBetaApplication -Property 'id,displayName,appId,authenticationBehaviors,additionalProperties' -ApplicationId $AADApp.Id -ErrorAction SilentlyContinue
+        $AADAppKeyCredentials = Get-MgBetaApplication -Property 'keyCredentials' -ApplicationId $AADApp.Id -ErrorAction SilentlyContinue
+
+        $complexAuthenticationBehaviors = @{}
+        if ($null -ne $AADBetaApp.authenticationBehaviors.blockAzureADGraphAccess)
+        {
+            $complexAuthenticationBehaviors.Add('BlockAzureADGraphAccess', $AADBetaApp.authenticationBehaviors.blockAzureADGraphAccess)
+        }
+        if ($null -ne $AADBetaApp.authenticationBehaviors.removeUnverifiedEmailClaim)
+        {
+            $complexAuthenticationBehaviors.Add('RemoveUnverifiedEmailClaim', $AADBetaApp.authenticationBehaviors.removeUnverifiedEmailClaim)
+        }
+        if ($null -ne $AADBetaApp.authenticationBehaviors.requireClientServicePrincipal)
+        {
+            $complexAuthenticationBehaviors.Add('RequireClientServicePrincipal', $AADBetaApp.authenticationBehaviors.requireClientServicePrincipal)
+        }
+        if ($complexAuthenticationBehaviors.values.Where({ $null -ne $_ }).Count -eq 0)
+        {
+            $complexAuthenticationBehaviors = $null
+        }
+
+        $complexOptionalClaims = @{}
+        $complexAccessToken = @()
+        foreach ($currentAccessToken in $AADApp.optionalClaims.accessToken)
+        {
+            $myAccessToken = @{}
+            $myAccessToken.Add('Essential', $currentAccessToken.essential)
+            $myAccessToken.Add('Name', $currentAccessToken.name)
+            $myAccessToken.Add('Source', $currentAccessToken.source)
+            if ($myAccessToken.values.Where({ $null -ne $_ }).Count -gt 0)
+            {
+                $complexAccessToken += $myAccessToken
+            }
+        }
+        $complexOptionalClaims.Add('AccessToken', $complexAccessToken)
+        $complexIdToken = @()
+        foreach ($currentIdToken in $AADApp.optionalClaims.idToken)
+        {
+            $myIdToken = @{}
+            $myIdToken.Add('Essential', $currentIdToken.essential)
+            $myIdToken.Add('Name', $currentIdToken.name)
+            $myIdToken.Add('Source', $currentIdToken.source)
+            if ($myIdToken.values.Where({ $null -ne $_ }).Count -gt 0)
+            {
+                $complexIdToken += $myIdToken
+            }
+        }
+        $complexOptionalClaims.Add('IdToken', $complexIdToken)
+        $complexSaml2Token = @()
+        foreach ($currentSaml2Token in $AADApp.optionalClaims.saml2Token)
+        {
+            $mySaml2Token = @{}
+            $mySaml2Token.Add('Essential', $currentSaml2Token.essential)
+            $mySaml2Token.Add('Name', $currentSaml2Token.name)
+            $mySaml2Token.Add('Source', $currentSaml2Token.source)
+            if ($mySaml2Token.values.Where({ $null -ne $_ }).Count -gt 0)
+            {
+                $complexSaml2Token += $mySaml2Token
+            }
+        }
+        $complexOptionalClaims.Add('Saml2Token', $complexSaml2Token)
+        if ($complexOptionalClaims.values.Where({ $null -ne $_ }).Count -eq 0)
+        {
+            $complexOptionalClaims = $null
+        }
+
+
+        $complexApi = @{}
+        $complexPreAuthorizedApplications = @()
+        foreach ($currentPreAuthorizedApplications in $AADApp.api.preAuthorizedApplications)
+        {
+            $myPreAuthorizedApplications = @{}
+            $myPreAuthorizedApplications.Add('AppId', $currentPreAuthorizedApplications.appId)
+            $myPreAuthorizedApplications.Add('PermissionIds', $currentPreAuthorizedApplications.permissionIds)
+            if ($myPreAuthorizedApplications.values.Where({ $null -ne $_ }).Count -gt 0)
+            {
+                $complexPreAuthorizedApplications += $myPreAuthorizedApplications
+            }
+        }
+
+        $complexOAuth2Scopes = @()
+        foreach ($currentOAuth2Scope in $AADApp.api.Oauth2PermissionScopes)
+        {
+            $complexOAuth2Scopes += @{
+                adminConsentDescription = $currentOAuth2Scope.adminConsentDescription
+                adminConsentDisplayName = $currentOAuth2Scope.adminConsentDisplayName
+                id                      = $currentOAuth2Scope.id
+                isEnabled               = $currentOAuth2Scope.isEnabled
+                type                    = $currentOAuth2Scope.type
+                userConsentDescription  = $currentOAuth2Scope.userConsentDescription
+                userConsentDisplayName  = $currentOAuth2Scope.userConsentDisplayName
+                value                   = $currentOAuth2Scope.value
+            }
+        }
+
+        $complexApi.Add('PreAuthorizedApplications', $complexPreAuthorizedApplications)
+        $complexApi.Add('Oauth2PermissionScopes', $complexOAuth2Scopes)
+        if ($complexApi.values.Where({ $null -ne $_ }).Count -eq 0)
+        {
+            $complexApi = $null
+        }
+
+        $complexKeyCredentials = @()
+        foreach ($currentkeyCredentials in $AADAppKeyCredentials.keyCredentials)
+        {
+            $mykeyCredentials = @{}
+            if ($null -ne $currentkeyCredentials.customKeyIdentifier)
+            {
+                $mykeyCredentials.Add('CustomKeyIdentifier', [convert]::ToBase64String($currentkeyCredentials.customKeyIdentifier))
+            }
+            $mykeyCredentials.Add('DisplayName', $currentkeyCredentials.displayName)
+            if ($null -ne $currentkeyCredentials.endDateTime)
+            {
+                $mykeyCredentials.Add('EndDateTime', ([DateTimeOffset]$currentkeyCredentials.endDateTime).ToString('o'))
+            }
+            $mykeyCredentials.Add('KeyId', $currentkeyCredentials.keyId)
+
+
+            if ($null -ne $currentkeyCredentials.Key)
+            {
+                $mykeyCredentials.Add('Key', [convert]::ToBase64String($currentkeyCredentials.key))
+            }
+
+            if ($null -ne $currentkeyCredentials.startDateTime)
+            {
+                $mykeyCredentials.Add('StartDateTime', ([DateTimeOffset]$currentkeyCredentials.startDateTime).ToString('o'))
+            }
+            $mykeyCredentials.Add('Type', $currentkeyCredentials.type)
+            $mykeyCredentials.Add('Usage', $currentkeyCredentials.usage)
+            if ($mykeyCredentials.values.Where({ $null -ne $_ }).Count -gt 0)
+            {
+                $complexKeyCredentials += $mykeyCredentials
+            }
+        }
+
+        $complexPasswordCredentials = @()
+        foreach ($currentpasswordCredentials in $AADApp.passwordCredentials)
+        {
+            $mypasswordCredentials = @{}
+            $mypasswordCredentials.Add('DisplayName', $currentpasswordCredentials.displayName)
+            if ($null -ne $currentpasswordCredentials.endDateTime)
+            {
+                $mypasswordCredentials.Add('EndDateTime', ([DateTimeOffset]$currentpasswordCredentials.endDateTime).ToString('o'))
+            }
+            $mypasswordCredentials.Add('Hint', $currentpasswordCredentials.hint)
+            $mypasswordCredentials.Add('KeyId', $currentpasswordCredentials.keyId)
+            if ($null -ne $currentpasswordCredentials.startDateTime)
+            {
+                $mypasswordCredentials.Add('StartDateTime', ([DateTimeOffset]$currentpasswordCredentials.startDateTime).ToString('o'))
+            }
+            if ($mypasswordCredentials.values.Where({ $null -ne $_ }).Count -gt 0)
+            {
+                $complexPasswordCredentials += $mypasswordCredentials
+            }
+        }
+
+        $complexAppRoles = @()
+        foreach ($currentappRoles in $AADApp.appRoles)
+        {
+            $myappRoles = @{}
+            $myappRoles.Add('AllowedMemberTypes', $currentappRoles.allowedMemberTypes)
+            $myappRoles.Add('Description', $currentappRoles.description)
+            $myappRoles.Add('DisplayName', $currentappRoles.displayName)
+            $myappRoles.Add('Id', $currentappRoles.id)
+            $myappRoles.Add('IsEnabled', $currentappRoles.isEnabled)
+            $myappRoles.Add('Origin', $currentappRoles.origin)
+            $myappRoles.Add('Value', $currentappRoles.value)
+            if ($myappRoles.values.Where({ $null -ne $_ }).Count -gt 0)
+            {
+                $complexAppRoles += $myappRoles
+            }
+        }
+
+        $permissionsObj = Get-M365DSCAzureADAppPermissions -App $AADApp
+        $isPublicClient = $false
+        if (-not [System.String]::IsNullOrEmpty($AADApp.PublicClient) -and $AADApp.PublicClient -eq $true)
+        {
+            $isPublicClient = $true
+        }
+        $AvailableToOtherTenantsValue = $false
+        if ($AADApp.SignInAudience -ne 'AzureADMyOrg')
+        {
+            $AvailableToOtherTenantsValue = $true
+        }
+
+        [Array]$Owners = Get-MgApplicationOwner -ApplicationId $AADApp.Id -All:$true | `
+                Where-Object { !$_.DeletedDateTime }
+        $OwnersValues = @()
+        foreach ($Owner in $Owners)
+        {
+            if ($Owner.AdditionalProperties.userPrincipalName)
+            {
+                $OwnersValues += $Owner.AdditionalProperties.userPrincipalName
+            }
+            else
+            {
+                $OwnersValues += $Owner.Id
+            }
+        }
+
+        $IsFallbackPublicClientValue = $false
+        if ($AADApp.IsFallbackPublicClient)
+        {
+            $IsFallbackPublicClientValue = $AADApp.IsFallbackPublicClient
+        }
+
+        #region OnPremisesPublishing
+        $onPremisesPublishingValue = @{}
+        $oppInfo = $null
+
+        try
+        {
+            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/applications/$($AADBetaApp.Id)/onPremisesPublishing"
+            $oppInfo = Invoke-MgGraphRequest -Method GET `
+                -Uri $Uri `
+                -ErrorAction SilentlyContinue
+        }
+        catch
+        {
+            Write-Verbose -Message "On-premises publishing is not enabled for App {$($AADBetaApp.DisplayName)}"
+        }
+
+        if ($null -ne $oppInfo)
+        {
+            $onPremisesPublishingValue = @{
+                alternateUrl                          = $oppInfo.alternateUrl
+                applicationServerTimeout              = $oppInfo.applicationServerTimeout
+                externalAuthenticationType            = $oppInfo.externalAuthenticationType
+                externalUrl                           = $oppInfo.externalUrl
+                internalUrl                           = $oppInfo.internalUrl
+                isBackendCertificateValidationEnabled = $oppInfo.isBackendCertificateValidationEnabled
+                isHttpOnlyCookieEnabled               = $oppInfo.isHttpOnlyCookieEnabled
+                isPersistentCookieEnabled             = $oppInfo.isPersistentCookieEnabled
+                isSecureCookieEnabled                 = $oppInfo.isSecureCookieEnabled
+                isStateSessionEnabled                 = $oppInfo.isStateSessionEnabled
+                isTranslateHostHeaderEnabled          = $oppInfo.isTranslateHostHeaderEnabled
+                isTranslateLinksInBodyEnabled         = $oppInfo.isTranslateLinksInBodyEnabled
+            }
+
+            # onPremisesApplicationSegments
+            $segmentValues = @()
+            foreach ($segment in $oppInfo.onPremisesApplicationSegments)
+            {
+                $entry = @{
+                    alternateUrl = $segment.AlternateUrl
+                    externalUrl  = $segment.externalUrl
+                    internalUrl  = $segment.internalUrl
+                }
+
+                $corsConfigurationValues = @()
+                foreach ($cors in $segment.corsConfigurations)
+                {
+                    $corsEntry = @{
+                        allowedHeaders  = [Array]($cors.allowedHeaders)
+                        allowedMethods  = [Array]($cors.allowedMethods)
+                        allowedOrigins  = [Array]($cors.allowedOrigins)
+                        maxAgeInSeconds = $cors.maxAgeInSeconds
+                        resource        = $cors.resource
+                    }
+                    $corsConfigurationValues += $corsEntry
+                }
+                $entry.Add('corsConfigurations', $corsConfigurationValues)
+                $segmentValues += $entry
+            }
+            $onPremisesPublishingValue.Add('onPremisesApplicationSegments', $segmentValues)
+
+            # singleSignOnSettings
+            $singleSignOnValues = @{
+                kerberosSignOnSettings = @{
+                    kerberosServicePrincipalName       = $oppInfo.singleSignOnSettings.kerberosSignOnSettings.kerberosServicePrincipalName
+                    kerberosSignOnMappingAttributeType = $oppInfo.singleSignOnSettings.kerberosSignOnSettings.kerberosSignOnMappingAttributeType
+                }
+                singleSignOnMode       = $oppInfo.singleSignOnSettings.singleSignOnMode
+            }
+            $onPremisesPublishingValue.Add('singleSignOnSettings', $singleSignOnValues)
+        }
+        #endregion
+
+        $IdentifierUrisValue = @()
+        if ($null -ne $AADApp.IdentifierUris)
+        {
+            $IdentifierUrisValue = $AADApp.IdentifierUris
+        }
+
+        $result = @{
+            DisplayName             = $AADApp.DisplayName
+            AvailableToOtherTenants = $AvailableToOtherTenantsValue
+            Description             = $AADApp.Description
+            GroupMembershipClaims   = $AADApp.GroupMembershipClaims
+            Homepage                = $AADApp.web.HomepageUrl
+            IdentifierUris          = $IdentifierUrisValue
+            IsFallbackPublicClient  = $IsFallbackPublicClientValue
+            KnownClientApplications = $AADApp.Api.KnownClientApplications
+            LogoutURL               = $AADApp.web.LogoutURL
+            PublicClient            = $isPublicClient
+            ReplyURLs               = $AADApp.web.RedirectUris
+            Owners                  = $OwnersValues
+            ObjectId                = $AADApp.Id
+            AppId                   = $AADApp.AppId
+            OptionalClaims          = $complexOptionalClaims
+            Api                     = $complexApi
+            AuthenticationBehaviors = $complexAuthenticationBehaviors
+            KeyCredentials          = $complexKeyCredentials
+            PasswordCredentials     = $complexPasswordCredentials
+            AppRoles                = $complexAppRoles
+            Permissions             = $permissionsObj
+            OnPremisesPublishing    = $onPremisesPublishingValue
+            ApplicationTemplateId   = $AADApp.AdditionalProperties.applicationTemplateId
+            Ensure                  = 'Present'
+            Credential              = $Credential
+            ApplicationId           = $ApplicationId
+            TenantId                = $TenantId
+            ApplicationSecret       = $ApplicationSecret
+            CertificateThumbprint   = $CertificateThumbprint
+            ManagedIdentity         = $ManagedIdentity.IsPresent
+            AccessTokens            = $AccessTokens
+        }
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -1602,6 +1592,7 @@ function Export-TargetResource
             }
             try
             {
+                $Script:exportedInstance = $AADApp
                 $Results = Get-TargetResource @Params
                 if ($Results.Ensure -eq 'Present')
                 {

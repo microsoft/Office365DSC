@@ -62,60 +62,40 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of Office 365 Shared Mailbox $DisplayName"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        try
+        if (-not $Script:exportedInstance)
         {
-            if (-not [System.String]::IsNullOrEmpty($Identity))
+            Write-Verbose -Message "Getting configuration of Office 365 Shared Mailbox $DisplayName"
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            try
             {
-                if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
-                {
-                    $mailbox = $Script:exportedInstances | Where-Object -FilterScript { $_.Identity -eq $Identity }
-                }
-                else
+                if (-not [System.String]::IsNullOrEmpty($Identity))
                 {
                     $mailbox = $mailbox = Get-Mailbox -Identity $Identity `
                         -RecipientTypeDetails 'SharedMailbox' `
                         -ResultSize Unlimited `
                         -ErrorAction Stop
                 }
-            }
 
-            if ($null -eq $mailbox)
-            {
-                if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
-                {
-                    $mailbox = $Script:exportedInstances | Where-Object -FilterScript { $_.DisplayName -eq $DisplayName }
-                }
-                else
+                if ($null -eq $mailbox)
                 {
                     $mailbox = $mailbox = Get-Mailbox -Identity $DisplayName `
                         -RecipientTypeDetails 'SharedMailbox' `
@@ -123,16 +103,20 @@ function Get-TargetResource
                         -ErrorAction Stop
                 }
             }
-        }
-        catch
-        {
-            Write-Verbose -Message "Could not retrieve AAD roledefinition by Id: {$Id}"
-        }
+            catch
+            {
+                Write-Verbose -Message "Could not retrieve AAD roledefinition by Id: {$Id}"
+            }
 
-        if ($null -eq $mailbox)
+            if ($null -eq $mailbox)
+            {
+                Write-Verbose -Message "The specified Shared Mailbox doesn't already exist."
+                return $nullReturn
+            }
+        }
+        else
         {
-            Write-Verbose -Message "The specified Shared Mailbox doesn't already exist."
-            return $nullReturn
+            $mailbox = $Script:exportedInstance
         }
 
         #region EmailAddresses
@@ -554,6 +538,7 @@ function Export-TargetResource
                     CertificatePath       = $CertificatePath
                     AccessTokens          = $AccessTokens
                 }
+                $Script:exportedInstance = $mailbox
                 $Results = Get-TargetResource @Params
                 $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                     -Results $Results

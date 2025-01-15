@@ -61,61 +61,68 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting SPOSiteGroups for {$Url}"
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'PNP' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        #checking if the site actually exists
-        try
+        if (-not $Script:exportedInstance)
         {
-            $site = Get-PnPTenantSite $Url
-        }
-        catch
-        {
-            $Message = "The specified site collection doesn't exist."
-            New-M365DSCLogEntry -Message $Message `
-                -Exception $_ `
-                -Source $MyInvocation.MyCommand.ModuleName
-            throw $Message
-            return $nullReturn
-        }
-        try
-        {
-            $ConnectionMode = New-M365DSCConnection -Workload 'PNP' `
-                -InboundParameters $PSBoundParameters `
-                -Url $Url
-            $siteGroup = Get-PnPGroup -Identity $Identity `
-                -ErrorAction Stop
-        }
-        catch
-        {
-            if ($Error[0].Exception.Message -eq 'Group cannot be found.')
-            {
-                Write-Verbose -Message "Site group $($Identity) could not be found on site $($Url)"
+            Write-Verbose -Message "Getting SPOSiteGroups for {$Url}"
 
+            $ConnectionMode = New-M365DSCConnection -Workload 'PNP' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            #checking if the site actually exists
+            try
+            {
+                $site = Get-PnPTenantSite $Url
+            }
+            catch
+            {
+                $Message = "The specified site collection doesn't exist."
+                New-M365DSCLogEntry -Message $Message `
+                    -Exception $_ `
+                    -Source $MyInvocation.MyCommand.ModuleName
+                throw $Message
+                return $nullReturn
+            }
+            try
+            {
+                $ConnectionMode = New-M365DSCConnection -Workload 'PNP' `
+                    -InboundParameters $PSBoundParameters `
+                    -Url $Url
+                $siteGroup = Get-PnPGroup -Identity $Identity `
+                    -ErrorAction Stop
+            }
+            catch
+            {
+                if ($Error[0].Exception.Message -eq 'Group cannot be found.')
+                {
+                    Write-Verbose -Message "Site group $($Identity) could not be found on site $($Url)"
+
+                }
+            }
+            if ($null -eq $siteGroup)
+            {
+                return $nullReturn
             }
         }
-        if ($null -eq $siteGroup)
+        else
         {
-            return $nullReturn
+            $siteGroup = $Script:exportedInstance
         }
 
         try
@@ -548,15 +555,6 @@ function Export-TargetResource
             foreach ($siteGroup in $siteGroups)
             {
                 Write-Host "        |---[$j/$($siteGroups.Length)] $($siteGroup.Title)" -NoNewline
-                try
-                {
-                    [array]$sitePerm = Get-PnPGroupPermissions -Identity $siteGroup.Title -ErrorAction Stop
-                }
-                catch
-                {
-                    Write-Warning -Message "The specified account does not have access to the permissions list for {$($siteGroup.Title)}"
-                    break
-                }
                 $Params = @{
                     Url                   = $site.Url
                     Identity              = $siteGroup.Title
@@ -572,6 +570,7 @@ function Export-TargetResource
                 }
                 try
                 {
+                    $Script:exportedInstance = $siteGroup
                     $Results = Get-TargetResource @Params
                     if ($Results.Ensure -eq 'Present')
                     {

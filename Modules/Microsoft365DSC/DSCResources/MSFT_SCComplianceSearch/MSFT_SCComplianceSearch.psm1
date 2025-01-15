@@ -90,93 +90,98 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of SCComplianceSearch for $Name"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters
-    }
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        if ($null -eq $Case)
+        if (-not $Script:exportedInstance)
         {
-            $Search = Get-ComplianceSearch -Identity $Name -ErrorAction SilentlyContinue
+            Write-Verbose -Message "Getting configuration of SCComplianceSearch for $Name"
+            if ($Global:CurrentModeIsExport)
+            {
+                $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
+                    -InboundParameters $PSBoundParameters `
+                    -SkipModuleReload $true
+            }
+            else
+            {
+                $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
+                    -InboundParameters $PSBoundParameters
+            }
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            if ($null -eq $Case)
+            {
+                $Search = Get-ComplianceSearch -Identity $Name -ErrorAction SilentlyContinue
+            }
+            else
+            {
+                $Search = Get-ComplianceSearch -Identity $Name -Case $Case -ErrorAction SilentlyContinue
+            }
+
+            if ($null -eq $Search)
+            {
+                Write-Verbose -Message "SCComplianceSearch $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            $Search = Get-ComplianceSearch -Identity $Name -Case $Case -ErrorAction SilentlyContinue
+            $Search = $Script:exportedInstance
         }
 
-        if ($null -eq $Search)
+        Write-Verbose "Found existing SCComplianceSearch $($Name)"
+        $result = @{
+            Name                                  = $Name
+            Case                                  = $Case
+            AllowNotFoundExchangeLocationsEnabled = $Search.AllowNotFoundExchangeLocationsEnabled
+            ContentMatchQuery                     = $Search.ContentMatchQuery
+            Description                           = $Search.Description
+            ExchangeLocation                      = $Search.ExchangeLocation
+            ExchangeLocationExclusion             = $Search.ExchangeLocationExclusion
+            HoldNames                             = $Search.HoldNames
+            IncludeUserAppContent                 = $Search.IncludeUserAppContent
+            Language                              = $Search.Language.TwoLetterISOLanguageName
+            PublicFolderLocation                  = $Search.PublicFolderLocation
+            SharePointLocation                    = $Search.SharePointLocation
+            SharePointLocationExclusion           = $Search.SharePointLocationExclusion
+            Credential                            = $Credential
+            ApplicationId                         = $ApplicationId
+            TenantId                              = $TenantId
+            CertificateThumbprint                 = $CertificateThumbprint
+            CertificatePath                       = $CertificatePath
+            CertificatePassword                   = $CertificatePassword
+            Ensure                                = 'Present'
+            AccessTokens                          = $AccessTokens
+        }
+
+        $nullParams = @()
+        foreach ($parameter in $result.Keys)
         {
-            Write-Verbose -Message "SCComplianceSearch $($Name) does not exist."
-            return $nullReturn
+            if ($null -eq $result.$parameter)
+            {
+                $nullParams += $parameter
+            }
         }
-        else
+
+        foreach ($paramToRemove in $nullParams)
         {
-            Write-Verbose "Found existing SCComplianceSearch $($Name)"
-            $result = @{
-                Name                                  = $Name
-                Case                                  = $Case
-                AllowNotFoundExchangeLocationsEnabled = $Search.AllowNotFoundExchangeLocationsEnabled
-                ContentMatchQuery                     = $Search.ContentMatchQuery
-                Description                           = $Search.Description
-                ExchangeLocation                      = $Search.ExchangeLocation
-                ExchangeLocationExclusion             = $Search.ExchangeLocationExclusion
-                HoldNames                             = $Search.HoldNames
-                IncludeUserAppContent                 = $Search.IncludeUserAppContent
-                Language                              = $Search.Language.TwoLetterISOLanguageName
-                PublicFolderLocation                  = $Search.PublicFolderLocation
-                SharePointLocation                    = $Search.SharePointLocation
-                SharePointLocationExclusion           = $Search.SharePointLocationExclusion
-                Credential                            = $Credential
-                ApplicationId                         = $ApplicationId
-                TenantId                              = $TenantId
-                CertificateThumbprint                 = $CertificateThumbprint
-                CertificatePath                       = $CertificatePath
-                CertificatePassword                   = $CertificatePassword
-                Ensure                                = 'Present'
-                AccessTokens                          = $AccessTokens
-            }
-
-            $nullParams = @()
-            foreach ($parameter in $result.Keys)
-            {
-                if ($null -eq $result.$parameter)
-                {
-                    $nullParams += $parameter
-                }
-            }
-
-            foreach ($paramToRemove in $nullParams)
-            {
-                $result.Remove($paramToRemove)
-            }
-
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            $result.Remove($paramToRemove)
         }
+
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -543,6 +548,7 @@ function Export-TargetResource
 
             Write-Host "        |---[$i/$($searches.Name.Count)] $($search.Name)" -NoNewline
 
+            $Script:exportedInstance = $search
             $Results = Get-TargetResource @PSBoundParameters -Name $search.Name
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

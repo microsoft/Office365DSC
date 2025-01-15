@@ -91,110 +91,99 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting Management Role Assignment for $Name"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
-
     try
     {
-        if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+        if (-not $Script:exportedInstance)
         {
-            $roleAssignment = $Script:exportedInstances | Where-Object -FilterScript { $_.Identity -eq $Name }
-        }
-        else
-        {
+            Write-Verbose -Message "Getting Management Role Assignment for $Name"
+            $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
             $roleAssignment = Get-ManagementRoleAssignment -Identity $Name -ErrorAction SilentlyContinue
-        }
 
-        if ($null -eq $roleAssignment)
-        {
-            Write-Verbose -Message "Management Role Assignment $($Name) does not exist."
-            return $nullReturn
+            if ($null -eq $roleAssignment)
+            {
+                Write-Verbose -Message "Management Role Assignment $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            $RecipientAdministrativeUnitScopeValue = $null
-            if ($roleAssignment.RecipientWriteScope -eq 'AdministrativeUnit')
-            {
-                $adminUnit = Get-AdministrativeUnit -Identity $roleAssignment.CustomRecipientWriteScope
-
-                if ($RecipientAdministrativeUnitScope -eq $adminUnit.Id)
-                {
-                    $RecipientAdministrativeUnitScopeValue = $RecipientAdministrativeUnitScope
-                }
-                else
-                {
-                    $RecipientAdministrativeUnitScopeValue = $adminUnit.DisplayName
-                }
-            }
-
-            $result = @{
-                Name                             = $roleAssignment.Name
-                CustomRecipientWriteScope        = $roleAssignment.CustomRecipientWriteScope
-                CustomResourceScope              = $roleAssignment.CustomResourceScope
-                ExclusiveRecipientWriteScope     = $roleAssignment.ExclusiveRecipientWriteScope
-                RecipientAdministrativeUnitScope = $RecipientAdministrativeUnitScopeValue
-                RecipientOrganizationalUnitScope = $roleAssignment.RecipientOrganizationalUnitScope
-                RecipientRelativeWriteScope      = $roleAssignment.RecipientRelativeWriteScope
-                Role                             = $roleAssignment.Role
-                Ensure                           = 'Present'
-                Credential                       = $Credential
-                ApplicationId                    = $ApplicationId
-                CertificateThumbprint            = $CertificateThumbprint
-                CertificatePath                  = $CertificatePath
-                CertificatePassword              = $CertificatePassword
-                Managedidentity                  = $ManagedIdentity.IsPresent
-                TenantId                         = $TenantId
-                AccessTokens                     = $AccessTokens
-            }
-
-            if ($roleAssignment.RoleAssigneeType -eq 'SecurityGroup' -or $roleAssignment.RoleAssigneeType -eq 'RoleGroup')
-            {
-                $result.Add('SecurityGroup', $roleAssignment.RoleAssignee)
-            }
-            elseif ($roleAssignment.RoleAssigneeType -eq 'RoleAssignmentPolicy')
-            {
-                $result.Add('Policy', $roleAssignment.RoleAssignee)
-            }
-            elseif ($roleAssignment.RoleAssigneeType -eq 'ServicePrincipal')
-            {
-                $result.Add('App', $roleAssignment.RoleAssignee)
-            }
-            elseif ($roleAssignment.RoleAssigneeType -eq 'User')
-            {
-                $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                    -InboundParameters $PSBoundParameters
-                $userInfo = Get-MgUser -UserId ($roleAssignment.RoleAssignee)
-                $result.Add('User', $userInfo.UserPrincipalName)
-            }
-
-            Write-Verbose -Message "Found Management Role Assignment $($Name)"
-            return $result
+            $roleAssignment = $Script:exportedInstance
         }
+
+        $RecipientAdministrativeUnitScopeValue = $null
+        if ($roleAssignment.RecipientWriteScope -eq 'AdministrativeUnit')
+        {
+            $adminUnit = Get-AdministrativeUnit -Identity $roleAssignment.CustomRecipientWriteScope
+
+            if ($RecipientAdministrativeUnitScope -eq $adminUnit.Id)
+            {
+                $RecipientAdministrativeUnitScopeValue = $RecipientAdministrativeUnitScope
+            }
+            else
+            {
+                $RecipientAdministrativeUnitScopeValue = $adminUnit.DisplayName
+            }
+        }
+
+        $result = @{
+            Name                             = $roleAssignment.Name
+            CustomRecipientWriteScope        = $roleAssignment.CustomRecipientWriteScope
+            CustomResourceScope              = $roleAssignment.CustomResourceScope
+            ExclusiveRecipientWriteScope     = $roleAssignment.ExclusiveRecipientWriteScope
+            RecipientAdministrativeUnitScope = $RecipientAdministrativeUnitScopeValue
+            RecipientOrganizationalUnitScope = $roleAssignment.RecipientOrganizationalUnitScope
+            RecipientRelativeWriteScope      = $roleAssignment.RecipientRelativeWriteScope
+            Role                             = $roleAssignment.Role
+            Ensure                           = 'Present'
+            Credential                       = $Credential
+            ApplicationId                    = $ApplicationId
+            CertificateThumbprint            = $CertificateThumbprint
+            CertificatePath                  = $CertificatePath
+            CertificatePassword              = $CertificatePassword
+            Managedidentity                  = $ManagedIdentity.IsPresent
+            TenantId                         = $TenantId
+            AccessTokens                     = $AccessTokens
+        }
+
+        if ($roleAssignment.RoleAssigneeType -eq 'SecurityGroup' -or $roleAssignment.RoleAssigneeType -eq 'RoleGroup')
+        {
+            $result.Add('SecurityGroup', $roleAssignment.RoleAssignee)
+        }
+        elseif ($roleAssignment.RoleAssigneeType -eq 'RoleAssignmentPolicy')
+        {
+            $result.Add('Policy', $roleAssignment.RoleAssignee)
+        }
+        elseif ($roleAssignment.RoleAssigneeType -eq 'ServicePrincipal')
+        {
+            $result.Add('App', $roleAssignment.RoleAssignee)
+        }
+        elseif ($roleAssignment.RoleAssigneeType -eq 'User')
+        {
+            $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
+                -InboundParameters $PSBoundParameters
+            $userInfo = Get-MgUser -UserId ($roleAssignment.RoleAssignee)
+            $result.Add('User', $userInfo.UserPrincipalName)
+        }
+
+        Write-Verbose -Message "Found Management Role Assignment $($Name)"
+        return $result
     }
     catch
     {
@@ -607,6 +596,7 @@ function Export-TargetResource
                 CertificatePath       = $CertificatePath
                 AccessTokens          = $AccessTokens
             }
+            $Script:exportedInstance = $assignment
             $Results = Get-TargetResource @Params
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results

@@ -123,99 +123,97 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of DLPCompliancePolicy for $Name"
-    if ($Global:CurrentModeIsExport)
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters `
-            -SkipModuleReload $true
-    }
-    else
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-            -InboundParameters $PSBoundParameters
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $nullReturn = $PSBoundParameters
-    $nullReturn.Ensure = 'Absent'
     try
     {
-        $PolicyObject = Get-DlpCompliancePolicy -Identity $Name -ErrorAction SilentlyContinue
-
-        if ($null -eq $PolicyObject)
+        if (-not $Script:exportedInstance)
         {
-            Write-Verbose -Message "DLPCompliancePolicy $($Name) does not exist."
-            return $nullReturn
+            Write-Verbose -Message "Getting configuration of DLPCompliancePolicy for $Name"
+
+            $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
+                -InboundParameters $PSBoundParameters
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
+            $CommandName = $MyInvocation.MyCommand
+            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
+                -CommandName $CommandName `
+                -Parameters $PSBoundParameters
+            Add-M365DSCTelemetryEvent -Data $data
+            #endregion
+
+            $nullReturn = $PSBoundParameters
+            $nullReturn.Ensure = 'Absent'
+
+            $PolicyObject = Get-DlpCompliancePolicy -Identity $Name -ErrorAction SilentlyContinue
+
+            if ($null -eq $PolicyObject)
+            {
+                Write-Verbose -Message "DLPCompliancePolicy $($Name) does not exist."
+                return $nullReturn
+            }
         }
         else
         {
-            Write-Verbose "Found existing DLPCompliancePolicy $($Name)"
-
-            $ExchangeSenderMemberOfValue = @()
-            if ($null -ne $PolicyObject.ExchangeSenderMemberOf)
-            {
-                foreach ($member in $PolicyObject.ExchangeSenderMemberOf)
-                {
-                    $ExchangeSenderMemberOfValue += (ConvertFrom-Json $member).PrimarySmtpAddress
-                }
-            }
-
-            $ExchangeSenderMemberOfExceptionValue = @()
-            if ($null -ne $PolicyObject.ExchangeSenderMemberOfException)
-            {
-                foreach ($member in $PolicyObject.ExchangeSenderMemberOfException)
-                {
-                    $ExchangeSenderMemberOfExceptionValue += (ConvertFrom-Json $member).PrimarySmtpAddress
-                }
-            }
-
-            $result = @{
-                Ensure                                = 'Present'
-                Name                                  = $PolicyObject.Name
-                Comment                               = $PolicyObject.Comment
-                EndpointDlpLocation                   = $PolicyObject.EndpointDlpLocation.Name
-                EndpointDlpLocationException          = $PolicyObject.EndpointDlpLocationException
-                ExchangeLocation                      = $PolicyObject.ExchangeLocation.Name
-                ExchangeSenderMemberOf                = $ExchangeSenderMemberOfValue
-                ExchangeSenderMemberOfException       = $ExchangeSenderMemberOfExceptionValue
-                Mode                                  = $PolicyObject.Mode
-                OneDriveLocation                      = $PolicyObject.OneDriveLocation.Name
-                OneDriveLocationException             = $PolicyObject.OneDriveLocationException
-                OnPremisesScannerDlpLocation          = $PolicyObject.OnPremisesScannerDlpLocation.Name
-                OnPremisesScannerDlpLocationException = $PolicyObject.OnPremisesScannerDlpLocationException
-                PowerBIDlpLocation                    = $PolicyObject.PowerBIDlpLocation.Name
-                PowerBIDlpLocationException           = $PolicyObject.PowerBIDlpLocationException
-                Priority                              = $PolicyObject.Priority
-                SharePointLocation                    = $PolicyObject.SharePointLocation.Name
-                SharePointLocationException           = $PolicyObject.SharePointLocationException
-                TeamsLocation                         = $PolicyObject.TeamsLocation.Name
-                TeamsLocationException                = $PolicyObject.TeamsLocationException
-                ThirdPartyAppDlpLocation              = $PolicyObject.ThirdPartyAppDlpLocation.Name
-                ThirdPartyAppDlpLocationException     = $PolicyObject.ThirdPartyAppDlpLocationException
-                Credential                            = $Credential
-                ApplicationId                         = $ApplicationId
-                TenantId                              = $TenantId
-                CertificateThumbprint                 = $CertificateThumbprint
-                CertificatePath                       = $CertificatePath
-                CertificatePassword                   = $CertificatePassword
-                AccessTokens                          = $AccessTokens
-            }
-
-            Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
-            return $result
+            $PolicyObject = $Script:exportedInstance
         }
+
+        Write-Verbose "Found existing DLPCompliancePolicy $($Name)"
+
+        $ExchangeSenderMemberOfValue = @()
+        if ($null -ne $PolicyObject.ExchangeSenderMemberOf)
+        {
+            foreach ($member in $PolicyObject.ExchangeSenderMemberOf)
+            {
+                $ExchangeSenderMemberOfValue += (ConvertFrom-Json $member).PrimarySmtpAddress
+            }
+        }
+
+        $ExchangeSenderMemberOfExceptionValue = @()
+        if ($null -ne $PolicyObject.ExchangeSenderMemberOfException)
+        {
+            foreach ($member in $PolicyObject.ExchangeSenderMemberOfException)
+            {
+                $ExchangeSenderMemberOfExceptionValue += (ConvertFrom-Json $member).PrimarySmtpAddress
+            }
+        }
+
+        $result = @{
+            Ensure                                = 'Present'
+            Name                                  = $PolicyObject.Name
+            Comment                               = $PolicyObject.Comment
+            EndpointDlpLocation                   = $PolicyObject.EndpointDlpLocation.Name
+            EndpointDlpLocationException          = $PolicyObject.EndpointDlpLocationException
+            ExchangeLocation                      = $PolicyObject.ExchangeLocation.Name
+            ExchangeSenderMemberOf                = $ExchangeSenderMemberOfValue
+            ExchangeSenderMemberOfException       = $ExchangeSenderMemberOfExceptionValue
+            Mode                                  = $PolicyObject.Mode
+            OneDriveLocation                      = $PolicyObject.OneDriveLocation.Name
+            OneDriveLocationException             = $PolicyObject.OneDriveLocationException
+            OnPremisesScannerDlpLocation          = $PolicyObject.OnPremisesScannerDlpLocation.Name
+            OnPremisesScannerDlpLocationException = $PolicyObject.OnPremisesScannerDlpLocationException
+            PowerBIDlpLocation                    = $PolicyObject.PowerBIDlpLocation.Name
+            PowerBIDlpLocationException           = $PolicyObject.PowerBIDlpLocationException
+            Priority                              = $PolicyObject.Priority
+            SharePointLocation                    = $PolicyObject.SharePointLocation.Name
+            SharePointLocationException           = $PolicyObject.SharePointLocationException
+            TeamsLocation                         = $PolicyObject.TeamsLocation.Name
+            TeamsLocationException                = $PolicyObject.TeamsLocationException
+            ThirdPartyAppDlpLocation              = $PolicyObject.ThirdPartyAppDlpLocation.Name
+            ThirdPartyAppDlpLocationException     = $PolicyObject.ThirdPartyAppDlpLocationException
+            Credential                            = $Credential
+            ApplicationId                         = $ApplicationId
+            TenantId                              = $TenantId
+            CertificateThumbprint                 = $CertificateThumbprint
+            CertificatePath                       = $CertificatePath
+            CertificatePassword                   = $CertificatePassword
+            AccessTokens                          = $AccessTokens
+        }
+
+        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
+        return $result
     }
     catch
     {
@@ -974,6 +972,7 @@ function Export-TargetResource
             }
 
             Write-Host "    |---[$i/$($policies.Count)] $($policy.Name)" -NoNewline
+            $Script:exportedInstance = $policy
             $Results = Get-TargetResource @PSBoundParameters -Name $policy.Name
             $Results = Update-M365DSCExportAuthenticationResults -ConnectionMode $ConnectionMode `
                 -Results $Results
