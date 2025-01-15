@@ -1,0 +1,7 @@
+/* Sets the width of the center column a bit wider than default, so tables render better. */
+.md-grid {
+    max-width: 67rem;
+}
+.md-sidebar--secondary:not([hidden]) {
+    display:hidden;
+}
