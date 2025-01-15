@@ -42,6 +42,10 @@
 * EXOTransportRule
   * Fixes issue extracting arrays in Get-TargetResource.
     * FIXES [#5575](https://github.com/microsoft/Microsoft365DSC/issues/5575)
+* IntuneAppConfigurationDevicePolicy
+  * Removed due to issue [#5587]. Android configuration already managed by IntuneAndroidManagedStoreAppConfiguration
+* IntuneMobileAppConfigurationPolicyIOS
+  * Initial release, fixes issue [#5587].
 * TeamsMeetingPolicy
   * Adds support for additional Copilot setting value.
     * FIXES [#5573](https://github.com/microsoft/Microsoft365DSC/issues/5573)
