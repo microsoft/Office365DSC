@@ -1246,7 +1246,7 @@ If specified, a new secret will be created for the application. -CreateNewSecret
 The path to the certificate to be uploaded for the app registration. If using with -CreateSelfSignedCertificate - a file with this name will be created and uploaded (file must not exist). Otherwise the file must already exist. Cannot be used with -CreateNewSecret simultaneously.
 
 .Parameter CreateSelfSignedCertificate
-If specified, a self-signed certificate will be created for the application. -CreateSelfSignedCertificate or -CertificatePath can be used, not both.
+If specified, a self-signed certificate will be created for the application.
 
 .Parameter AdminConsent
 If specified, admin consent will be granted for the application.
@@ -1430,7 +1430,7 @@ function Update-M365DSCAzureAdApplication
                 }
                 else
                 {
-                    # Neither CertificatePath and CreateSelfSignedCertificate are specified.
+                    # Neither CertificatePath nor CreateSelfSignedCertificate are specified.
                     Write-LogEntry -Message 'Certificate is specified as Type, but neither the CertificatePath or CreateSelfSignedCertificate parameters are specified.' -Type Error
                     return
                 }
@@ -1713,7 +1713,7 @@ function Update-M365DSCAzureAdApplication
                     if ($CreateSelfSignedCertificate)
                     {
                         Write-LogEntry '    CreateSelfSignedCertificate specified, generating new Self Signed Certificate'
-                        $cerCert = New-SelfSignedCertificate -CertStoreLocation 'Cert:\CurrentUser\My' `
+                        $cerCert = New-SelfSignedCertificate -CertStoreLocation 'Cert:\LocalMachine\My' `
                             -Subject "CN=$ApplicationName" `
                             -KeySpec Signature `
                             -NotAfter $endDate `
